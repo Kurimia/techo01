@@ -51,7 +51,7 @@ html,body{height:100%}
 body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--font);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
   padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
 #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
-#app{width:1133px;height:744px;position:relative;flex:none;overflow:hidden;background:var(--bg);transform-origin:center center}
+#app{--sheetc:72px;--aw:1133px;--ah:744px;--th:56px;--bw:1133px;--bh:688px;--hw:566.5px;width:var(--aw);height:var(--ah);position:relative;flex:none;overflow:hidden;background:var(--bg);transform-origin:center center}
 button,input,select{font-family:inherit;color:inherit}
 input{-webkit-user-select:text;user-select:text}
 button{cursor:pointer}
@@ -67,10 +67,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .rb{width:38px;height:38px;border-radius:19px;border:none;background:var(--desk-2);color:var(--on-desk);display:flex;align-items:center;justify-content:center;padding:0}
 .chap{height:30px;padding:0 12px;border-radius:15px;font-size:12px;border:none;background:var(--desk-2);color:var(--on-desk);white-space:nowrap}
 .chap.on{background:var(--on-desk);color:var(--desk);font-weight:700}
-.bk-title{position:absolute;left:0;right:0;top:66px;text-align:center;display:flex;flex-direction:column;gap:3px}
-.bk-title b{font-size:22px;letter-spacing:.04em}
+.bk-title{position:absolute;left:172px;top:12px;text-align:left;display:flex;flex-direction:column;gap:2px;pointer-events:none}
+.bk-title b{font-size:20px;letter-spacing:.04em}
 .bk-title span{font-size:12px;color:var(--on-desk-sub);font-variant-numeric:tabular-nums}
-.book{--va:8deg;position:absolute;left:186px;top:136px;width:760px;height:462px;perspective:1800px;perspective-origin:50% 40%;touch-action:none;cursor:grab}
+.book{--va:8deg;position:absolute;left:186px;top:151px;scale:1.25;width:760px;height:462px;perspective:1800px;perspective-origin:50% 40%;touch-action:none;cursor:grab}
 .sheet{position:absolute;width:380px;background:#F1EFEA;box-shadow:0 2px 5px rgba(0,0,0,.3)}
 .half{position:absolute;top:0;width:380px;height:462px;overflow:hidden;background:var(--paper)}
 .half.L{left:0;transform-origin:right center;transform:rotateY(var(--va));border-radius:8px 0 0 8px;box-shadow:-6px 10px 24px rgba(0,0,0,.35)}
@@ -102,7 +102,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .cv-sub{font-family:var(--latin);font-size:11px;font-weight:600;letter-spacing:.42em;opacity:.8}
 .cv-band{position:absolute;right:46px;top:0;width:8px;height:150px;background:var(--cvi);opacity:.35;border-radius:0 0 3px 3px}
 .cv-mark{position:absolute;left:0;right:0;bottom:36px;text-align:center;font-family:var(--latin);font-size:12px;letter-spacing:.3em;color:var(--cvi);opacity:.55}
-.cvpick{position:absolute;left:50%;top:606px;transform:translateX(-50%);width:420px;display:flex;flex-direction:column;gap:5px;padding:8px 14px 10px;border-radius:14px;background:var(--desk-2);box-sizing:border-box;z-index:3}
+.cvpick{position:absolute;left:50%;top:650px;transform:translateX(-50%);width:420px;display:flex;flex-direction:column;gap:5px;padding:8px 14px 10px;border-radius:14px;background:var(--desk-2);box-sizing:border-box;z-index:3}
 .cvpick{animation:cvin .22s ease-out}
 @keyframes cvin{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
 .cvdone{margin-left:auto;height:26px;padding:0 14px;border:none;border-radius:14px;background:var(--on-desk);color:var(--desk);font-size:12px;font-weight:700}
@@ -169,21 +169,26 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .chapseg button{height:30px;padding:0 8px;border:none;border-radius:8px;background:none;font-size:12px;color:var(--sub);white-space:nowrap}
 .chapseg button.on{background:var(--seg-on);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.12)}
 .bookbtn2{width:36px;height:36px;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;padding:0;color:var(--ink);flex:none}
-#tbx{position:absolute;z-index:12;display:flex;align-items:center;gap:2px;height:44px;padding:0 8px 0 4px;background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:0 6px 20px rgba(0,0,0,.14);touch-action:none}
+#tbx{position:absolute;z-index:12;display:flex;align-items:center;gap:3px;height:48px;padding:0 8px 0 4px;background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:0 6px 20px rgba(0,0,0,.14);touch-action:none}
 #tbx[hidden]{display:none!important}
 #tbx .grip{width:22px;height:36px;border:none;background:none;color:var(--muted);display:flex;align-items:center;justify-content:center;padding:0;cursor:grab;touch-action:none}
-#tbx.dock{box-shadow:none;height:40px;border-color:var(--border)}
+#tbx.dock{box-shadow:none;height:44px;border-color:var(--border)}
 #tbx.drag{box-shadow:0 12px 30px rgba(0,0,0,.25);opacity:.95}
 #tbx .rtgl{height:32px;border:none;background:var(--seg)}
-#tbx .goalbtn{height:32px;padding:0 10px}
+#tbx .goalbtn{height:34px;width:50px;padding:0;justify-content:center}
+#tbx .goalbtn svg{width:19px;height:19px}
+#tbx .tool svg{width:22px;height:22px}
+#tbx .rgrp{gap:2px}
 #tbx .pens{gap:2px}
-#tbx .tool{width:28px}
-#tbx .pen{width:25px}
+#tbx .tool{width:38px;height:36px}
+#tbx .pen{width:32px;height:32px;border-radius:16px}
+#tbx .pen i{width:18px;height:18px;border-radius:9px}
+#tbx .pen.mk i{width:20px;height:11px;border-radius:2px}
 .rail{position:absolute;left:0;top:0;bottom:0;width:48px;background:var(--rail);border-right:1px solid var(--border);display:flex;flex-direction:column;gap:6px;padding-top:10px;box-sizing:border-box;z-index:3}
 .rail .bookbtn{width:40px;height:40px;margin:0 4px 6px;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;padding:0;color:var(--ink)}
 .tab{width:44px;border:none;border-radius:0 10px 10px 0;writing-mode:vertical-rl;text-orientation:upright;font-size:13px;letter-spacing:.12em;display:flex;align-items:center;justify-content:center;padding:0;background:none;color:var(--sub)}
 .tab.on{background:var(--bg);color:var(--ink);font-weight:700}
-.top{position:absolute;left:0;right:0;top:0;height:56px;box-sizing:border-box;padding:0 14px 0 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);background:var(--bg);z-index:3}
+.top{position:absolute;left:0;right:0;top:0;height:var(--th);box-sizing:border-box;padding:0 14px 0 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);background:var(--bg);z-index:3}
 .navb{width:30px;height:36px;border:none;background:none;display:flex;align-items:center;justify-content:center;padding:0}
 .ttl{display:flex;flex-direction:column;line-height:1.2;flex:none}
 .ttl b{font-size:16px;white-space:nowrap}
@@ -208,17 +213,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .sw.on{background:var(--ink)}.sw.on::after{left:16px}
 .goalbtn{height:36px;padding:0 12px;border-radius:18px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--surface);flex:none}
 .goalbtn.on{background:var(--btn);color:var(--btn-t);border-color:var(--btn)}
-#pbody{position:absolute;left:0;top:56px;width:1133px;height:688px;overflow:hidden;touch-action:none}
-#zw{position:absolute;left:0;top:0;width:1133px;height:688px;transform-origin:0 0}
-#ink{position:absolute;left:0;top:0;width:1133px;height:688px;pointer-events:none;z-index:8}
-.pstatic{position:absolute;left:0;top:0;width:1133px;height:688px;background:var(--bg);color:var(--ink);overflow:hidden;pointer-events:none}
-.pstatic img{position:absolute;left:0;top:0;width:1133px;height:688px}
-.phalf{position:absolute;top:0;width:566.5px;height:688px;overflow:hidden;pointer-events:none;background:var(--bg)}
-.phalf.L{left:0}.phalf.R{left:566.5px}
-.phalf .pin{position:absolute;top:0;width:1133px;height:688px}
-.phalf.L .pin{left:0}.phalf.R .pin{left:-566.5px}
-#turnlayer{position:absolute;left:0;top:56px;width:1133px;height:688px;z-index:10;pointer-events:none;perspective:1500px;perspective-origin:566.5px 344px}
-.pleaf{position:absolute;top:0;width:566.5px;height:688px;transform-style:preserve-3d;z-index:6;pointer-events:none}
+#pbody{position:absolute;left:0;top:var(--th);width:var(--bw);height:var(--bh);overflow:hidden;touch-action:none}
+#zw{position:absolute;left:0;top:0;width:var(--bw);height:var(--bh);transform-origin:0 0}
+#ink{position:absolute;left:0;top:0;width:var(--bw);height:var(--bh);pointer-events:none;z-index:8}
+.pstatic{position:absolute;left:0;top:0;width:var(--bw);height:var(--bh);background:var(--bg);color:var(--ink);overflow:hidden;pointer-events:none}
+.pstatic img{position:absolute;left:0;top:0;width:var(--bw);height:var(--bh)}
+.phalf{position:absolute;top:0;width:var(--hw);height:var(--bh);overflow:hidden;pointer-events:none;background:var(--bg)}
+.phalf.L{left:0}.phalf.R{left:var(--hw)}
+.phalf .pin{position:absolute;top:0;width:var(--bw);height:var(--bh)}
+.phalf.L .pin{left:0}.phalf.R .pin{left:calc(-1 * var(--hw))}
+#turnlayer{position:absolute;left:0;top:var(--th);width:var(--bw);height:var(--bh);z-index:10;pointer-events:none;perspective:1500px;perspective-origin:var(--hw) 40%}
+.pleaf{position:absolute;top:0;width:var(--hw);height:var(--bh);transform-style:preserve-3d;z-index:6;pointer-events:none}
 .pleaf .face2{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;background:var(--bg)}
 .pleaf .face2.back{transform:rotateY(180deg)}
 .pleaf .sh{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
@@ -263,6 +268,46 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .dti.done span{color:var(--muted);text-decoration:line-through}
 .dtn{font-size:10px;color:var(--sub);margin:auto}
 .panel .tlist .task{cursor:grab;touch-action:pan-y}
+/* ---------- portrait (week / day only) ---------- */
+.dleft{width:470px;flex:none;display:flex;flex-direction:column;padding:6px 16px 14px 4px}
+#app.port .dleft{width:300px;padding-right:10px}
+#app.port .top{align-items:flex-end}
+#app.port .top > .bookbtn2,#app.port .top > .navs{margin-bottom:8px}
+#app.port .wk-main{padding-bottom:6px}
+.shandle{display:none}
+.panel.tplp{padding-bottom:20px;overflow:auto}
+#app.port .wk > .panel.tplp:not(.open){overflow:hidden}
+#app.port .wk > .panel{position:absolute;left:0;right:0;bottom:0;width:auto;height:var(--sheetc);border-left:none;border-top:1px solid var(--border);border-radius:18px 18px 0 0;box-shadow:0 -8px 26px rgba(0,0,0,.13);z-index:10;padding:0 18px 18px;gap:10px;overflow:hidden;transition:height .28s cubic-bezier(.3,.7,.3,1)}
+#app.port .wk > .panel.open{height:52%}
+#app.port .wk > .panel.open.withgoals{overflow-y:auto}
+#app.port .wk > .panel.drag{transition:none}
+#app.port .shandle{display:flex;order:-3;flex:none;height:26px;margin:0 -18px -8px;border:none;background:none;align-items:center;justify-content:center;padding:0;cursor:grab;touch-action:none}
+#app.port .shandle::before{content:"";width:44px;height:5px;border-radius:3px;background:var(--border)}
+#app.port .wk > .panel > .pdays{order:-2}
+#app.port .pd{height:50px;border-radius:12px;flex-direction:column;gap:1px}
+#app.port .pd small{font-size:10px;font-weight:500;line-height:1;opacity:.75}
+#app.port .pd b{font-size:15px;line-height:1.1}
+.pdots{display:flex;gap:2px;height:7px;align-items:center}
+.pdots i{width:6px;height:6px;border-radius:3px;background:currentColor;display:block}
+.pdots i.dn{background:var(--done)}
+#app.port .pd.on .pdots i:not(.dn){background:var(--btn-t)}
+#app.port .wk > .panel .msec.open{flex:1 1 auto;min-height:160px}
+#app.port .fab{bottom:calc(var(--sheetc) + 14px)}
+#pbody.sheetopen .fab{bottom:calc(var(--bh) * .52 + 14px)}
+#app.port .evx.evx-half{width:100%;top:auto;bottom:0;height:62%;border-left:none;border-top:1px solid var(--border);box-shadow:0 -10px 30px rgba(0,0,0,.12)}
+.capb{width:30px;height:30px;border-radius:15px;border:none;background:var(--btn);color:var(--btn-t);display:flex;align-items:center;justify-content:center;padding:0;flex:none;margin-left:4px}
+.capb svg{width:16px;height:16px}
+#app.port .top > .capb{margin-bottom:11px}
+/* portrait sheet: compact day boxes, two-column task list, bigger memo */
+#app.port .pd{height:38px;display:grid;grid-template-columns:auto auto;justify-content:center;align-content:center;align-items:baseline;column-gap:3px;row-gap:2px;border-radius:10px}
+#app.port .pd small{font-size:10px}
+#app.port .pd b{font-size:14px;line-height:1}
+#app.port .pdots{grid-column:1 / -1;justify-self:center;height:6px}
+#app.port .pdots i{width:5px;height:5px}
+#app.port .wk > .panel.open{height:60%}
+#app.port .wk > .panel .tsec{flex:0 1 auto;max-height:36%}
+#app.port .wk > .panel .tlist{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:16px;align-content:start}
+#app.port .wk > .panel .msec.open,#app.port .wk > .panel .evmemo.msec.open{flex:1 1 auto;min-height:200px}
 #tdghost{position:absolute;z-index:50;pointer-events:none;background:var(--surface);border:1px solid var(--ink);border-radius:8px;padding:5px 10px;font-size:12px;box-shadow:0 8px 20px rgba(0,0,0,.2);white-space:nowrap}
 .adl{width:34px;flex:none;font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;box-sizing:border-box}
 .adstrip{position:relative;flex:1;min-width:0;background:var(--surface);border:1px solid var(--l-col);border-radius:6px;background-image:linear-gradient(to right,var(--l-col) 1px,transparent 1px);background-size:calc(100% / 7) 100%;touch-action:none}
@@ -272,7 +317,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .adstrip .selbox{height:20px;top:2px;padding:0 6px;flex-direction:row;align-items:center;gap:6px}
 .xb{width:30px;height:30px;border:none;background:none;color:var(--sub);display:flex;align-items:center;justify-content:center;padding:0;border-radius:8px;flex:none}
 .xb:hover{background:var(--seg)}
-.evx{position:absolute;top:0;height:688px;right:0;z-index:7;background:var(--panel);display:flex;flex-direction:column;gap:12px;padding:14px 18px 18px;box-sizing:border-box}
+.evx{position:absolute;top:0;height:var(--bh);right:0;z-index:7;background:var(--panel);display:flex;flex-direction:column;gap:12px;padding:14px 18px 18px;box-sizing:border-box}
 .evx.evx-half{width:50%;border-left:1px solid var(--border);box-shadow:-10px 0 30px rgba(0,0,0,.10)}
 .evx.evx-full{left:0;flex-direction:row;gap:0;padding:0;background:var(--bg)}
 .evx-h{display:flex;align-items:center;gap:6px;flex:none}
@@ -333,7 +378,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .now{position:absolute;height:0;border-top:2px solid var(--now);pointer-events:none;z-index:3}
 .now::before{content:"";position:absolute;left:-5px;top:-6px;width:10px;height:10px;border-radius:5px;background:var(--now)}
 .wkend{position:absolute;top:0;bottom:0;background:var(--weekend);pointer-events:none}
-.panel{width:240px;box-sizing:border-box;border-left:1px solid var(--border);padding:14px 16px 84px;display:flex;flex-direction:column;gap:12px;background:var(--panel);overflow:hidden;flex:none}
+.panel{width:240px;box-sizing:border-box;border-left:1px solid var(--border);padding:14px 16px 18px;display:flex;flex-direction:column;gap:12px;background:var(--panel);overflow:hidden;flex:none}
 .card{display:flex;flex-direction:column;gap:7px;padding:11px 13px;border-radius:12px;background:var(--surface);border:1px solid var(--border)}
 .card .k{font-size:11px;color:var(--muted)}
 .card .v{font-size:13px;font-weight:500;outline:none;border-radius:4px}
@@ -376,8 +421,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .fab{position:absolute;right:18px;bottom:18px;width:52px;height:52px;padding:0;justify-content:center;border:none;border-radius:26px;background:var(--btn);color:var(--btn-t);display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:9}
 
 /* other pages */
-.pg{position:absolute;inset:0;padding:22px 28px 24px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px}
-.pg h1{margin:0;font-size:22px;letter-spacing:.04em}
+.pg{position:absolute;inset:0;padding:10px 28px 22px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px}
+.pg h1{margin:0;font-size:17px;line-height:1.25;letter-spacing:.04em}
 .ruled{background-image:linear-gradient(to bottom,transparent 31px,var(--l-half) 31px);background-size:100% 32px;border-radius:8px;background-color:var(--surface);border:1px solid var(--border)}
 .edit{outline:none;border-radius:6px;padding:2px 4px;margin:-2px -4px;-webkit-user-select:text;user-select:text}
 .edit:focus{background:var(--panel)}
@@ -435,7 +480,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .pbtns{display:flex;justify-content:space-between;align-items:center}
 .primary{height:34px;padding:0 18px;border:none;border-radius:17px;background:var(--btn);color:var(--btn-t);font-size:13px;font-weight:700;white-space:nowrap}
 .danger{border:none;background:none;padding:0;font-size:13px;color:#C8483E}
-#toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);background:var(--btn);color:var(--btn-t);font-size:13px;padding:8px 16px;border-radius:18px;z-index:30;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}
+#toast{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);background:var(--btn);color:var(--btn-t);font-size:13px;padding:8px 16px;border-radius:18px;z-index:30;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}
 #toast.on{opacity:1}
 #toast.act{pointer-events:auto;display:flex;align-items:center;gap:12px;padding:6px 6px 6px 16px}
 #toast button{height:28px;padding:0 12px;border:none;border-radius:14px;background:var(--btn-t);color:var(--btn);font-size:12.5px;font-weight:700}
@@ -484,7 +529,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 /* ================= basics ================= */
 const $ = (s, r = document) => r.querySelector(s);
 const app = $('#app'), pb = $('#pbody'), zw = $('#zw'), pop = $('#pop'), book = $('#book');
-const BODY_W = 1133, BODY_H = 688, TOTAL = 74;
+let BODY_W = 1133, BODY_H = 688, W_APP = 1133, H_APP = 744, PORT = false;
+const TOTAL = 74;
 const DOW = ['月','火','水','木','金','土','日'];
 const COLORS = ['gray', 'purple', 'pink', 'cream', 'green', 'blue', 'orange'];
 const pad = n => String(n).padStart(2, '0');
@@ -755,7 +801,7 @@ function weekBody(w, opt = {}) {
     '<div class="wkend" style="left:' + (500 / 7) + '%;width:' + (200 / 7) + '%"></div>' + bg + '<div class="lines"></div>' + top + now + '</div>';
   const mon = tpl ? '' : '<div class="wkmon" aria-label="' + (ws.getMonth() + 1) + '月"><b>' + (ws.getMonth() + 1) + '</b>月</div>';
   const main = '<div class="wk-main"><div class="dayhead">' + mon + head + '</div>' + allday + '<div class="gw"><div class="tlab">' + tlabels(3) + '</div>' + grid + '</div></div>';
-  if (tpl) return '<div class="wk">' + main + '<aside class="panel" style="padding-bottom:20px;overflow:auto">' + (S.ui.goals ? goalsCard(weekOf(TODAY)) : '') + '' + tagLegend() + '</aside></div>';
+  if (tpl) return '<div class="wk">' + main + '<aside class="panel tplp' + (PORT && S.ui.sheet ? ' open' : '') + '">' + (PORT && !thumb ? '<button class="shandle" data-sheet="1" aria-label="シートを開閉"></button>' : '') + (S.ui.goals ? goalsCard(weekOf(TODAY)) : '') + '' + tagLegend() + '</aside></div>';
   return '<div class="wk">' + main + panelWithEvent(w, thumb) + '</div>';
 }
 function tagLegend() { return '<div class="card" style="gap:2px"><span class="k" style="margin-bottom:4px">タグ</span>' + S.tags.map(t => '<button class="legend-row" data-act="tagedit" data-id="' + t.id + '"><i style="width:14px;height:14px;border-radius:4px;flex:none;background:var(--c-' + t.color + ')"></i>' + esc(t.name) + '</button>').join('') + '<button class="legend-row" data-act="tagadd" style="color:var(--sub)"><i style="width:14px;height:14px;border-radius:4px;flex:none;border:1px dashed var(--muted);box-sizing:border-box"></i>＋ タグを追加</button></div>'; }
@@ -785,7 +831,9 @@ function panelHTML(w, thumb, ev) {
   /* day boxes: tap = show that day's todo below, drop a task = give it that date (it stays in WEEK) */
   const pdays = '<div class="pdays" role="group" aria-label="日ごとのタスク">' + wdays.map((dk, i) => {
     const n = S.tasks.filter(t => t.date === dk && !t.done).length, on = mode === 'today' && dk === pday;
-    return '<button class="pd' + (on ? ' on' : '') + (dk === TODAYK ? ' td' : '') + (i === 5 ? ' sat' : i === 6 ? ' sun' : '') + '" data-act="pday" data-date="' + dk + '"' + (thumb ? '' : ' data-dtbox="' + dk + '"') + ' aria-label="' + md(parse(dk)) + 'のタスク ' + n + '件"><b>' + parse(dk).getDate() + '</b></button>';
+    let dots = '';
+    if (PORT && !thumb) { const all = S.tasks.filter(t => t.date === dk), op = all.filter(t => !t.done).length, dn = all.length - op; dots = '<span class="pdots">' + '<i></i>'.repeat(Math.min(op, 6)) + '<i class="dn"></i>'.repeat(Math.min(dn, Math.max(0, 6 - op))) + '</span>'; }
+    return '<button class="pd' + (on ? ' on' : '') + (dk === TODAYK ? ' td' : '') + (i === 5 ? ' sat' : i === 6 ? ' sun' : '') + '" data-act="pday" data-date="' + dk + '"' + (thumb ? '' : ' data-dtbox="' + dk + '"') + ' aria-label="' + md(parse(dk)) + 'のタスク ' + n + '件">' + (PORT && !thumb ? '<small>' + DOW[i] + '</small>' : '') + '<b>' + parse(dk).getDate() + '</b>' + dots + '</button>';
   }).join('') + '</div>';
   let list = '';
   if (mode === 'today') {
@@ -799,13 +847,13 @@ function panelHTML(w, thumb, ev) {
     for (const t of vis(ts)) list += '<div class="task' + (t.done ? ' done' : '') + '"' + (thumb ? '' : ' data-tdrag="' + t.id + '"') + '>' + taskBox(t) + '<span class="tt">' + esc(t.title) + '</span>' + (t.date ? '<span class="due">' + DOW[dowIdx(parse(t.date))] + '</span>' : '') + (!t.done && t.date !== TODAYK && todayIn ? '<button class="mini" data-act="totoday" data-id="' + t.id + '">今日へ</button>' : '') + '</div>';
     list += '</div><div class="addrow"><input' + idp + ' data-add="week" data-w="' + w + '" placeholder="＋ 今週のタスク" aria-label="今週のタスクを追加" enterkeyhint="done"></div>';
   }
-  return '<aside class="panel' + (S.ui.goals ? ' withgoals' : '') + '">' + (S.ui.goals ? goalsCard(w) : '') +
+  return '<aside class="panel' + (S.ui.goals ? ' withgoals' : '') + (PORT && S.ui.sheet ? ' open' : '') + '">' + (PORT && !thumb ? '<button class="shandle" data-sheet="1" aria-label="' + (S.ui.sheet ? 'シートを下げる' : 'シートを引き上げる') + '"></button>' : '') + (S.ui.goals ? goalsCard(w) : '') +
     pdays + '<div class="segrow"><div class="segs" role="group" aria-label="タスクの表示"><button data-act="panel" data-v="today" class="' + (mode === 'today' ? 'on' : '') + '">DAY</button><button data-act="panel" data-v="week" class="' + (mode === 'week' ? 'on' : '') + '">WEEK</button></div>' +
     '<button class="donetg' + (showD ? ' on' : '') + '" data-act="pdone" aria-pressed="' + showD + '" aria-label="完了したタスクを' + (showD ? '隠す' : '表示') + '" title="完了したタスクを' + (showD ? '隠す' : '表示') + '">' + ICON.donetg + '</button></div>' +
     '<div class="tsec"' + (thumb ? '' : ' data-tzone="' + mode + '"') + '>' + list + '</div>' +
     (ev ? evMemoHTML(ev).replace('<section class="evmemo"', '<section class="evmemo msec open"') :
     '<section class="msec' + (S.ui.memo ? ' open' : '') + '"><div class="sechead"><h2 class="en">MEMO</h2><button class="link en" data-act="memo">' + (S.ui.memo ? 'HIDE' : 'SHOW') + '</button></div>' +
-    (S.ui.memo ? '<div class="memo" ' + (thumb ? '' : 'data-draw') + '></div>' : '') + '</section>') + '</aside>';
+    (S.ui.memo ? '<div class="memo" ' + (thumb ? '' : 'data-draw') + ' data-inkkey="wm' + w + '"></div>' : '') + '</section>') + '</aside>';
 }
 function panelWithEvent(w, thumb) {
   const ev = !thumb && selEvent();
@@ -834,16 +882,16 @@ function dayBody(dk) {
   const adBars = ad.map((it, i) => { const c = it.ev.tag ? tagColor(it.ev.tag) : null; return '<div class="adbar' + (isSel('event', it.ev.id) ? ' sel' : '') + '" data-kind="event" data-id="' + it.ev.id + '" data-date="' + it.dk + '" style="left:4px;right:4px;top:' + (i * 22 + 2) + 'px;font-size:12px' + (c ? ';border-color:var(--c-' + c + '-t)' : '') + '">' + (c ? '<span class="dot" style="background:var(--c-' + c + '-t)"></span>' : '') + esc(it.ev.name) + (it.end !== it.dk ? '　' + (parse(it.dk).getMonth() + 1) + '/' + parse(it.dk).getDate() + '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '') + '</div>'; }).join('');
   const sev = selEvent();
   const dd = parse(dk), dwi = dowIdx(dd);
-  return '<div class="wk"><div style="width:470px;flex:none;display:flex;flex-direction:column;padding:6px 16px 14px 4px">' +
+  return '<div class="wk"><div class="dleft">' +
     '<div class="dayttl' + (dk === TODAYK ? ' today' : dwi === 5 ? ' sat' : dwi === 6 ? ' sun' : '') + '"><b>' + dd.getDate() + '</b><span><i>' + (dd.getMonth() + 1) + '月</i>' + DOWEN[dwi] + '</span>' + (dk === TODAYK ? '<em>TODAY</em>' : '') + '</div>' +
     '<div class="adrow" style="margin-left:6px"><span class="adl">終日</span><div class="adstrip" data-ad="1" data-date="' + dk + '" style="height:' + (lanes * 22 + 4) + 'px;background-image:none">' + adBars + '</div></div>' +
     '<div style="flex:1;min-height:0;display:flex"><div class="tlab" style="width:40px;font-size:12px">' + tlabels(2) + '</div>' +
     '<div class="grid" data-draw data-grid="day" data-date="' + dk + '" style="border:1px solid var(--border);border-radius:4px">' + bg + '<div class="lines one"></div>' + top + now + '</div></div></div>' +
-    '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px;padding:16px 22px 90px 12px;border-left:1px solid var(--border);background:var(--panel)">' +
+    '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px;padding:16px 22px 18px 12px;border-left:1px solid var(--border);background:var(--panel)">' +
     '<section class="tsec dtsec"><div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex:none"><h2 style="margin:0;font-size:17px">' + (dk === TODAYK ? '今日のタスク' : 'この日のタスク') + '</h2><span style="font-size:12px;color:var(--muted)">' + ts.filter(t => t.done).length + ' / ' + ts.length + ' 完了</span><button class="pill" style="margin-left:auto;font-size:12px" data-act="pickweek" data-date="' + dk + '">今週のタスクから追加</button>' +
     '<button class="donetg' + (showD ? ' on' : '') + '" data-act="pdone" aria-pressed="' + showD + '" aria-label="完了したタスクを' + (showD ? '隠す' : '表示') + '" title="完了したタスクを' + (showD ? '隠す' : '表示') + '">' + ICON.donetg + '</button></div>' +
     '<div class="tlist">' + list + '</div><div class="addrow" style="margin-top:6px;flex:none"><input id="addtask" data-add="date" data-date="' + dk + '" placeholder="＋ タスクを追加" aria-label="タスクを追加" enterkeyhint="done" style="height:34px;font-size:13px"></div></section>' +
-    (sev ? evMemoHTML(sev, true) : '<section class="msec' + (S.ui.memo ? ' open' : '') + '"><div class="sechead"><h2 class="en">MEMO</h2><button class="link en" data-act="memo">' + (S.ui.memo ? 'HIDE' : 'SHOW') + '</button></div>' + (S.ui.memo ? '<div class="memo" data-draw style="background-image:linear-gradient(to bottom,transparent 31px,var(--l-half) 31px);background-size:100% 32px"></div>' : '') + '</section>') + '</div></div>';
+    (sev ? evMemoHTML(sev, true) : '<section class="msec' + (S.ui.memo ? ' open' : '') + '"><div class="sechead"><h2 class="en">MEMO</h2><button class="link en" data-act="memo">' + (S.ui.memo ? 'HIDE' : 'SHOW') + '</button></div>' + (S.ui.memo ? '<div class="memo" data-draw data-inkkey="dm' + dk + '" style="background-image:linear-gradient(to bottom,transparent 31px,var(--l-half) 31px);background-size:100% 32px"></div>' : '') + '</section>') + '</div></div>';
 }
 
 /* ---------- other pages ---------- */
@@ -896,7 +944,7 @@ function monthBody(m, thumb) {
   for (const ev of evs(sel).filter(e => !e.allDay).sort((a, b) => a.s - b.s)) items.push('<div class="irow"><span class="t">' + (ev.allDay ? '終日' : fmtT(ev.s) + '–' + fmtT(ev.e)) + '</span><span class="n">' + (ev.tag ? '<span style="display:inline-block;width:8px;height:8px;border-radius:4px;margin-right:6px;background:var(--c-' + tagColor(ev.tag) + '-t)"></span>' : '') + esc(ev.name) + '</span><button class="xbtn" data-act="mdel" data-date="' + sel + '" data-id="' + ev.id + '" aria-label="' + esc(ev.name) + 'を削除">' + ICON.x + '</button></div>');
   for (const t of S.tasks.filter(t => t.date === sel)) items.push('<div class="irow"><span class="t">タスク</span><span class="n" style="' + (t.done ? 'color:var(--muted);text-decoration:line-through' : '') + '">' + esc(t.title) + '</span></div>');
   const opts = (v, withAll) => { let o = withAll ? '<option value="">終日</option>' : ''; for (let t = 6; t <= 24; t += 0.5) o += '<option value="' + t + '"' + (v === t ? ' selected' : '') + '>' + fmtT(t) + '</option>'; return o; };
-  const panel = '<aside style="width:330px;flex:none;display:flex;flex-direction:column;gap:10px;padding:16px 18px 84px;border-left:1px solid var(--border);background:var(--panel)">' +
+  const panel = '<aside style="width:330px;flex:none;display:flex;flex-direction:column;gap:10px;padding:16px 18px 18px;border-left:1px solid var(--border);background:var(--panel)">' +
     '<div style="display:flex;align-items:baseline;gap:8px"><h2 style="margin:0;font-size:18px">' + md(d) + '</h2></div>' +
     '<div style="display:flex;gap:6px"><button class="pill" data-act="day" data-date="' + sel + '">日のページを開く</button><button class="pill" data-act="openweek" data-date="' + sel + '">この週のページ</button></div>' +
     '<div style="display:flex;flex-direction:column;overflow:auto;min-height:0">' + (items.length ? items.join('') : '<span style="font-size:13px;color:var(--muted);padding:8px 0">予定はまだありません</span>') + '</div>' +
@@ -991,15 +1039,16 @@ function pensHTML() {
   return '<div class="pens" role="group" aria-label="ペン" style="margin-left:0;border:none;height:36px;padding:0 2px">' +
     [['k', '黒'], ['b', '青'], ['r', '赤'], ['my', '黄色の蛍光']].map(p => '<button class="pen' + (isMk(p[0]) ? ' mk' : '') + '' + (u.tool === 'pen' && u.pen === p[0] ? ' on' : '') + '" data-act="pen" data-v="' + p[0] + '" aria-label="' + p[1] + 'のペン"><i style="background:var(--pen-' + p[0] + ')"></i></button>').join('') +
     '<span class="vsep"></span><button class="tool' + (u.tool === 'eraser' ? ' on' : '') + '" data-act="eraser" aria-label="消しゴム">' + ICON.eraser + '</button><button class="tool' + (u.tool === 'lasso' ? ' on' : '') + '" data-act="lasso" aria-label="なげなわ（囲んで動かす）" title="なげなわ">' + ICON.lasso + '</button><button class="tool" data-act="undo" aria-label="取り消し（2本指でタップでも戻せます）">' + ICON.undo + '</button>' +
-    '<button class="tool' + (u.finger ? ' on' : '') + '" data-act="finger" aria-pressed="' + u.finger + '" aria-label="指でも書く" title="指でも書く"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11V5a1.5 1.5 0 013 0v5"/><path d="M12 10V4a1.5 1.5 0 013 0v6"/><path d="M15 10V6a1.5 1.5 0 013 0v7a7 7 0 01-7 7h-.5a6 6 0 01-4.8-2.4L3.6 14.3a1.5 1.5 0 012.3-1.9L9 15"/></svg></button></div>';
+    '</div>';
 }
 /* Routine chip (same look as Goals) + one icon slot right next to it: pencil = edit the template, check = done */
 const routineTgl = () => {
   const tpl = V.mode === 'tplWeek' || V.mode === 'tplMonth';
-  return '<div class="rgrp"><button class="goalbtn' + (S.ui.routine || tpl ? ' on' : '') + '" data-act="routine" aria-pressed="' + (S.ui.routine || tpl) + '"' + (tpl ? ' aria-disabled="true"' : '') + '>' + ICON.repeat + 'ROUTINE</button>' +
+  return '<div class="rgrp"><button class="goalbtn' + (S.ui.routine || tpl ? ' on' : '') + '" data-act="routine" aria-pressed="' + (S.ui.routine || tpl) + '"' + (tpl ? ' aria-disabled="true"' : '') + ' aria-label="ルーティンを表示" title="ルーティン">' + ICON.repeat + '</button>' +
     (tpl ? '<button class="tool rdo" data-act="tpldone" aria-label="完了して手帳に戻る" title="完了">' + ICON.done + '</button>'
          : '<button class="tool" data-act="tplweek" aria-label="ルーティンの型を編集" title="編集">' + ICON.pencil + '</button>') + '</div>';
 };
+const CAPB = '<button class="capb" data-act="capture" aria-label="思いつきを書き留める" title="書き留める">' + ICON.plus + '</button>';
 function renderTop() {
   let h = '';
   if (V.mode === 'page') {
@@ -1007,10 +1056,10 @@ function renderTop() {
     const isW = i.type === 'week', away = isW && i.w !== weekOf(TODAY);
     h = chapHTML() + '<div class="navs"><button class="navb" data-act="prev" aria-label="前のページ">' + ICON.l + '</button>' +
       (isW ? '<button class="nowb" data-act="thisweek" aria-label="今週へ移動"' + (away ? '' : ' disabled') + '>TODAY</button>' : '') +
-      '<button class="navb" data-act="next" aria-label="次のページ">' + ICON.r + '</button></div>';
+      '<button class="navb" data-act="next" aria-label="次のページ">' + ICON.r + '</button></div>' + CAPB;
   } else if (V.mode === 'day') {
     const d = parse(V.date);
-    h = chapHTML() + '<div class="navs"><button class="navb" data-act="dprev" aria-label="前の日">' + ICON.l + '</button><button class="nowb" data-act="today" aria-label="今日へ移動"' + (V.date === TODAYK ? ' disabled' : '') + '>TODAY</button><button class="navb" data-act="dnext" aria-label="次の日">' + ICON.r + '</button></div>';
+    h = chapHTML() + '<div class="navs"><button class="navb" data-act="dprev" aria-label="前の日">' + ICON.l + '</button><button class="nowb" data-act="today" aria-label="今日へ移動"' + (V.date === TODAYK ? ' disabled' : '') + '>TODAY</button><button class="navb" data-act="dnext" aria-label="次の日">' + ICON.r + '</button></div>' + CAPB;
   } else {
     const isW = V.mode === 'tplWeek';
     h = '<button class="pill en backb" data-act="tpldone" aria-label="完了して手帳に戻る">' + ICON.l + 'BACK</button><b class="tplttl">' + ICON.repeat + 'ROUTINE</b><div class="segs" style="width:180px"><button data-act="tplweek" class="' + (isW ? 'on' : '') + '">WEEKLY</button><button data-act="tplmonth" class="' + (!isW ? 'on' : '') + '">MONTHLY</button></div>';
@@ -1028,30 +1077,30 @@ function renderTbx() {
   let h = '<button class="grip" data-grip="1" aria-label="道具を動かす">' + GRIP + '</button>' + pensHTML();
   if (isWeek || V.mode === 'day' || tpl) h += '<span class="vsep"></span>' + routineTgl();
   const isIdea = V.mode === 'page' && info(V.n).type === 'ideas';
-  if (isWeek || isIdea || V.mode === 'tplWeek') h += (isIdea ? '<span class="vsep"></span>' : '') + '<button class="goalbtn' + (u.goals ? ' on' : '') + '" data-act="goals" aria-pressed="' + u.goals + '">' + ICON.flag + 'GOALS</button>';
+  if (isWeek || isIdea || V.mode === 'tplWeek') h += (isIdea ? '<span class="vsep"></span>' : '') + '<button class="goalbtn' + (u.goals ? ' on' : '') + '" data-act="goals" aria-pressed="' + u.goals + '" aria-label="目標を表示" title="目標">' + ICON.flag + '</button>';
   t.innerHTML = h;
   placeTbx();
 }
 function placeTbx() {
   const t = $('#tbx'), w = t.offsetWidth, hh = t.offsetHeight;
   let p = S.ui.tbx;
-  if (!p) p = { x: 1133 - w - 12, y: 8, right: true };
-  let x = p.right ? 1133 - w - 12 : p.x;
-  const y = clamp(p.y, 4, 744 - hh - 4);
-  t.style.left = clamp(x, 6, 1133 - w - 6) + 'px';
+  if (!p || PORT) p = { x: W_APP - w - 12, y: 8, right: true };
+  let x = p.right ? W_APP - w - 12 : p.x;
+  const y = clamp(p.y, 4, H_APP - hh - 4);
+  t.style.left = clamp(x, 6, W_APP - w - 6) + 'px';
   t.style.top = y + 'px';
   /* docked in the top bar (default): sits flush and the bar's content makes room for it */
   const dock = p.right && y < 30;
   t.classList.toggle('dock', dock);
-  const top = $('#top'); top.style.paddingRight = dock ? (w + 22) + 'px' : ''; top.classList.remove('tight');
+  const top = $('#top'); top.style.paddingRight = dock && !PORT ? (w + 22) + 'px' : ''; top.classList.remove('tight');
   /* if real fonts make the bar too full, narrow the index tabs a little instead of overlapping */
-  if (dock) { let mx = 0; for (const c of top.children) mx = Math.max(mx, c.offsetLeft + c.offsetWidth); if (mx > t.offsetLeft - 2) top.classList.add('tight'); }
+  if (dock && !PORT) { let mx = 0; for (const c of top.children) mx = Math.max(mx, c.offsetLeft + c.offsetWidth); if (mx > t.offsetLeft - 2) top.classList.add('tight'); }
 }
 (() => {
   const t = $('#tbx'); let D = null;
   t.addEventListener('pointerdown', e => {
     if (!e.target.closest('[data-grip]')) return;
-    const ar = app.getBoundingClientRect(), k = ar.width / 1133;
+    const ar = app.getBoundingClientRect(), k = ar.width / W_APP;
     D = { id: e.pointerId, k, dx: (e.clientX - ar.left) / k - t.offsetLeft, dy: (e.clientY - ar.top) / k - t.offsetTop, ar };
     t.classList.add('drag'); try { t.setPointerCapture(e.pointerId); } catch (err) {}
     e.preventDefault(); e.stopPropagation();
@@ -1059,13 +1108,13 @@ function placeTbx() {
   t.addEventListener('pointermove', e => {
     if (!D || e.pointerId !== D.id) return;
     const x = (e.clientX - D.ar.left) / D.k - D.dx, y = (e.clientY - D.ar.top) / D.k - D.dy;
-    t.style.left = clamp(x, 6, 1133 - t.offsetWidth - 6) + 'px'; t.style.top = clamp(y, 4, 744 - t.offsetHeight - 4) + 'px';
+    t.style.left = clamp(x, 6, W_APP - t.offsetWidth - 6) + 'px'; t.style.top = clamp(y, 4, H_APP - t.offsetHeight - 4) + 'px';
   });
   const end = e => {
     if (!D || e.pointerId !== D.id) return;
     D = null; t.classList.remove('drag');
     const x = t.offsetLeft, w = t.offsetWidth;
-    S.ui.tbx = { x, y: t.offsetTop, right: x + w > 1133 - 30 }; save();
+    if (!PORT) { S.ui.tbx = { x, y: t.offsetTop, right: x + w > W_APP - 30 }; save(); }
   };
   t.addEventListener('pointerup', end); t.addEventListener('pointercancel', end);
   t.addEventListener('dblclick', e => { if (e.target.closest('[data-grip]')) { S.ui.tbx = null; save(); placeTbx(); } });
@@ -1094,14 +1143,15 @@ function evxHTML() {
 function renderBody() {
   zw.innerHTML = bodyFor(V, false) + evxHTML() + '<canvas id="ink" aria-hidden="true"></canvas>';
   let extra = '';
-  if (V.mode === 'page' || V.mode === 'day') extra += '<button class="fab" data-act="capture" aria-label="書き留める" title="書き留める">' + ICON.plus + '</button>';
   if (Z.z > 1.01) extra += '<button class="zoomreset" data-act="zoomreset">100%に戻す</button>';
   pb.querySelectorAll('.fab,.zoomreset').forEach(x => x.remove());
+  pb.classList.toggle('sheetopen', PORT && !!S.ui.sheet && V.mode === 'page');
   pb.insertAdjacentHTML('beforeend', extra);
   applyZoom();
   setupInk();
 }
 function renderPage(anim) {
+  syncPort();
   renderRail(); renderTop(); renderBody();
   if (anim) { zw.classList.remove('turn-next', 'turn-prev'); void zw.offsetWidth; zw.classList.add(anim); }
 }
@@ -1112,9 +1162,15 @@ function nextView(dir) {
   const n = V.n + dir; return n >= 1 && n <= TOTAL ? { mode: 'page', n } : null;
 }
 function inkURLFor(k) {
-  const arr = S.strokes[k]; if (!arr || !arr.length) return '';
-  const c = document.createElement('canvas'); c.width = 1133; c.height = 688;
-  const x = c.getContext("2d"); for (const st of inkOrder(arr)) drawStroke(x, st); return c.toDataURL('image/png');
+  const arr = S.strokes[k] || [];
+  const mkey = k && k[0] === 'd' ? 'dm' + k.slice(1) : (gridKey(k) ? 'wm' + info(+k.slice(1)).w : null);
+  const mh = mkey ? zw.querySelector('.memo[data-inkkey^="wm"],.memo[data-inkkey^="dm"]') : null, marr = mh ? (S.strokes[mkey] || []) : [];
+  if (!arr.length && !marr.length) return '';
+  const c = document.createElement('canvas'); c.width = BODY_W; c.height = BODY_H;
+  const g = zw.querySelector('.grid[data-grid="week"],.grid[data-grid="day"]');
+  const x = c.getContext("2d"), M = gridKey(k) ? (g && (g.dataset.grid === 'day') === (k[0] === 'd') ? mkMap(hostOrigin(g), g.dataset.grid) : thumbMap(k)) : null; for (const st of inkOrder(arr)) drawStroke(x, mapSt(st, M));
+  if (marr.length) { const o = hostOrigin(mh); x.save(); x.beginPath(); x.rect(o[0], o[1], o[2], o[3]); x.clip(); x.translate(o[0], o[1]); for (const st of inkOrder(marr)) drawStroke(x, st); x.restore(); }
+  return c.toDataURL('image/png');
 }
 function staticPage(v) { const u = inkURLFor(inkKey(v)); return bodyFor(v, true) + (u ? '<img alt="" src="' + u + '">' : ''); }
 /* the open page is a spread folded at its centre: the outer half lifts and turns over the centre line */
@@ -1130,7 +1186,7 @@ function startTurn(dir) {
   under.innerHTML = dir === 1 ? half(curH, 'L') + half(nxtH, 'R') : half(nxtH, 'L') + half(curH, 'R');
   const crease = document.createElement('div'); crease.className = 'pcrease';
   const leaf = document.createElement('div'); leaf.className = 'pleaf';
-  leaf.style.left = dir === 1 ? '566.5px' : '0px';
+  leaf.style.left = dir === 1 ? (BODY_W / 2) + 'px' : '0px';
   leaf.style.transformOrigin = dir === 1 ? '0 50%' : '100% 50%';
   const fs = dir === 1 ? 'R' : 'L', bs = dir === 1 ? 'L' : 'R';
   leaf.innerHTML = '<div class="face2"><div class="phalf ' + fs + '" style="left:0"><div class="pin pstatic">' + curH + '</div></div><div class="sh"></div></div>' +
@@ -1180,6 +1236,41 @@ function clampPan() { Z.tx = clamp(Z.tx, BODY_W - BODY_W * Z.z, 0); Z.ty = clamp
 
 /* ================= ink ================= */
 let ink, ictx, drawing = null, lastTapBlock = 0;
+/* week/day pages: page handwriting is stored in "grid space" (GBASE units from the grid's top-left), so it stays on the
+   same day and time when the layout changes (portrait, all-day rows). Each stroke keeps its shape (uniform scale k). */
+const GBASE = { week: [843, 592], day: [430, 592], tpl: [843, 592] };
+const GL = { week: [38, 82, 843, 592], day: [44, 82, 430, 592] };   // the grid in the landscape layout (used for thumbnails)
+const ML = { week: [910, 349.8, 207, 254.2], day: [503, 347.6, 608, 250.4] };   // the memo box in the landscape layout (thumbnails)
+const gridKey = k => !!k && (k === 'tw' || /^d\d/.test(k) || (/^p\d+$/.test(k) && info(+k.slice(1)).type === 'week'));
+const mkMap = (o, t) => { const b = GBASE[t]; const sx = o[2] / b[0], sy = o[3] / b[1]; return { x: o[0], y: o[1], sx, sy, k: Math.min(sx, sy) }; };
+function liveMap() { const k = inkKey(V); if (!gridKey(k)) return null; const g = zw.querySelector('.grid[data-grid="week"],.grid[data-grid="day"],.grid[data-grid="tpl"]'); return g ? mkMap(hostOrigin(g), g.dataset.grid) : null; }
+const thumbMap = k => gridKey(k) ? (k[0] === 'd' ? mkMap(GL.day, 'day') : mkMap(GL.week, 'week')) : null;
+function stCenter(p) { let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (const q of p) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1]; } return [(x0 + x1) / 2, (y0 + y1) / 2]; }
+/* stored -> screen */
+function mapSt(st, M) {
+  if (!M || st._scr) return st;
+  const c = stCenter(st.p), cx = M.x + c[0] * M.sx, cy = M.y + c[1] * M.sy;
+  const o = { c: st.c, w: (st.w || 1) * M.k, p: st.p.map(q => [cx + (q[0] - c[0]) * M.k, cy + (q[1] - c[1]) * M.k, q[2]]) };
+  return o;
+}
+/* screen -> stored (when a stroke is finished) */
+function storeSt(st, M) {
+  const c = stCenter(st.p), sx0 = (c[0] - M.x) / M.sx, sy0 = (c[1] - M.y) / M.sy;
+  st.p = st.p.map(q => [Math.round((sx0 + (q[0] - c[0]) / M.k) * 10) / 10, Math.round((sy0 + (q[1] - c[1]) / M.k) * 10) / 10, q[2]]);
+  const w = (st.w || 1) / M.k; if (Math.abs(w - 1) > 0.01) st.w = Math.round(w * 100) / 100; else delete st.w;
+  delete st._scr;
+}
+/* old data (before grid space): page strokes were in landscape body pixels */
+function migrateInk() {
+  if (S.inkv === 2) { const a = (S.strokes || {}).tw; if (a) for (const st of a) { st._scr = true; storeSt(st, mkMap(GL.week, 'week')); } S.inkv = 3; return; }
+  if (S.inkv >= 3) return;
+  for (const k of Object.keys(S.strokes || {})) {
+    if (!gridKey(k)) continue;
+    const M = thumbMap(k);
+    for (const st of S.strokes[k]) { st._scr = true; storeSt(st, M); }
+  }
+  S.inkv = 3;
+}
 const curStrokes = () => { const k = inkKey(V); if (!k) return null; return S.strokes[k] || (S.strokes[k] = []); };
 const penColor = c => getComputedStyle(app).getPropertyValue('--pen-' + c).trim() || '#2B4EA8';
 function setupInk() {
@@ -1189,7 +1280,8 @@ function setupInk() {
   ictx = ink.getContext('2d'); ictx.setTransform(dpr, 0, 0, dpr, 0, 0);
   redrawInk();
 }
-function drawSeg(ctx, st, a, b) { ctx.strokeStyle = penColor(st.c); ctx.lineWidth = (0.7 + 2.6 * ((a[2] + b[2]) / 2)) * (st.w || 1); ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+const taper = (d, L) => { const T = Math.min(3.5, L / 3); if (T <= 0) return 1; const f = x => x >= T ? 1 : 0.72 + 0.28 * (x / T); return Math.min(f(d), f(L - d)); };
+function drawSeg(ctx, st, a, b, f = 1) { ctx.strokeStyle = penColor(st.c); ctx.lineWidth = 2 * (st.w || 1) * f; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
 /* highlighters: one translucent wide path per stroke (so overlaps inside a stroke don't darken), drawn under the pens */
 const isMk = c => c === 'my' || c === 'mc' || c === 'mp';
 /* width is per kind: pens share one setting, markers share another (x0.4 - x3 / x0.5 - x2.2) */
@@ -1199,8 +1291,8 @@ function widthPop(btn) {
   const prev = c => '<svg width="120" height="28" viewBox="0 0 120 28" aria-hidden="true"><path d="M8 18 C 30 6, 50 26, 72 14 S 104 8, 112 12" fill="none" stroke="' + penColor(S.ui.pen) + '" stroke-linecap="round" stroke-width="' + (mk ? 13 * v : 2.3 * v) + '"' + (mk ? ' stroke-opacity=".32"' : '') + ' id="wprev"/></svg>';
   popCtx = { type: 'width' };
   openPop('<span class="lab">' + (mk ? 'マーカーの太さ' : 'ペンの太さ') + '</span><div class="wrow">' + prev() + '</div><input type="range" id="wsl" min="' + min + '" max="' + max + '" step="0.1" value="' + v + '" aria-label="太さ"><div class="pbtns"><button class="link" data-pop="wreset">標準に戻す</button><button class="primary" data-pop="close">完了</button></div>', btn);
-  const r = btn.getBoundingClientRect(), ar = app.getBoundingClientRect(), k = ar.width / 1133;
-  pop.style.left = clamp((r.left - ar.left) / k - 120, 8, 1133 - 298) + 'px'; pop.style.top = ((r.bottom - ar.top) / k + 10) + 'px';
+  const r = btn.getBoundingClientRect(), ar = app.getBoundingClientRect(), k = ar.width / W_APP;
+  pop.style.left = clamp((r.left - ar.left) / k - 120, 8, W_APP - 298) + 'px'; pop.style.top = ((r.bottom - ar.top) / k + 10) + 'px';
 }
 function setWidth(v) { const w = S.ui.width || (S.ui.width = {}); w[isMk(S.ui.pen) ? 'm' : 'p'] = v; save(); const pv = $('#wprev'); if (pv) pv.setAttribute('stroke-width', isMk(S.ui.pen) ? 13 * v : 2.3 * v); }
 document.addEventListener('input', e => { if (e.target.id === 'wsl') setWidth(+e.target.value); });
@@ -1225,7 +1317,13 @@ function drawLassoSel() {
   ictx.save(); ictx.setLineDash([5, 4]); ictx.lineWidth = 1.2; ictx.strokeStyle = penColor('b'); ictx.strokeRect(b[0] + o[0], b[1] + o[1], b[2] - b[0], b[3] - b[1]); ictx.restore();
 }
 const inkOrder = arr => arr.filter(st => isMk(st.c)).concat(arr.filter(st => !isMk(st.c)));
-function drawStroke(ctx, st) { if (isMk(st.c)) return drawMarker(ctx, st); const p = st.p; if (!p.length) return; if (p.length === 1) drawSeg(ctx, st, p[0], [p[0][0] + .01, p[0][1], p[0][2]]); for (let i = 1; i < p.length; i++) drawSeg(ctx, st, p[i - 1], p[i]); }
+function drawStroke(ctx, st) {
+  if (isMk(st.c)) return drawMarker(ctx, st); const p = st.p; if (!p.length) return;
+  if (p.length === 1) { drawSeg(ctx, st, p[0], [p[0][0] + .01, p[0][1], p[0][2]], 0.8); return; }
+  const cum = [0]; for (let i = 1; i < p.length; i++) cum.push(cum[i - 1] + Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]));
+  const L = cum[cum.length - 1];
+  for (let i = 1; i < p.length; i++) drawSeg(ctx, st, p[i - 1], p[i], taper((cum[i - 1] + cum[i]) / 2, L));
+}
 const strokesFor = k => S.strokes[k] || (S.strokes[k] = []);
 function hostOrigin(el) { const zr = zw.getBoundingClientRect(), k = zr.width / BODY_W, r = el.getBoundingClientRect(); return [(r.left - zr.left) / k, (r.top - zr.top) / k, r.width / k, r.height / k]; }
 function redrawInk() {
@@ -1234,7 +1332,8 @@ function redrawInk() {
   const ov = zw.querySelector('[data-evx]'), or = ov ? hostOrigin(ov) : null;
   const outside = () => { if (!or) return; ictx.beginPath(); ictx.rect(0, 0, BODY_W, BODY_H); ictx.rect(or[0], or[1], or[2], or[3]); ictx.clip('evenodd'); };
   ictx.save(); outside();
-  for (const st of inkOrder(curStrokes() || [])) drawStroke(ictx, st);
+  const M = liveMap();
+  for (const st of inkOrder(curStrokes() || [])) drawStroke(ictx, mapSt(st, M));
   ictx.restore();
   zw.querySelectorAll('[data-inkkey]').forEach(el => {
     const arr = S.strokes[el.dataset.inkkey]; if (!arr || !arr.length) return;
@@ -1258,13 +1357,13 @@ function localPt(e) {
 function eraseAt(pt, k, o) {
   const arr = k ? strokesFor(k) : curStrokes(); if (!arr) return;
   if (o) pt = [pt[0] - o[0], pt[1] - o[1]];
-  const before = arr.length;
-  for (let i = arr.length - 1; i >= 0; i--) if (arr[i].p.some(q => Math.hypot(q[0] - pt[0], q[1] - pt[1]) < 12)) arr.splice(i, 1);
+  const before = arr.length, M = k ? null : liveMap();
+  for (let i = arr.length - 1; i >= 0; i--) if (mapSt(arr[i], M).p.some(q => Math.hypot(q[0] - pt[0], q[1] - pt[1]) < 12)) arr.splice(i, 1);
   if (arr.length !== before) { redrawInk(); thumbCache.delete(inkKey(V)); save(); }
 }
 function undoInk() {
   while (undoKeys.length) { const k = undoKeys.pop(); if (k && k.data) { restore(k); return true; }
-    if (k && k.mv) { for (const st of k.mv) for (const q of st.p) { q[0] -= k.dx; q[1] -= k.dy; } if (LS) LS.box = boxOf(LS.items); redrawInk(); lassoBar(); save(); return true; }
+    if (k && k.mv) { for (const st of k.mv) for (const q of st.p) { q[0] -= k.dx; q[1] -= k.dy; } if (LS) LS.box = boxOf(LS.items.map(st => mapSt(st, LS.M))); redrawInk(); lassoBar(); save(); return true; }
     if (k && k.del) { const arr = k.del.k === inkKey(V) ? curStrokes() : strokesFor(k.del.k); if (arr) { arr.push(...k.del.items); redrawInk(); save(); return true; } continue; } const arr = S.strokes[k]; if (arr && arr.length && zw.querySelector('[data-inkkey="' + k + '"]')) { arr.pop(); redrawInk(); save(); return true; } }
   const arr = curStrokes(); if (arr && arr.length) { arr.pop(); redrawInk(); thumbCache.delete(inkKey(V)); save(); return true; } return false;
 }
@@ -1284,7 +1383,7 @@ function t2Start(e) {
 }
 function t2Move(e) {
   if (!T2) return;
-  const k = app.getBoundingClientRect().width / 1133;
+  const k = app.getBoundingClientRect().width / W_APP;
   for (const t of e.touches) { const s0 = T2.start[t.identifier]; if (s0 && Math.hypot(t.clientX - s0[0], t.clientY - s0[1]) / k > 22) T2.moved = true; }
 }
 function t2End(e) {
@@ -1322,18 +1421,24 @@ pb.addEventListener('pointerdown', e => {
   const sb = pb.querySelector('.selbox');
   if (sb && !e.target.closest('.selbox,.selbar')) { commitSel(); e.stopPropagation(); e.preventDefault(); suppressClick = Date.now(); return; }
   if (e.target.closest('.selbox,.selbar')) return;
-  // 3a) task drag: panel list <-> day boxes
-  const dEl = e.target.closest('[data-tdrag]');
-  if (dEl && !e.target.closest('button,input,select')) { TD = { id: e.pointerId, tid: dEl.dataset.tdrag, x0: e.clientX, y0: e.clientY, title: (dEl.querySelector('span,.tt') || dEl).textContent, on: false }; try { pb.setPointerCapture(e.pointerId); } catch (err) {} e.preventDefault(); return; }
-  // 3b) edge swipe (outer 1/20 of the page, finger or mouse): turn one page
-  if (e.pointerType !== 'pen' && !e.target.closest('[data-evx]') && (V.mode === 'page' || V.mode === 'day') && !e.target.closest('button,input,select,a,[contenteditable="true"]')) {
-    const ax = appPt(e)[0];
-    if (ax < BODY_W / 20 || ax > BODY_W * 19 / 20) {
+  // 2b) portrait sheet: drag the handle up / down (a tap toggles it)
+  /* finger anywhere on the sheet (not the task list or a text field) drags it; the pencil keeps writing in the memo */
+  const pnl0 = PORT && e.pointerType !== 'pen' && e.target.closest('.wk > .panel');
+  const sh = pnl0 && !e.target.closest('input,select,textarea,[contenteditable="true"],[data-tdrag],.tlist') ? pnl0 : null;
+  if (sh) { const pnl = sh; const onBtn = !!e.target.closest('button:not(.shandle)'); G = { id: e.pointerId, mode: 'sheet', pnl, onBtn, y0: e.clientY, h0: pnl.offsetHeight, h: pnl.offsetHeight, moved: false, k: pb.getBoundingClientRect().height / BODY_H }; pnl.classList.add('drag'); if (!onBtn) { try { pb.setPointerCapture(e.pointerId); } catch (err) {} e.preventDefault(); } return; }
+  // 2c) page edge (finger / mouse): turn one page. The zone is wide; on a task row only the outermost strip counts.
+  if (e.pointerType !== 'pen' && !e.target.closest('[data-evx]') && (V.mode === 'page' || V.mode === 'day') && !e.target.closest('button,input,select,a,[contenteditable="true"],.panel.open')) {
+    const ax = appPt(e)[0], zone = Math.round(BODY_W * (PORT ? 0.1 : 0.072)), outer = 36;
+    const onTask = e.target.closest('[data-tdrag]');
+    if ((ax < zone || ax > BODY_W - zone) && (!onTask || ax < outer || ax > BODY_W - outer)) {
       G = { id: e.pointerId, mode: 'edge', side: ax < BODY_W / 2 ? 'L' : 'R', x0: e.clientX, y0: e.clientY, moved: false };
       try { pb.setPointerCapture(e.pointerId); } catch (err) {}
       e.preventDefault(); return;
     }
   }
+  // 3a) task drag: panel list <-> day boxes
+  const dEl = e.target.closest('[data-tdrag]');
+  if (dEl && !e.target.closest('button,input,select')) { TD = { id: e.pointerId, tid: dEl.dataset.tdrag, x0: e.clientX, y0: e.clientY, title: (dEl.querySelector('span,.tt') || dEl).textContent, on: false }; try { pb.setPointerCapture(e.pointerId); } catch (err) {} e.preventDefault(); return; }
   // 4) handwriting
   if (e.target.closest('[data-draw]') && inkKey(V) && (e.pointerType === 'pen' || S.ui.finger) && !e.target.closest('.hdl,.sel,input,select,textarea,[contenteditable="true"]')) {
     e.preventDefault(); e.stopPropagation();
@@ -1347,11 +1452,12 @@ pb.addEventListener('pointerdown', e => {
         if (x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]) { drawing = { id: e.pointerId, move: true, last: [pt[0], pt[1]], dx: 0, dy: 0 }; return; }
         clearLasso();
       }
-      drawing = { id: e.pointerId, lasso: true, k: k || inkKey(V), o, pts: [o ? [pt[0] - o[0], pt[1] - o[1]] : [pt[0], pt[1]]] }; return;
+      drawing = { id: e.pointerId, lasso: true, k: k || inkKey(V), o, M: k ? null : liveMap(), pts: [o ? [pt[0] - o[0], pt[1] - o[1]] : [pt[0], pt[1]]] }; return;
     }
     const st = { c: S.ui.pen, p: [o ? [pt[0] - o[0], pt[1] - o[1], pt[2]] : pt] }, wv = widthOf(S.ui.pen); if (wv !== 1) st.w = wv;
+    const M = k ? null : liveMap(); if (M) st._scr = true;
     (k ? strokesFor(k) : curStrokes()).push(st); undoKeys.push(k || inkKey(V));
-    drawing = { id: e.pointerId, st, k, o }; drawStroke(ictx, { c: st.c, p: [pt] });
+    drawing = { id: e.pointerId, st, k, o, M }; drawStroke(ictx, { c: st.c, p: [pt] });
     return;
   }
   // 5a) all-day strip: drag across days to add a multi-day event, tap a bar to select it
@@ -1372,7 +1478,11 @@ pb.addEventListener('pointerdown', e => {
   if (hd) G.mode = 'resize', G.edge = hd.dataset.edge, G.el = hd.closest('.blk');
   else if (selb && selb.dataset.kind === 'event') G.mode = 'move', G.el = selb;
   else if (blk && !blk.classList.contains('bg')) G.mode = 'tapblk', G.el = blk;
-  else { G.mode = 'range'; G.day = dayFromX(grid, e.clientX); G.t0 = Math.floor(timeFromY(grid, e.clientY) * 2) / 2; }
+  else {
+    G.mode = 'range'; G.day = dayFromX(grid, e.clientX); G.t0 = Math.floor(timeFromY(grid, e.clientY) * 2) / 2;
+    /* long press without moving: show the hour that will be added, before the finger moves or lifts */
+    const g0 = G; g0.lp = setTimeout(() => { if (G === g0 && !g0.moved) { const s = clamp(g0.t0, 6, 23); drawSel(g0.grid, g0.day, s, s + 1); g0.shown = true; } }, 320);
+  }
   if (G.mode === 'resize' || G.mode === 'move') { const m = selModel(); if (!m) { G = null; return; } G.s0 = m.s; G.e0 = m.e; G.date0 = SEL.date; }
   try { pb.setPointerCapture(e.pointerId); } catch (err) {}
   e.preventDefault();
@@ -1383,7 +1493,7 @@ pb.addEventListener('pointermove', e => {
   if (TD && e.pointerId === TD.id) {
     if (!TD.on && Math.hypot(e.clientX - TD.x0, e.clientY - TD.y0) > 8) { TD.on = true; const g = document.createElement('div'); g.id = 'tdghost'; g.textContent = TD.title; app.appendChild(g); }
     if (TD.on) {
-      const ar = app.getBoundingClientRect(), k = ar.width / 1133, g = $('#tdghost');
+      const ar = app.getBoundingClientRect(), k = ar.width / W_APP, g = $('#tdghost');
       g.style.left = ((e.clientX - ar.left) / k + 8) + 'px'; g.style.top = ((e.clientY - ar.top) / k - 14) + 'px';
       const tg = tdTarget(e); pb.querySelectorAll('.drop').forEach(x => x !== tg && x.classList.remove('drop')); if (tg) tg.classList.add('drop');
     }
@@ -1410,19 +1520,23 @@ pb.addEventListener('pointermove', e => {
       if (drawing.erase) { eraseAt(pa, drawing.k, drawing.o); continue; }
       if (drawing.lasso) { const o = drawing.o; drawing.pts.push(o ? [pa[0] - o[0], pa[1] - o[1]] : [pa[0], pa[1]]); continue; }
       if (drawing.move) { const dx = pa[0] - drawing.last[0], dy = pa[1] - drawing.last[1]; drawing.last = [pa[0], pa[1]]; drawing.dx += dx; drawing.dy += dy;
-        for (const st of LS.items) for (const q of st.p) { q[0] += dx; q[1] += dy; } LS.box = [LS.box[0] + dx, LS.box[1] + dy, LS.box[2] + dx, LS.box[3] + dy]; continue; }
+        const fx = LS.M ? dx / LS.M.sx : dx, fy = LS.M ? dy / LS.M.sy : dy; drawing.fx = (drawing.fx || 0) + fx; drawing.fy = (drawing.fy || 0) + fy;
+        for (const st of LS.items) for (const q of st.p) { q[0] += fx; q[1] += fy; } LS.box = [LS.box[0] + dx, LS.box[1] + dy, LS.box[2] + dx, LS.box[3] + dy]; continue; }
       const o = drawing.o, pt = o ? [pa[0] - o[0], pa[1] - o[1], pa[2]] : pa;
       const p = drawing.st.p, last = p[p.length - 1];
       if (Math.abs(pt[0] - last[0]) + Math.abs(pt[1] - last[1]) < 0.6) continue;
       p.push(pt);
       if (isMk(drawing.st.c)) { if (!drawing.raf) drawing.raf = requestAnimationFrame(() => { if (drawing) drawing.raf = 0; redrawInk(); }); continue; }
-      drawSeg(ictx, drawing.st, o ? [last[0] + o[0], last[1] + o[1], last[2]] : last, pa);
+      const sl = Math.hypot(pt[0] - last[0], pt[1] - last[1]); drawing.len = (drawing.len || 0) + sl;
+      const ds = drawing.len - sl / 2, fs = ds >= 3.5 ? 1 : 0.72 + 0.28 * ds / 3.5;
+      drawSeg(ictx, drawing.st, o ? [last[0] + o[0], last[1] + o[1], last[2]] : last, pa, fs);
     }
     return;
   }
   if (!G || e.pointerId !== G.id) return;
   if (!G.moved && Math.hypot(e.clientX - G.x0, e.clientY - G.y0) > 6) G.moved = true;
   if (!G.moved) return;
+  if (G.mode === 'sheet') { if (!G.dragging && Math.abs(e.clientY - G.y0) / G.k < 14) return; G.dragging = true; const h = clamp(G.h0 - (e.clientY - G.y0) / G.k, 72, BODY_H * 0.86); G.h = h; G.pnl.style.height = h + 'px'; return; }
   if (G.mode === 'edge') {
     const k = pb.getBoundingClientRect().width / BODY_W, dx = (e.clientX - G.x0) / k, now = performance.now();
     if (!G.turn) { if ((G.side === 'R' && dx < 0) || (G.side === 'L' && dx > 0)) G.turn = startTurn(G.side === 'R' ? 1 : -1); if (!G.turn) return; }
@@ -1483,15 +1597,23 @@ function endPointer(e) {
   if (drawing && e.pointerId === drawing.id) {
     if (drawing.lasso) {
       const poly = drawing.pts, arr = drawing.k === inkKey(V) ? (curStrokes() || []) : strokesFor(drawing.k);
-      const items = poly.length > 4 ? arr.filter(st => st.p.filter(q => inPoly(q[0], q[1], poly)).length >= st.p.length * 0.6) : [];
-      LS = items.length ? { k: drawing.k, o: drawing.o, items, box: boxOf(items) } : null;
+      const M = drawing.M, items = poly.length > 4 ? arr.filter(st => { const p = mapSt(st, M).p; return p.filter(q => inPoly(q[0], q[1], poly)).length >= p.length * 0.6; }) : [];
+      LS = items.length ? { k: drawing.k, o: drawing.o, M, items, box: boxOf(items.map(st => mapSt(st, M))) } : null;
       drawing = null; redrawInk(); lassoBar(); suppressClick = Date.now(); return;
     }
-    if (drawing.move) { if (drawing.dx || drawing.dy) undoKeys.push({ mv: LS.items.slice(), dx: drawing.dx, dy: drawing.dy }); drawing = null; suppressClick = Date.now(); thumbCache.delete(inkKey(V)); save(); return; }
-    drawing = null; suppressClick = Date.now(); thumbCache.delete(inkKey(V)); save(); return;
+    if (drawing.move) { if (drawing.dx || drawing.dy) undoKeys.push({ mv: LS.items.slice(), dx: drawing.fx || 0, dy: drawing.fy || 0 }); drawing = null; suppressClick = Date.now(); thumbCache.delete(inkKey(V)); save(); return; }
+    if (drawing.M && drawing.st && drawing.st._scr) storeSt(drawing.st, drawing.M);
+    const wasPen = drawing.st && !isMk(drawing.st.c);
+    drawing = null; if (wasPen) redrawInk(); suppressClick = Date.now(); thumbCache.delete(inkKey(V)); save(); return;
   }
   if (!G || e.pointerId !== G.id) return;
   const g = G; G = null;
+  if (g.lp) clearTimeout(g.lp);
+  if (g.mode === 'sheet') {
+    g.pnl.classList.remove('drag'); g.pnl.style.height = '';
+    if (!g.dragging && g.onBtn) return;   // a tap on a button (day box, DAY/WEEK…): the click handles it
+    S.ui.sheet = g.dragging ? g.h > (72 + BODY_H * 0.6) / 2 : !S.ui.sheet; save(); suppressClick = Date.now(); renderBody(); return;
+  }
   if (g.mode === 'edge') {
     if (!g.turn) return;
     const h = g.hist || [[0, 0]], a = h[0], z = h[h.length - 1];
@@ -1619,11 +1741,11 @@ let popCtx = null;
 function openPop(html, anchor) {
   if (anchor === 'keep' && !pop.hidden) { const l = pop.style.left, t = pop.style.top; pop.innerHTML = html; pop.style.left = l; pop.style.top = t; return; }
   pop.innerHTML = html; pop.hidden = false;
-  const ar = app.getBoundingClientRect(), k = ar.width / 1133;
+  const ar = app.getBoundingClientRect(), k = ar.width / W_APP;
   let x = 600, y = 120;
-  if (anchor && anchor !== 'keep') { const r = anchor.getBoundingClientRect(); x = (r.right - ar.left) / k + 12; y = (r.top - ar.top) / k; if (x + 300 > 1133) x = (r.left - ar.left) / k - 302; }
-  pop.style.left = clamp(x, 8, 1133 - 298) + 'px';
-  pop.style.top = clamp(y, 60, 744 - pop.offsetHeight - 10) + 'px';
+  if (anchor && anchor !== 'keep') { const r = anchor.getBoundingClientRect(); x = (r.right - ar.left) / k + 12; y = (r.top - ar.top) / k; if (x + 300 > W_APP) x = (r.left - ar.left) / k - 302; }
+  pop.style.left = clamp(x, 8, W_APP - 298) + 'px';
+  pop.style.top = clamp(y, 60, H_APP - pop.offsetHeight - 10) + 'px';
 }
 function closePop(deselect) { pop.hidden = true; pop.innerHTML = ''; popCtx = null; if (deselect && SEL) { SEL = null; renderBody(); } }
 app.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target) && !pb.contains(e.target)) { closePop(true); } }, true);
@@ -1806,11 +1928,12 @@ function act(b, e) {
     case 'tplweek': if (V.mode === 'page' || V.mode === 'day') PREV = V; go({ mode: 'tplWeek' }); break;
     case 'tplmonth': if (V.mode === 'page' || V.mode === 'day') PREV = V; go({ mode: 'tplMonth' }); break;
     case 'routine': if (V.mode === 'tplWeek' || V.mode === 'tplMonth') break; u.routine = !u.routine; save(); renderPage(); break;
-    case 'goals': u.goals = !u.goals; save(); renderPage(); break;
+    case 'goals': u.goals = !u.goals; if (PORT && u.goals) u.sheet = true; save(); renderPage(); break;
     case 'panel': u.panel = b.dataset.v; save(); renderBody(); break;
-    case 'pday': u.pday = b.dataset.date; u.panel = 'today'; save(); renderBody(); break;
+    case 'pday': u.pday = b.dataset.date; u.panel = 'today'; if (PORT) u.sheet = true; save(); renderBody(); break;
     case 'pdone': u.pDone = u.pDone === false; save(); renderBody(); break;
     case 'memo': u.memo = !u.memo; save(); renderBody(); break;
+    case 'sheet': u.sheet = !u.sheet; save(); renderBody(); break;
     case 'pen': clearLasso(); if (u.tool === 'pen' && u.pen === b.dataset.v) { widthPop(b); break; } u.pen = b.dataset.v; u.tool = 'pen'; save(); renderTop(); break;
     case 'lasso': clearLasso(); u.tool = u.tool === 'lasso' ? 'pen' : 'lasso'; save(); renderTop(); break;
     case 'eraser': clearLasso(); u.tool = u.tool === 'eraser' ? 'pen' : 'eraser'; save(); renderTop(); break;
@@ -1829,7 +1952,7 @@ function act(b, e) {
     case 'capture':
       popCtx = { type: 'capture' };
       openPop('<span class="lab">書き留める</span><input type="text" id="cap" aria-label="思いついたこと" placeholder="思いついたこと" enterkeyhint="done"><div class="row">' + WHENS().map(w => '<button class="whenb' + (w === 'いつか' ? ' on' : '') + '" data-cw="' + w + '">' + w + '</button>').join('') + '</div><div class="pbtns"><button class="link" data-pop="close">やめる</button><button class="primary" data-cap="1">追加</button></div>', b);
-      pop.style.left = '820px'; pop.style.top = (744 - pop.offsetHeight - 84) + 'px';
+      { const ar = app.getBoundingClientRect(), k = ar.width / W_APP, r = b.getBoundingClientRect(); pop.style.left = clamp((r.left - ar.left) / k - 20, 8, W_APP - 298) + 'px'; pop.style.top = ((r.bottom - ar.top) / k + 8) + 'px'; }
       $('#cap', pop).focus();
       break;
     case 'when': u.when = b.dataset.v; save(); renderBody(); break;
@@ -1912,14 +2035,17 @@ $('#page').addEventListener('input', e => {
 });
 
 /* ================= book view ================= */
-let BN = pageOfWeek(weekOf(TODAY));
+let BN = pageOfWeek(weekOf(TODAY)), VIEWBOOK = true;
 const thumbCache = new Map();
 function inkThumb(n) {
-  const k = 'p' + n, arr = S.strokes[k];
-  if (!arr || !arr.length) return '';
+  const k = 'p' + n, i = info(n), mk = i.type === 'week' ? 'wm' + i.w : null, marr = mk ? S.strokes[mk] : null;
+  let arr = S.strokes[k];
+  if ((!arr || !arr.length) && (!marr || !marr.length)) return '';
+  arr = arr || [];
+  if (marr && marr.length && !thumbCache.has(k)) { const o = ML.week; arr = arr.concat(marr.map(st => ({ c: st.c, w: st.w, _scr: true, p: st.p.map(q => [q[0] + o[0], q[1] + o[1], q[2]]) }))).map(st => st); }
   if (thumbCache.has(k)) return thumbCache.get(k);
   const c = document.createElement('canvas'); c.width = 1133; c.height = 688;
-  const x = c.getContext("2d"); for (const st of inkOrder(arr)) drawStroke(x, st);
+  const x = c.getContext("2d"), M = thumbMap(k); for (const st of inkOrder(arr)) drawStroke(x, mapSt(st, M));
   const url = c.toDataURL('image/png'); thumbCache.set(k, url); return url;
 }
 /* covers: a slightly thick board in a colour of your choice. The book view counts 0 = front cover, TOTAL+1 = back cover. */
@@ -2011,14 +2137,14 @@ function renderShelf() {
     '<div class="sbook empty" aria-label="2027年（まだありません）"><span>2027</span><small>年が明けたら追加</small></div></div><div class="shelfline"></div>';
 }
 function openBook(n) {
-  closePop(); removeSel(); htmlCache.clear(); BN = n; renderBook();
+  closePop(); removeSel(); htmlCache.clear(); BN = n; VIEWBOOK = true; syncPort(); renderBook();
   const p = $('#page');
   p.style.opacity = '0'; p.style.transform = 'scale(.9)';
   book.hidden = false; book.style.opacity = '0';
   requestAnimationFrame(() => { book.style.opacity = '1'; setTimeout(() => { p.hidden = true; p.style.opacity = ''; p.style.transform = ''; }, 280); });
 }
 function openPageFromBook() {
-  const p = $('#page'); V = { mode: 'page', n: clamp(BN, 1, TOTAL) }; SEL = null; Z = { z: 1, tx: 0, ty: 0 };
+  const p = $('#page'); V = { mode: 'page', n: clamp(BN, 1, TOTAL) }; SEL = null; Z = { z: 1, tx: 0, ty: 0 }; VIEWBOOK = false;
   p.hidden = false; p.style.opacity = '0'; p.style.transform = 'scale(.7)';
   renderPage();
   requestAnimationFrame(() => { p.style.opacity = '1'; p.style.transform = 'none'; book.style.opacity = '0'; setTimeout(() => { book.hidden = true; }, 300); });
@@ -2198,13 +2324,28 @@ document.addEventListener('keydown', e => {
 
 /* ================= scale & boot ================= */
 let scale = 1;
+/* portrait is used for the week and day pages only; everything else (and the book) keeps the landscape page, scaled to fit */
+function wantPort() { return window.innerHeight > window.innerWidth * 1.05 && !VIEWBOOK && (V.mode === 'day' || V.mode === 'tplWeek' || (V.mode === 'page' && info(V.n).type === 'week')); }
+function syncPort() {
+  const p = wantPort(), changed = p !== PORT;
+  PORT = p; W_APP = p ? 744 : 1133; H_APP = p ? 1133 : 744;
+  const th = p ? 100 : 56; BODY_W = W_APP; BODY_H = H_APP - th;
+  const st = app.style;
+  st.setProperty('--aw', W_APP + 'px'); st.setProperty('--ah', H_APP + 'px'); st.setProperty('--th', th + 'px');
+  st.setProperty('--bw', BODY_W + 'px'); st.setProperty('--bh', BODY_H + 'px'); st.setProperty('--hw', (BODY_W / 2) + 'px');
+  app.classList.toggle('port', p);
+  scale = Math.min(window.innerWidth / W_APP, window.innerHeight / H_APP);
+  st.transform = 'scale(' + scale + ')';
+  return changed;
+}
 function fit() {
-  scale = Math.min(window.innerWidth / 1133, window.innerHeight / 744);
-  app.style.transform = 'scale(' + scale + ')';
-  if (!$('#page').hidden) setupInk();
+  const ch = syncPort();
+  if (!$('#page').hidden && !VIEWBOOK) { if (ch) { closePop(); removeSel(); renderPage(); } else setupInk(); }
 }
 window.addEventListener('resize', fit);
 if (window.matchMedia) { const mq = matchMedia('(prefers-color-scheme: dark)'); if (mq.addEventListener) mq.addEventListener('change', () => { thumbCache.clear(); redrawInk(); if (!book.hidden) renderBook(); }); }
+migrateInk();
+S.ui.finger = false;
 fit();
 const autoN = autoPlace(); if (autoN) save();
 renderBook();
