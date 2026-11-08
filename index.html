@@ -1370,7 +1370,7 @@ function undoInk() {
 
 /* ================= pointer routing on the page body ================= */
 const touches = new Map();
-let PG = null, ignoreTouch = false, G = null, suppressClick = 0, lastPinchMoved = false;
+let PG = null, ignoreTouch = false, G = null, suppressClick = 0, lastPinchMoved = false, pendingZR = false;
 /* two-finger tap = undo. Uses Touch Events on the whole app, so it works wherever the fingers land
    and even if the two fingers touch down a little apart in time. */
 let T2 = null;
@@ -1387,12 +1387,18 @@ function t2Move(e) {
   for (const t of e.touches) { const s0 = T2.start[t.identifier]; if (s0 && Math.hypot(t.clientX - s0[0], t.clientY - s0[1]) / k > 22) T2.moved = true; }
 }
 function t2End(e) {
+  if (e.touches.length === 0 && (touches.size || ignoreTouch || PG)) {   // all fingers are up: forget any finger we missed
+    if (PG) { if (PG.moved && Z.z <= 1.02) { Z = { z: 1, tx: 0, ty: 0 }; applyZoom(); } PG = null; }
+    touches.clear(); ignoreTouch = false;
+    if (pendingZR) { pendingZR = false; renderBodyKeepZoom(); }
+  }
   if (!T2 || e.touches.length > 0) return;
   const ok = !T2.moved && !T2.many && Date.now() - T2.t < 500;
   T2 = null;
   if (ok) { toast(undoInk() ? '1つ戻しました' : '戻すものがありません'); suppressClick = Date.now(); }
 }
 app.addEventListener('touchstart', t2Start, { capture: true, passive: true });
+window.addEventListener('blur', () => { touches.clear(); ignoreTouch = false; PG = null; });
 app.addEventListener('touchmove', t2Move, { capture: true, passive: true });
 app.addEventListener('touchend', t2End, { capture: true, passive: true });
 app.addEventListener('touchcancel', t2End, { capture: true, passive: true });
@@ -1408,6 +1414,7 @@ pb.addEventListener('pointerdown', e => {
   if ((!pop.hidden || SEL) && !pop.contains(e.target) && !e.target.closest('.hdl,.sel,.evmemo,[data-evx]')) { closePop(true); e.stopPropagation(); e.preventDefault(); suppressClick = Date.now(); return; }
   // 2) two-finger gestures
   if (e.pointerType === 'touch') {
+    if (e.isPrimary) { touches.clear(); ignoreTouch = false; PG = null; }
     touches.set(e.pointerId, appPt(e));
     if (ignoreTouch) { e.stopPropagation(); return; }
     if (touches.size === 2) {
@@ -1588,11 +1595,11 @@ function endPointer(e) {
         lastPinchMoved = PG.moved;
         if (PG.moved && Z.z <= 1.02) { Z = { z: 1, tx: 0, ty: 0 }; applyZoom(); }
         PG = null; ignoreTouch = touches.size > 0; suppressClick = Date.now();
-        if (PG === null && lastPinchMoved) renderBodyKeepZoom();
+        if (PG === null && lastPinchMoved) { if (touches.size === 0) renderBodyKeepZoom(); else pendingZR = true; }
       }
       e.stopPropagation(); return;
     }
-    if (ignoreTouch) { if (touches.size === 0) ignoreTouch = false; e.stopPropagation(); suppressClick = Date.now(); return; }
+    if (ignoreTouch) { if (touches.size === 0) { ignoreTouch = false; if (pendingZR) { pendingZR = false; renderBodyKeepZoom(); } } e.stopPropagation(); suppressClick = Date.now(); return; }
   }
   if (drawing && e.pointerId === drawing.id) {
     if (drawing.lasso) {
