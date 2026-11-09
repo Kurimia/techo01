@@ -1,5 +1,5 @@
-// 手帳2026：オフラインで開けるようにアプリ本体を iPad に保存しておく
-const VERSION = 'techo-v5';
+// Tokimekuri：オフラインで開けるようにアプリ本体を iPad に保存しておく
+const VERSION = 'techo-v9';
 const SHELL = ['./', 'index.html', 'manifest.json', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {

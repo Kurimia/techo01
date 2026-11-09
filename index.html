@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>2026年の手帳</title>
+<title>Tokimekuri</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="手帳2026">
+<meta name="apple-mobile-web-app-title" content="Tokimekuri">
 <meta name="theme-color" content="#E7E6E2" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E0F12" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.json">
@@ -427,8 +427,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .edit{outline:none;border-radius:6px;padding:2px 4px;margin:-2px -4px;-webkit-user-select:text;user-select:text}
 .edit:focus{background:var(--panel)}
 .edit:empty::before{content:attr(data-ph);color:var(--muted)}
-.qcols{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-.qcol{display:flex;flex-direction:column;gap:6px;min-width:0}
+.qcols{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:auto auto auto minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);column-gap:16px;row-gap:6px}
+.qcol{display:grid;grid-row:1 / span 6;grid-template-rows:subgrid;gap:6px;min-width:0}
+.qhrow{display:flex;align-items:center;gap:8px;min-width:0}
+.qhrow .qh{align-self:auto}
 .qleft{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
 .mbox{flex:1;min-height:0;position:relative;border:1px solid var(--border);border-radius:10px;background-color:var(--surface);background-image:linear-gradient(to bottom,transparent 27px,var(--l-half) 27px);background-size:100% 28px;background-position:0 6px}
 .mbox.cur{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink) inset}
@@ -619,7 +621,18 @@ function migrate() {
 migrate();
 /* ideas -> weekend: once per week, 1-2 ideas per weekend day go into a free hour as tentative events (this month's ideas first, then "いつか").
    The idea moves into the event; "思いつきに戻す" on the event moves it back. */
+function returnIdeas() {
+  let n = 0;
+  for (const dk of Object.keys(S.events)) {
+    if (dk >= TODAYK) continue;
+    const keep = [];
+    for (const ev of S.events[dk]) { if (ev.idea && ev.tent) { if (!S.ideas.some(x => x.id === ev.idea.id)) S.ideas.push({ id: ev.idea.id, title: ev.name, when: ev.idea.when || 'いつか', done: false }); n++; } else keep.push(ev); }
+    S.events[dk] = keep;
+  }
+  return n;
+}
 function autoPlace() {
+  returnIdeas();
   const w = weekOf(TODAY), A = S.auto || (S.auto = {}); if (A[w]) return 0;
   A[w] = 1;
   const ws = weekStart(w), thisMonth = (TODAY.getMonth() + 1) + '月';
@@ -633,7 +646,7 @@ function autoPlace() {
     let n = 1 + Math.floor(Math.random() * 2);
     while (n-- > 0 && pool.length && free.length) {
       const idea = pool.shift(), s0 = free[Math.floor(Math.random() * free.length)];
-      (S.events[dk] = S.events[dk] || []).push({ id: uid(), name: idea.title, s: s0, e: s0 + 1, tent: true });
+      (S.events[dk] = S.events[dk] || []).push({ id: uid(), name: idea.title, s: s0, e: s0 + 1, tent: true, idea: { id: idea.id, when: idea.when } });
       S.ideas = S.ideas.filter(x => x !== idea); placed++;
       for (let i = free.length - 1; i >= 0; i--) if (free[i] < s0 + 1 && free[i] + 1 > s0) free.splice(i, 1);
     }
@@ -643,16 +656,54 @@ function autoPlace() {
 const undoKeys = [];
 let saveT = 0, saveWarned = false;
 function writeNow() { return window.__techoPut(KEEP, JSON.parse(JSON.stringify(S))).then(() => { saveWarned = false; }, () => { if (!saveWarned) { saveWarned = true; toast('保存できませんでした。容量がいっぱいの可能性があります'); } }); }
-function save() { clearTimeout(saveT); saveT = setTimeout(writeNow, 300); }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { clearTimeout(saveT); writeNow(); } });
+function save() { if (lastSnap && !lastSnap.after) lastSnap.after = snapData(); clearTimeout(saveT); saveT = setTimeout(writeNow, 300); }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { clearTimeout(saveT); writeNow(); } else checkDay(); });
+/* the app can stay open in the background for days: when the date changes, save and start again on the new day */
+function realTodayKey() { let d = new Date(); d.setHours(0, 0, 0, 0); if (d.getFullYear() !== 2026) d = new Date(2026, 10, 1); return key(d); }
+let dayReloading = false;
+function checkDay() {
+  if (dayReloading || realTodayKey() === TODAYK) return;
+  if (document.visibilityState === 'visible' && (drawing || G || TD || PG)) return;   // not in the middle of a stroke or a drag
+  dayReloading = true; clearTimeout(saveT);
+  writeNow().then(() => location.reload(), () => location.reload());
+}
+window.addEventListener('focus', checkDay);
+window.addEventListener('pageshow', checkDay);
+setInterval(checkDay, 60000);
 /* undo for data changes: a snapshot (without ink) goes on the same stack as ink strokes */
-function snap() { const o = Object.assign({}, S); delete o.strokes; delete o.ui; undoKeys.push({ data: JSON.stringify(o) }); }
-function restore(entry) { const o = JSON.parse(entry.data); Object.assign(S, o); SEL = null; closePop(); thumbCache.clear(); htmlCache.clear(); save(); renderPage(); }
+function snapData() { const o = Object.assign({}, S); delete o.strokes; delete o.ui; return JSON.parse(JSON.stringify(o)); }
+let lastSnap = null;
+function snap() { lastSnap = { data: snapData() }; undoKeys.push(lastSnap); }
+const J = x => JSON.stringify(x === undefined ? null : x), clone = x => x === undefined ? undefined : JSON.parse(JSON.stringify(x));
+/* undo one action: items it removed come back, items it added go away, items it changed get their old value
+   (only where nothing has touched them since) — later additions and edits are kept */
+function mergeList(cur, B, A) {
+  const bi = new Map(B.map((x, i) => [x.id, [x, i]])), ai = new Map(A.map(x => [x.id, x]));
+  let out = cur.filter(x => !(ai.has(x.id) && !bi.has(x.id)));                       // added by the action
+  out = out.map(x => { const b = bi.get(x.id), a = ai.get(x.id); return b && a && J(x) === J(a) && J(a) !== J(b[0]) ? clone(b[0]) : x; });
+  for (const [id, [b, i]] of bi) if (!ai.has(id) && !out.some(x => x.id === id)) out.splice(Math.min(i, out.length), 0, clone(b));  // removed by the action
+  return out;
+}
+function restore(en) {
+  const B = en.data, A = en.after || snapData();
+  for (const k of new Set(Object.keys(B).concat(Object.keys(A)))) {
+    if (k === 'events') {
+      const flat = o => { const m = []; for (const dk of Object.keys(o || {})) for (const ev of o[dk]) m.push(Object.assign({ __dk: dk }, ev)); return m; };
+      const merged = mergeList(flat(S.events), flat(B.events), flat(A.events)), ev = {};
+      for (const x of merged) { const dk = x.__dk; const y = Object.assign({}, x); delete y.__dk; (ev[dk] = ev[dk] || []).push(y); }
+      S.events = ev;
+    } else if (Array.isArray(B[k]) && Array.isArray(A[k]) && Array.isArray(S[k]) && B[k].concat(A[k]).every(x => x && x.id != null)) S[k] = mergeList(S[k], B[k], A[k]);
+    else if (J(S[k]) === J(A[k])) { if (B[k] === undefined) delete S[k]; else S[k] = clone(B[k]); }
+  }
+  SEL = null; closePop(); thumbCache.clear(); htmlCache.clear(); save(); renderPage();
+}
 function exportBackup() {
   const d = new Date(), name = 'techo2026-' + key(d) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + '.json';
   const blob = new Blob([JSON.stringify({ app: 'techo2026', saved: d.toISOString(), data: S })], { type: 'application/json' });
   const file = new File([blob], name, { type: 'application/json' });
-  if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file] }).catch(() => {}); return; }
+  const dl = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); };
+  if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file] }).catch(err => { if (!err || err.name !== 'AbortError') dl(); }); return; }
+  dl(); return;
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
@@ -664,7 +715,7 @@ function importBackup() {
       let o; try { o = JSON.parse(t); } catch (e) { toast('このファイルは読み込めませんでした'); return; }
       const data = o && o.data ? o.data : o;
       if (!data || !data.series || !data.ui) { toast('手帳のバックアップではないようです'); return; }
-      S = data; undoKeys.length = 0; thumbCache.clear(); htmlCache.clear(); writeNow(); renderBook(); toast('バックアップから戻しました');
+      const prev = S; undoKeys.length = 0; undoKeys.push({ imp: prev }); S = data; thumbCache.clear(); htmlCache.clear(); writeNow(); renderBook(); undoToast('バックアップから戻しました（元に戻すと、読み込む前の内容に戻ります）');
     });
   };
   inp.click();
@@ -768,7 +819,7 @@ function weekBody(w, opt = {}) {
     let bars = '';
     for (const it of allDayIn(wsK, weK)) {
       const c0 = Math.max(0, daysBetween(wsK, it.dk)), c1 = Math.min(6, daysBetween(wsK, it.end));
-      let lane = 0; while (lanes[lane] && lanes[lane] >= c0) lane++; lanes[lane] = c1;
+      let lane = 0; while (lanes[lane] !== undefined && lanes[lane] >= c0) lane++; lanes[lane] = c1;
       const c = it.ev.tag ? tagColor(it.ev.tag) : null, sel = isSel('event', it.ev.id);
       bars += '<div class="adbar' + (sel ? ' sel' : '') + '" data-kind="event" data-id="' + it.ev.id + '" data-date="' + it.dk + '" style="left:calc(' + (c0 * 100 / 7) + '% + 2px);width:calc(' + ((c1 - c0 + 1) * 100 / 7) + '% - 4px);top:' + (lane * 22 + 2) + 'px' + (c ? ';border-color:var(--c-' + c + '-t)' : '') + '">' + (c ? '<span class="dot" style="background:var(--c-' + c + '-t)"></span>' : '') + esc(it.ev.name) + (it.end !== it.dk ? '　' + (parse(it.dk).getMonth() + 1) + '/' + parse(it.dk).getDate() + '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '') + '</div>';
     }
@@ -806,7 +857,8 @@ function weekBody(w, opt = {}) {
 }
 function tagLegend() { return '<div class="card" style="gap:2px"><span class="k" style="margin-bottom:4px">タグ</span>' + S.tags.map(t => '<button class="legend-row" data-act="tagedit" data-id="' + t.id + '"><i style="width:14px;height:14px;border-radius:4px;flex:none;background:var(--c-' + t.color + ')"></i>' + esc(t.name) + '</button>').join('') + '<button class="legend-row" data-act="tagadd" style="color:var(--sub)"><i style="width:14px;height:14px;border-radius:4px;flex:none;border:1px dashed var(--muted);box-sizing:border-box"></i>＋ タグを追加</button></div>'; }
 function goalsCard(w) {
-  const q = Math.ceil((weekStart(w).getMonth() + 1) / 3) || 4, qEnd = new Date(2026, q * 3, 0);
+  const ws0 = weekStart(w), wsd = ws0.getFullYear() < 2026 ? new Date(2026, 0, 1) : ws0;
+  const q = Math.ceil((wsd.getMonth() + 1) / 3), qEnd = new Date(2026, q * 3, 0);
   const left = Math.max(0, Math.round((qEnd - TODAY) / 864e5));
   return '<section class="card" aria-label="目標"><span class="k">2026年</span><span class="v edit" contenteditable="true" data-edit="year" data-ph="年の目標">' + esc(S.goals.year || '') + '</span>' +
     '<span class="k">Q' + q + '</span><span class="v edit" contenteditable="true" data-edit="q" data-q="' + q + '" data-ph="3ヶ月の目標">' + esc(S.goals.q[q] || '') + '</span>' +
@@ -898,10 +950,10 @@ function dayBody(dk) {
 function goalBody(thumb) {
   const cq = Math.ceil((TODAY.getMonth() + 1) / 3);
   let cols = '';
-  for (let q = 1; q <= 4; q++) cols += '<div class="qcol' + (q === cq ? ' cur' : '') + '"><button class="qh" data-act="goto" data-n="' + (1 + q) + '">Q' + q + '　' + ((q - 1) * 3 + 1) + '〜' + (q * 3) + '月</button>' +
+  for (let q = 1; q <= 4; q++) cols += '<div class="qcol' + (q === cq ? ' cur' : '') + '"><div class="qhrow"><button class="qh" data-act="goto" data-n="' + (1 + q) + '">Q' + q + '　' + ((q - 1) * 3 + 1) + '〜' + (q * 3) + '月</button>' +
+    (q === cq ? '<span class="qleft">あと' + Math.max(0, Math.round((new Date(2026, q * 3, 0) - TODAY) / 864e5)) + '日</span>' : '') + '</div>' +
     '<span class="edit" contenteditable="true" data-edit="q" data-q="' + q + '" data-ph="3ヶ月の目標" style="font-size:15px;font-weight:700">' + esc(S.goals.q[q] || '') + '</span>' +
     '<span class="edit" contenteditable="true" data-edit="theme" data-q="' + q + '" data-ph="テーマ" style="font-size:13px;color:var(--sub)">' + esc(S.goals.theme[q] || '') + '</span>' +
-    (q === cq ? '<span class="qleft">あと' + Math.max(0, Math.round((new Date(2026, q * 3, 0) - TODAY) / 864e5)) + '日</span>' : '') +
     [0, 1, 2].map(k => { const m = (q - 1) * 3 + 1 + k, cm = TODAY.getMonth() + 1;
       return '<div class="mbox' + (m === cm ? ' cur' : m < cm ? ' past' : '') + '"><button class="mlab" data-act="goto" data-n="' + (5 + m) + '">' + m + '月</button></div>'; }).join('') + '</div>';
   return '<div class="pg" ' + (thumb ? '' : 'data-draw') + '><h1>2026年の目標</h1><div class="card" style="padding:14px 18px"><span class="k">この1年で</span><span class="v edit" contenteditable="true" data-edit="year" data-ph="1年の目標" style="font-size:18px;font-weight:700">' + esc(S.goals.year || '') + '</span></div><div class="qcols">' + cols + '</div></div>';
@@ -943,13 +995,13 @@ function monthBody(m, thumb) {
   for (const it of allDayIn(sel, sel)) items.push('<div class="irow"><span class="t">' + (it.end !== it.dk ? (parse(it.dk).getMonth() + 1) + '/' + parse(it.dk).getDate() + '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '終日') + '</span><span class="n" style="font-weight:700">' + (it.ev.tag ? '<span style="display:inline-block;width:8px;height:8px;border-radius:4px;margin-right:6px;background:var(--c-' + tagColor(it.ev.tag) + '-t)"></span>' : '') + esc(it.ev.name) + '</span><button class="xbtn" data-act="mdel" data-date="' + it.dk + '" data-id="' + it.ev.id + '" aria-label="' + esc(it.ev.name) + 'を削除">' + ICON.x + '</button></div>');
   for (const ev of evs(sel).filter(e => !e.allDay).sort((a, b) => a.s - b.s)) items.push('<div class="irow"><span class="t">' + (ev.allDay ? '終日' : fmtT(ev.s) + '–' + fmtT(ev.e)) + '</span><span class="n">' + (ev.tag ? '<span style="display:inline-block;width:8px;height:8px;border-radius:4px;margin-right:6px;background:var(--c-' + tagColor(ev.tag) + '-t)"></span>' : '') + esc(ev.name) + '</span><button class="xbtn" data-act="mdel" data-date="' + sel + '" data-id="' + ev.id + '" aria-label="' + esc(ev.name) + 'を削除">' + ICON.x + '</button></div>');
   for (const t of S.tasks.filter(t => t.date === sel)) items.push('<div class="irow"><span class="t">タスク</span><span class="n" style="' + (t.done ? 'color:var(--muted);text-decoration:line-through' : '') + '">' + esc(t.title) + '</span></div>');
-  const opts = (v, withAll) => { let o = withAll ? '<option value="">終日</option>' : ''; for (let t = 6; t <= 24; t += 0.5) o += '<option value="' + t + '"' + (v === t ? ' selected' : '') + '>' + fmtT(t) + '</option>'; return o; };
+  const opts = (v, withAll, start) => { let o = withAll ? '<option value="">終日</option>' : ''; for (let t = 6; start ? t < 24 : t <= 24; t += 0.5) o += '<option value="' + t + '"' + (v === t ? ' selected' : '') + '>' + fmtT(t) + '</option>'; return o; };
   const panel = '<aside style="width:330px;flex:none;display:flex;flex-direction:column;gap:10px;padding:16px 18px 18px;border-left:1px solid var(--border);background:var(--panel)">' +
     '<div style="display:flex;align-items:baseline;gap:8px"><h2 style="margin:0;font-size:18px">' + md(d) + '</h2></div>' +
     '<div style="display:flex;gap:6px"><button class="pill" data-act="day" data-date="' + sel + '">日のページを開く</button><button class="pill" data-act="openweek" data-date="' + sel + '">この週のページ</button></div>' +
     '<div style="display:flex;flex-direction:column;overflow:auto;min-height:0">' + (items.length ? items.join('') : '<span style="font-size:13px;color:var(--muted);padding:8px 0">予定はまだありません</span>') + '</div>' +
     '<div class="card" style="margin-top:auto;gap:8px"><span class="k">この日に予定を追加</span><input ' + (thumb ? '' : 'id="mname"') + ' data-madd="1" placeholder="予定の名前" aria-label="予定の名前" enterkeyhint="done" style="height:34px;border:1px solid var(--border);border-radius:8px;padding:0 8px;font-size:14px;background:var(--surface)">' +
-    '<div class="row"><select ' + (thumb ? '' : 'id="ms"') + ' aria-label="開始" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + opts(null, true) + '</select>–<select ' + (thumb ? '' : 'id="me"') + ' aria-label="終了" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + opts(null, true) + '</select><select ' + (thumb ? '' : 'id="md"') + ' aria-label="日数（終日のとき）" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + [...Array(14)].map((_, i) => '<option value="' + (i + 1) + '">' + (i + 1) + '日間</option>').join('') + '</select></div>' +
+    '<div class="row"><select ' + (thumb ? '' : 'id="ms"') + ' aria-label="開始" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + opts(null, true, true) + '</select>–<select ' + (thumb ? '' : 'id="me"') + ' aria-label="終了" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + opts(null, true) + '</select><select ' + (thumb ? '' : 'id="md"') + ' aria-label="日数（終日のとき）" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + [...Array(14)].map((_, i) => '<option value="' + (i + 1) + '">' + (i + 1) + '日間</option>').join('') + '</select></div>' +
     '<div class="row">' + tagDots(S.ui.newTag, 'data-mtag') + '</div><button class="primary" data-act="madd" data-date="' + sel + '" style="align-self:flex-end">追加</button></div></aside>';
   return '<div class="wk" ' + (thumb ? '' : 'data-draw') + '><div class="pg" style="position:relative;flex:1;min-width:0;gap:10px"><div style="display:flex;align-items:baseline;gap:14px"><h1>' + m + '月</h1></div>' + monthCal(2026, m, { detail: true, sel, style: 'flex:1;min-height:0' }) + '</div>' + panel + '</div>';
 }
@@ -1157,7 +1209,7 @@ function renderPage(anim) {
 }
 /* ---------- page turn (edge swipe / arrows): the page lifts from its edge and turns like paper ---------- */
 function nextView(dir) {
-  if (V.mode === 'day') return { mode: 'day', date: key(addDays(parse(V.date), dir)) };
+  if (V.mode === 'day') { const d = key(addDays(parse(V.date), dir)); return d >= '2026-01-01' && d <= '2026-12-31' ? { mode: 'day', date: d } : null; }
   if (V.mode !== 'page') return null;
   const n = V.n + dir; return n >= 1 && n <= TOTAL ? { mode: 'page', n } : null;
 }
@@ -1227,7 +1279,7 @@ function flipPage(dir) {
   if (startTurn(dir)) { finishTurn(true); return; }
   const tv = nextView(dir); if (tv) go(tv, dir > 0 ? 'turn-next' : 'turn-prev');
 }
-function go(v, anim) { closePop(); SEL = null; LS = null; S.ui.evx = null; Z = { z: 1, tx: 0, ty: 0 }; V = v; renderPage(anim); }
+function go(v, anim) { if (v && v.mode === 'day') v.date = v.date < '2026-01-01' ? '2026-01-01' : v.date > '2026-12-31' ? '2026-12-31' : v.date; closePop(); SEL = null; LS = null; S.ui.evx = null; Z = { z: 1, tx: 0, ty: 0 }; V = v; renderPage(anim); }
 
 /* ================= zoom ================= */
 let Z = { z: 1, tx: 0, ty: 0 };
@@ -1358,19 +1410,23 @@ function eraseAt(pt, k, o) {
   const arr = k ? strokesFor(k) : curStrokes(); if (!arr) return;
   if (o) pt = [pt[0] - o[0], pt[1] - o[1]];
   const before = arr.length, M = k ? null : liveMap();
-  for (let i = arr.length - 1; i >= 0; i--) if (mapSt(arr[i], M).p.some(q => Math.hypot(q[0] - pt[0], q[1] - pt[1]) < 12)) arr.splice(i, 1);
+  const gone = [];
+  for (let i = arr.length - 1; i >= 0; i--) if (mapSt(arr[i], M).p.some(q => Math.hypot(q[0] - pt[0], q[1] - pt[1]) < 12)) gone.push(...arr.splice(i, 1));
+  if (gone.length) { if (drawing && drawing.erase) { if (!drawing.rec) { drawing.rec = { del: { k: k || inkKey(V), items: [] } }; undoKeys.push(drawing.rec); } drawing.rec.del.items.push(...gone); } else undoKeys.push({ del: { k: k || inkKey(V), items: gone } }); }
   if (arr.length !== before) { redrawInk(); thumbCache.delete(inkKey(V)); save(); }
 }
 function undoInk() {
   while (undoKeys.length) { const k = undoKeys.pop(); if (k && k.data) { restore(k); return true; }
     if (k && k.mv) { for (const st of k.mv) for (const q of st.p) { q[0] -= k.dx; q[1] -= k.dy; } if (LS) LS.box = boxOf(LS.items.map(st => mapSt(st, LS.M))); redrawInk(); lassoBar(); save(); return true; }
-    if (k && k.del) { const arr = k.del.k === inkKey(V) ? curStrokes() : strokesFor(k.del.k); if (arr) { arr.push(...k.del.items); redrawInk(); save(); return true; } continue; } const arr = S.strokes[k]; if (arr && arr.length && zw.querySelector('[data-inkkey="' + k + '"]')) { arr.pop(); redrawInk(); save(); return true; } }
+    if (k && k.del) { const arr = k.del.k === inkKey(V) ? curStrokes() : strokesFor(k.del.k); if (arr) { arr.push(...k.del.items); thumbCache.delete(k.del.k); redrawInk(); save(); return true; } continue; }
+    if (k && k.ink) { const arr = k.ink === inkKey(V) ? curStrokes() : S.strokes[k.ink], i = arr ? arr.indexOf(k.st) : -1; if (i >= 0) { arr.splice(i, 1); thumbCache.delete(k.ink); redrawInk(); save(); return true; } continue; }
+    if (k && k.imp) { S = k.imp; SEL = null; closePop(); thumbCache.clear(); htmlCache.clear(); writeNow(); renderBook(); return true; } const arr = S.strokes[k]; if (arr && arr.length && zw.querySelector('[data-inkkey="' + k + '"]')) { arr.pop(); redrawInk(); save(); return true; } }
   const arr = curStrokes(); if (arr && arr.length) { arr.pop(); redrawInk(); thumbCache.delete(inkKey(V)); save(); return true; } return false;
 }
 
 /* ================= pointer routing on the page body ================= */
 const touches = new Map();
-let PG = null, ignoreTouch = false, G = null, suppressClick = 0, lastPinchMoved = false, pendingZR = false;
+let penTap = 0, PG = null, ignoreTouch = false, G = null, suppressClick = 0, lastPinchMoved = false, pendingZR = false;
 /* two-finger tap = undo. Uses Touch Events on the whole app, so it works wherever the fingers land
    and even if the two fingers touch down a little apart in time. */
 let T2 = null;
@@ -1436,8 +1492,9 @@ pb.addEventListener('pointerdown', e => {
   // 2c) page edge (finger / mouse): turn one page. The zone is wide; on a task row only the outermost strip counts.
   if (e.pointerType !== 'pen' && !e.target.closest('[data-evx]') && (V.mode === 'page' || V.mode === 'day') && !e.target.closest('button,input,select,a,[contenteditable="true"],.panel.open')) {
     const ax = appPt(e)[0], zone = Math.round(BODY_W * (PORT ? 0.1 : 0.072)), outer = 36;
-    const onTask = e.target.closest('[data-tdrag]');
-    if ((ax < zone || ax > BODY_W - zone) && (!onTask || ax < outer || ax > BODY_W - outer)) {
+    const onTask = e.target.closest('[data-tdrag]'), onGrid = e.target.closest('.grid[data-grid],.adstrip,.adrow,.alld,[data-allday]');
+    const strip = onTask ? outer : onGrid ? 18 : zone;
+    if (ax < strip || ax > BODY_W - strip) {
       G = { id: e.pointerId, mode: 'edge', side: ax < BODY_W / 2 ? 'L' : 'R', x0: e.clientX, y0: e.clientY, moved: false };
       try { pb.setPointerCapture(e.pointerId); } catch (err) {}
       e.preventDefault(); return;
@@ -1452,6 +1509,7 @@ pb.addEventListener('pointerdown', e => {
     try { pb.setPointerCapture(e.pointerId); } catch (err) {}
     const pt = localPt(e), host = e.target.closest('[data-inkkey]');
     const k = host ? host.dataset.inkkey : null, o = host ? hostOrigin(host) : null;
+    const tapBtn = e.target.closest('button,a,label,[data-act]');
     if (S.ui.tool === 'eraser') { drawing = { id: e.pointerId, erase: true, k, o }; eraseAt(pt, k, o); return; }
     if (S.ui.tool === 'lasso') {
       if (LS) {
@@ -1463,8 +1521,8 @@ pb.addEventListener('pointerdown', e => {
     }
     const st = { c: S.ui.pen, p: [o ? [pt[0] - o[0], pt[1] - o[1], pt[2]] : pt] }, wv = widthOf(S.ui.pen); if (wv !== 1) st.w = wv;
     const M = k ? null : liveMap(); if (M) st._scr = true;
-    (k ? strokesFor(k) : curStrokes()).push(st); undoKeys.push(k || inkKey(V));
-    drawing = { id: e.pointerId, st, k, o, M }; drawStroke(ictx, { c: st.c, p: [pt] });
+    (k ? strokesFor(k) : curStrokes()).push(st); undoKeys.push({ ink: k || inkKey(V), st });
+    drawing = { id: e.pointerId, st, k, o, M, tapBtn, t0: Date.now(), x0: e.clientX, y0: e.clientY }; drawStroke(ictx, { c: st.c, p: [pt] });
     return;
   }
   // 5a) all-day strip: drag across days to add a multi-day event, tap a bar to select it
@@ -1609,6 +1667,9 @@ function endPointer(e) {
       drawing = null; redrawInk(); lassoBar(); suppressClick = Date.now(); return;
     }
     if (drawing.move) { if (drawing.dx || drawing.dy) undoKeys.push({ mv: LS.items.slice(), dx: drawing.fx || 0, dy: drawing.fy || 0 }); drawing = null; suppressClick = Date.now(); thumbCache.delete(inkKey(V)); save(); return; }
+    if (drawing.tapBtn && drawing.st && Date.now() - drawing.t0 < 450 && Math.hypot(e.clientX - drawing.x0, e.clientY - drawing.y0) < 8) {
+      const btn = drawing.tapBtn; cancelSingle(); suppressClick = 0; penTap = 0; btn.click(); penTap = Date.now(); return;
+    }
     if (drawing.M && drawing.st && drawing.st._scr) storeSt(drawing.st, drawing.M);
     const wasPen = drawing.st && !isMk(drawing.st.c);
     drawing = null; if (wasPen) redrawInk(); suppressClick = Date.now(); thumbCache.delete(inkKey(V)); save(); return;
@@ -1913,6 +1974,7 @@ $('#tbx').addEventListener('click', e => { e.stopPropagation(); const b = e.targ
 $('#page').addEventListener('click', e => {
   if (e.target.closest('#tbx')) return;
   if (Date.now() - suppressClick < 300 && pb.contains(e.target)) return;
+  if (e.isTrusted && Date.now() - penTap < 600) return;   // the pencil tap already pressed the button
   if (e.target.closest('.grid[data-grid]')) return;
   const b = e.target.closest('[data-act]'); if (b) act(b, e);
 });
@@ -1993,7 +2055,7 @@ function madd(dk) {
   const n = $('#mname', pb), v = n && n.value.trim(); if (!v) { if (n) n.focus(); return; }
   const s = $('#ms', pb).value, en = $('#me', pb).value;
   const ev = { id: uid(), name: v };
-  if (s === '') { ev.allDay = true; const nd = +(($('#md', pb) || {}).value || 1); if (nd > 1) ev.end = key(addDays(parse(dk), nd - 1)); } else { ev.s = parseFloat(s); ev.e = en === '' ? Math.min(24, ev.s + 1) : Math.max(parseFloat(en), ev.s + 0.5); }
+  if (s === '') { ev.allDay = true; const nd = +(($('#md', pb) || {}).value || 1); if (nd > 1) ev.end = key(addDays(parse(dk), nd - 1)); } else { ev.s = parseFloat(s); ev.s = Math.min(ev.s, 23.5); ev.e = Math.min(24, en === '' ? ev.s + 1 : Math.max(parseFloat(en), ev.s + 0.5)); }
   if (S.ui.newTag) ev.tag = S.ui.newTag;
   evs(dk).push(ev); save(); thumbCache.clear(); renderBody(); toast('予定を追加しました');
 }
@@ -2354,7 +2416,9 @@ if (window.matchMedia) { const mq = matchMedia('(prefers-color-scheme: dark)'); 
 migrateInk();
 S.ui.finger = false;
 fit();
-const autoN = autoPlace(); if (autoN) save();
+const carried = (() => { const w = weekOf(TODAY); let n = 0; for (const t of S.tasks) if (!t.done && t.week < w) { t.week = w; if (t.date && t.date < TODAYK) { t.date = null; t.time = null; } n++; } return n; })();
+const autoN = autoPlace(); if (autoN || carried) save();
+if (carried) setTimeout(() => toast('先週までのやること ' + carried + ' 件を今週に移しました'), autoN ? 2600 : 600);
 renderBook();
 if (autoN) setTimeout(() => toast('週末に思いつきを' + autoN + '件、仮予定で入れました'), 600);
 })();
