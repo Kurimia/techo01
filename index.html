@@ -2436,7 +2436,7 @@ function syncPort() {
   st.setProperty('--aw', W_APP + 'px'); st.setProperty('--ah', H_APP + 'px'); st.setProperty('--th', th + 'px');
   st.setProperty('--bw', BODY_W + 'px'); st.setProperty('--bh', BODY_H + 'px'); st.setProperty('--hw', (BODY_W / 2) + 'px');
   app.classList.toggle('port', p);
-  const stg = document.getElementById('stage'), sw = stg ? stg.clientWidth : window.innerWidth, shh = stg ? stg.clientHeight : window.innerHeight;
+  const ins = safeInsets(), sw = window.innerWidth - ins[1] - ins[3], shh = window.innerHeight - ins[0] - ins[2];
   scale = Math.min(sw / W_APP, shh / H_APP);
   st.transform = 'scale(' + scale + ')';
   return changed;
@@ -2445,7 +2445,16 @@ function fit() {
   const ch = syncPort();
   if (!$('#page').hidden && !VIEWBOOK) { if (ch) { closePop(); removeSel(); renderPage(); } else setupInk(); }
 }
-window.addEventListener('resize', fit);
+function safeInsets() {
+  let pr = document.getElementById('sa-probe');
+  if (!pr) { pr = document.createElement('div'); pr.id = 'sa-probe'; pr.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)'; document.body.appendChild(pr); }
+  const cs = getComputedStyle(pr); return [parseFloat(cs.paddingTop) || 0, parseFloat(cs.paddingRight) || 0, parseFloat(cs.paddingBottom) || 0, parseFloat(cs.paddingLeft) || 0];
+}
+let fitTimers = [];
+function fitSoon() { fit(); fitTimers.forEach(clearTimeout); fitTimers = [80, 250, 600, 1200].map(ms => setTimeout(fit, ms)); }
+window.addEventListener('resize', fitSoon);
+window.addEventListener('orientationchange', fitSoon);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', fitSoon);
 if (window.matchMedia) { const mq = matchMedia('(prefers-color-scheme: dark)'); if (mq.addEventListener) mq.addEventListener('change', () => { thumbCache.clear(); redrawInk(); if (!book.hidden) renderBook(); }); }
 migrateInk();
 S.ui.finger = false;
