@@ -6,14 +6,14 @@
 <title>Tokimekuri</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Tokimekuri">
 <meta name="theme-color" content="#E7E6E2" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E0F12" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{height:100%}body{margin:0;font-size:14px;font-family:system-ui,-apple-system,sans-serif;-webkit-text-size-adjust:100%;overscroll-behavior:none}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>html,body{height:100%}body{margin:0;font-size:14px;font-family:system-ui,-apple-system,sans-serif;-webkit-text-size-adjust:100%;overscroll-behavior:none}img{max-width:100%}[hidden]{display:none!important}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
 <style>
 /* Layout: a fixed 1133x744 iPad-mini landscape "device" scaled to fit the window; book view and page view swap inside it */
@@ -22,7 +22,7 @@
   --l-hour:rgba(0,0,0,0.18);--l-half:rgba(0,0,0,0.07);--l-col:rgba(0,0,0,0.11);--weekend:rgba(0,0,0,0.025);
   --seg:#ECECED;--seg-on:#FFFFFF;--ev-b:#6E7076;--now:#2F6FD1;--today:#2F6FD1;--sat:#4A5A80;--sun:#B5453C;--btn:#1C1C1E;--btn-t:#FFFFFF;--sw-off:#C6C7CB;--done:#2F6FD1;
   --pen-k:#1C1C1E;--pen-b:#2B4EA8;--pen-r:#C8483E;--pen-mc:#38BDF0;--pen-mp:#FF5FA8;--pen-my:#D6E96D;
-  --desk:#E7E6E2;--desk-2:#D8D6D0;--on-desk:#2A2A2D;--on-desk-sub:#6C6C71;--paper:#FAF9F6;--paper-line:rgba(0,0,0,0.09);
+  --sbar:#2A2A2D;--desk:#E7E6E2;--desk-2:#D8D6D0;--on-desk:#2A2A2D;--on-desk-sub:#6C6C71;--paper:#FAF9F6;--paper-line:rgba(0,0,0,0.09);
   --c-gray:#E7E8EC;--c-gray-t:#4F5260;--c-purple:#E8E0F7;--c-purple-t:#5B4B86;--c-pink:#F9DDE8;--c-pink-t:#8A4562;
   --c-cream:#FCEBCB;--c-cream-t:#7A5C2E;--c-green:#DDF1E3;--c-green-t:#3E6B4C;--c-blue:#DCE8FA;--c-blue-t:#2F5487;--c-orange:#FDE2CF;--c-orange-t:#8A4A1F;
   --tab-paper:#FFFFFF;--tab-paper-t:#1C1C1E;--tab-purple:#F1EDFA;--tab-purple-t:#5A4C85;--tab-cream:#FBF3E3;--tab-cream-t:#7A6036;--tab-blue:#EAF2FC;--tab-blue-t:#36598A;--tab-pink:#FBEDF2;--tab-pink-t:#8A4E68;--tab-green:#EBF6EE;--tab-green-t:#47705A;--tab-orange:#FCEFE6;--tab-orange-t:#86532F;
@@ -33,7 +33,7 @@
   --bg:#141416;--surface:#1D1D20;--panel:#18181B;--rail:#111113;--ink:#EDEDEF;--sub:#A9ABB0;--muted:#7D7F85;--border:#2E2E33;
   --l-hour:rgba(255,255,255,0.17);--l-half:rgba(255,255,255,0.06);--l-col:rgba(255,255,255,0.10);--weekend:rgba(255,255,255,0.025);
   --seg:#26262A;--seg-on:#3A3A40;--ev-b:#8C8E94;--now:#6F9BF2;--today:#6F9BF2;--sat:#9AA8CC;--sun:#E08A80;--btn:#EDEDEF;--btn-t:#141416;--sw-off:#4A4A50;--done:#6F9BF2;
-  --pen-k:#EDEDEF;--pen-b:#8EA9F0;--pen-r:#EA7B70;--pen-mc:#4FC9F5;--pen-mp:#FF77B7;--pen-my:#D6E96D;--desk:#0E0F12;--desk-2:#23262D;--paper:#1D1D20;--paper-line:rgba(255,255,255,0.08);
+  --pen-k:#EDEDEF;--pen-b:#8EA9F0;--pen-r:#EA7B70;--pen-mc:#4FC9F5;--pen-mp:#FF77B7;--pen-my:#D6E96D;--sbar:#0E0F12;--desk:#0E0F12;--desk-2:#23262D;--on-desk:#F2F2F4;--on-desk-sub:#A9ADB7;--paper:#1D1D20;--paper-line:rgba(255,255,255,0.08);
   --c-gray:#2B2C31;--c-gray-t:#BDC0C8;--c-purple:#2E2840;--c-purple-t:#CFC2F2;--c-pink:#3D2730;--c-pink-t:#F2BDD2;
   --c-cream:#3D3323;--c-cream-t:#F0D6A6;--c-green:#22352A;--c-green-t:#B5E2C3;--c-blue:#22304A;--c-blue-t:#B8CCF2;--c-orange:#3D2A1E;--c-orange-t:#F3C2A0;
   --tab-paper:#2A2A2E;--tab-paper-t:#EDEDEF;--tab-purple:#2E2840;--tab-purple-t:#CFC2F2;--tab-cream:#3D3323;--tab-cream-t:#F0D6A6;--tab-blue:#22304A;--tab-blue-t:#B8CCF2;--tab-pink:#3D2730;--tab-pink-t:#F2BDD2;--tab-green:#22352A;--tab-green-t:#B5E2C3;--tab-orange:#3D2A1E;--tab-orange-t:#F3C2A0;
@@ -42,7 +42,7 @@
   --bg:#141416;--surface:#1D1D20;--panel:#18181B;--rail:#111113;--ink:#EDEDEF;--sub:#A9ABB0;--muted:#7D7F85;--border:#2E2E33;
   --l-hour:rgba(255,255,255,0.17);--l-half:rgba(255,255,255,0.06);--l-col:rgba(255,255,255,0.10);--weekend:rgba(255,255,255,0.025);
   --seg:#26262A;--seg-on:#3A3A40;--ev-b:#8C8E94;--now:#6F9BF2;--today:#6F9BF2;--sat:#9AA8CC;--sun:#E08A80;--btn:#EDEDEF;--btn-t:#141416;--sw-off:#4A4A50;--done:#6F9BF2;
-  --pen-k:#EDEDEF;--pen-b:#8EA9F0;--pen-r:#EA7B70;--pen-mc:#4FC9F5;--pen-mp:#FF77B7;--pen-my:#D6E96D;--desk:#0E0F12;--desk-2:#23262D;--paper:#1D1D20;--paper-line:rgba(255,255,255,0.08);
+  --pen-k:#EDEDEF;--pen-b:#8EA9F0;--pen-r:#EA7B70;--pen-mc:#4FC9F5;--pen-mp:#FF77B7;--pen-my:#D6E96D;--sbar:#0E0F12;--desk:#0E0F12;--desk-2:#23262D;--on-desk:#F2F2F4;--on-desk-sub:#A9ADB7;--paper:#1D1D20;--paper-line:rgba(255,255,255,0.08);
   --c-gray:#2B2C31;--c-gray-t:#BDC0C8;--c-purple:#2E2840;--c-purple-t:#CFC2F2;--c-pink:#3D2730;--c-pink-t:#F2BDD2;
   --c-cream:#3D3323;--c-cream-t:#F0D6A6;--c-green:#22352A;--c-green-t:#B5E2C3;--c-blue:#22304A;--c-blue-t:#B8CCF2;--c-orange:#3D2A1E;--c-orange-t:#F3C2A0;
   --tab-paper:#2A2A2E;--tab-paper-t:#EDEDEF;--tab-purple:#2E2840;--tab-purple-t:#CFC2F2;--tab-cream:#3D3323;--tab-cream-t:#F0D6A6;--tab-blue:#22304A;--tab-blue-t:#B8CCF2;--tab-pink:#3D2730;--tab-pink-t:#F2BDD2;--tab-green:#22352A;--tab-green-t:#B5E2C3;--tab-orange:#3D2A1E;--tab-orange-t:#F3C2A0;
@@ -50,7 +50,8 @@
 html,body{height:100%}
 body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--font);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
   padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
-#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--sbar,var(--desk));z-index:50}
+#stage{position:fixed;inset:0;top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px);display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
 #app{--sheetc:72px;--aw:1133px;--ah:744px;--th:56px;--bw:1133px;--bh:688px;--hw:566.5px;width:var(--aw);height:var(--ah);position:relative;flex:none;overflow:hidden;background:var(--bg);transform-origin:center center}
 button,input,select{font-family:inherit;color:inherit}
 input{-webkit-user-select:text;user-select:text}
@@ -458,7 +459,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .irow .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .xbtn{width:26px;height:26px;border:none;background:none;color:var(--muted);border-radius:13px;display:flex;align-items:center;justify-content:center;padding:0}
 .idea{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;font-size:14px}
-.idea .tt{flex:1;min-width:0}
+.iexp .k{font-size:11px;color:var(--muted)}
+.iexp.tx{margin:2px 0 10px;border-radius:12px;border-top:1px solid var(--ink)}
+.task .ttx{cursor:pointer;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.idea .tt{flex:1;min-width:0;cursor:pointer;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.idea.open{border-color:var(--ink);border-bottom-left-radius:0;border-bottom-right-radius:0}
+.ibadge{font-size:11px;font-weight:600;color:var(--sub);background:var(--seg);border-radius:6px;padding:1px 6px;font-variant-numeric:tabular-nums}
+.iexp{margin-top:-11px;border:1px solid var(--ink);border-top:1px dashed var(--border);border-radius:0 0 12px 12px;background:var(--surface);padding:10px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:none}
+.iexp .todo{display:flex;align-items:center;gap:8px;min-height:32px;font-size:13.5px;border-bottom:1px solid var(--border)}
+.iexp .todo .tt{flex:1;min-width:0}
+.iexp .todo.done .tt{color:var(--muted);text-decoration:line-through}
+.iexp input{height:34px;border:1px solid var(--border);border-radius:8px;padding:0 10px;font-size:14px;background:var(--surface);color:var(--ink)}
+.iexp .imemo{height:190px;flex:none;position:relative}
 .idea.done .tt{color:var(--muted);text-decoration:line-through}
 .whenb{height:30px;padding:0 12px;border-radius:15px;font-size:12px;border:1px solid var(--border);background:var(--surface)}
 .whenb.on{background:var(--btn);color:var(--btn-t);border-color:var(--btn);font-weight:700}
@@ -1018,9 +1030,15 @@ function quarterBody(q, thumb) {
 function ideasBody(thumb) {
   const mo = w => { const n = parseInt(w, 10); return isNaN(n) ? 99 : (n - TODAY.getMonth() - 1 + 12) % 12; };
   const dated = S.ideas.filter(i => i.when !== 'いつか').sort((a, b) => mo(a.when) - mo(b.when)), sd = S.ideas.filter(i => i.when === 'いつか');
-  const item = i => '<div class="idea' + (i.done ? ' done' : '') + '"><button class="box' + (i.done ? ' on' : '') + '" data-act="idone" data-id="' + i.id + '" aria-label="' + esc(i.title) + 'をやった">' + (i.done ? ICON.check : '') + '</button><span class="tt">' + esc(i.title) + '</span>' +
+  const iopen = !thumb && S.ui.iopen;
+  const ibadge = i => { const td = i.todos || [], ink = (S.strokes['i' + i.id] || []).length; return (td.length ? '<span class="ibadge">' + td.filter(x => x.done).length + '/' + td.length + '</span>' : '') + (ink ? '<span class="ibadge">メモ</span>' : ''); };
+  const iexp = i => iopen !== i.id ? '' : '<div class="iexp"><span class="k">この思いつきでやること</span>' +
+    (i.todos || []).map((t, n) => '<div class="todo' + (t.done ? ' done' : '') + '"><button class="box' + (t.done ? ' on' : '') + '" data-act="itodo" data-id="' + i.id + '" data-i="' + n + '" aria-label="' + esc(t.title) + 'をやった">' + (t.done ? ICON.check : '') + '</button><span class="tt">' + esc(t.title) + '</span><button class="mini" data-act="itododel" data-id="' + i.id + '" data-i="' + n + '" aria-label="削除">×</button></div>').join('') +
+    '<input data-itodo="' + i.id + '" placeholder="＋ やることを足す" aria-label="やることを足す" enterkeyhint="done">' +
+    '<span class="k">メモ（手書き）</span><div class="memo imemo" data-draw data-inkkey="i' + i.id + '"></div></div>';
+  const item = i => '<div class="idea' + (i.done ? ' done' : '') + (iopen === i.id ? ' open' : '') + '"><button class="box' + (i.done ? ' on' : '') + '" data-act="idone" data-id="' + i.id + '" aria-label="' + esc(i.title) + 'をやった">' + (i.done ? ICON.check : '') + '</button><span class="tt" data-act="iopen" data-id="' + i.id + '" role="button" aria-expanded="' + (iopen === i.id) + '">' + esc(i.title) + ibadge(i) + '</span>' +
     (i.when !== 'いつか' ? '<button class="tagc" data-act="iwhen" data-v="いつか" data-id="' + i.id + '" title="いつかに戻す">' + esc(i.when) + '</button>' : '') +
-    (i.done ? '' : '<button class="mini" data-act="itoday" data-id="' + i.id + '">今日やる</button><button class="mini" data-act="iweek" data-id="' + i.id + '">今週やる</button>') + '</div>';
+    (i.done ? '' : '<button class="mini" data-act="itoday" data-id="' + i.id + '">今日やる</button><button class="mini" data-act="iweek" data-id="' + i.id + '">今週やる</button>') + '</div>' + iexp(i);
   const gl = S.ui.goals ? '<aside class="panel" style="padding-bottom:20px;overflow:auto">' + goalsCard(weekOf(TODAY)) + '</aside>' : '';
   return (gl ? '<div class="wk">' : '') + '<div class="pg" ' + (thumb ? '' : 'data-draw') + (gl ? ' style="position:relative;inset:auto;flex:1;min-width:0"' : '') + '><div style="display:flex;align-items:baseline;gap:14px"><h1>思いつき</h1></div>' +
     '<div class="card" style="border:1.5px solid var(--ink);padding:12px 16px"><input ' + (thumb ? '' : 'id="ideain"') + ' aria-label="思いついたこと" placeholder="思いついたことを書く" enterkeyhint="done" style="font-size:16px;border:none;padding:4px 0;background:transparent;outline:none">' +
@@ -1030,9 +1048,15 @@ function ideasBody(thumb) {
 }
 function tasksBody(thumb) {
   const w = weekOf(TODAY), showDone = !!S.ui.showDone;
-  const row = (t, where) => '<div class="task' + (t.done ? ' done' : '') + '" style="min-height:42px;border-bottom:1px solid var(--border);font-size:14px">' + taskBox(t) + '<span class="tt">' + esc(t.title) + '</span>' +
+  const topen = !thumb && S.ui.topen;
+  const tbadge = t => { const td = t.todos || [], ink = (S.strokes['t' + t.id] || []).length; return (td.length ? '<span class="ibadge">' + td.filter(x => x.done).length + '/' + td.length + '</span>' : '') + (ink ? '<span class="ibadge">メモ</span>' : ''); };
+  const texp = t => topen !== t.id ? '' : '<div class="iexp tx"><span class="k">このタスクでやること</span>' +
+    (t.todos || []).map((s, n) => '<div class="todo' + (s.done ? ' done' : '') + '"><button class="box' + (s.done ? ' on' : '') + '" data-act="ttodo" data-id="' + t.id + '" data-i="' + n + '" aria-label="' + esc(s.title) + 'をやった">' + (s.done ? ICON.check : '') + '</button><span class="tt">' + esc(s.title) + '</span><button class="mini" data-act="ttododel" data-id="' + t.id + '" data-i="' + n + '" aria-label="削除">×</button></div>').join('') +
+    '<input data-ttodo="' + t.id + '" placeholder="＋ やることを足す" aria-label="やることを足す" enterkeyhint="done">' +
+    '<span class="k">メモ（手書き）</span><div class="memo imemo" data-draw data-inkkey="t' + t.id + '"></div></div>';
+  const row = (t, where) => '<div class="task' + (t.done ? ' done' : '') + (topen === t.id ? ' topen' : '') + '" style="min-height:42px;border-bottom:1px solid var(--border);font-size:14px">' + taskBox(t) + '<span class="tt ttx" data-act="topen" data-id="' + t.id + '" role="button" aria-expanded="' + (topen === t.id) + '">' + esc(t.title) + tbadge(t) + '</span>' +
     (t.date && where !== 'today' ? '<span class="due">' + DOW[dowIdx(parse(t.date))] + '</span>' : '') +
-    (!t.done ? (where !== 'today' ? '<button class="mini" data-act="tk" data-to="today" data-id="' + t.id + '">今日</button>' : '') + (where !== 'week' ? '<button class="mini" data-act="tk" data-to="week" data-id="' + t.id + '">今週</button>' : '') + '<button class="mini" data-act="tidea" data-id="' + t.id + '" title="まだやらない：思いつきに戻す">思いつきへ</button>' : '') + '</div>';
+    (!t.done ? (where !== 'today' ? '<button class="mini" data-act="tk" data-to="today" data-id="' + t.id + '">今日</button>' : '') + (where !== 'week' ? '<button class="mini" data-act="tk" data-to="week" data-id="' + t.id + '">今週</button>' : '') + '<button class="mini" data-act="tidea" data-id="' + t.id + '" title="まだやらない：思いつきに戻す">思いつきへ</button>' : '') + '</div>' + texp(t);
   const col = (title, sub, list, where, ph) => {
     const open = list.filter(t => !t.done), done = list.filter(t => t.done);
     return '<section style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:baseline;gap:8px"><h2 style="margin:0;font-size:16px">' + title + '</h2><span style="font-size:12px;color:var(--muted)">' + sub + '・残り' + open.length + '</span></div>' +
@@ -1509,7 +1533,8 @@ pb.addEventListener('pointerdown', e => {
     try { pb.setPointerCapture(e.pointerId); } catch (err) {}
     const pt = localPt(e), host = e.target.closest('[data-inkkey]');
     const k = host ? host.dataset.inkkey : null, o = host ? hostOrigin(host) : null;
-    const tapBtn = e.target.closest('button,a,label,[data-act]');
+    let tapBtn = e.target.closest('button,a,label,[data-act]');
+    if (tapBtn && /^(qday|msel)$/.test(tapBtn.dataset.act || '')) tapBtn = null;
     if (S.ui.tool === 'eraser') { drawing = { id: e.pointerId, erase: true, k, o }; eraseAt(pt, k, o); return; }
     if (S.ui.tool === 'lasso') {
       if (LS) {
@@ -2026,6 +2051,12 @@ function act(b, e) {
       break;
     case 'when': u.when = b.dataset.v; save(); renderBody(); break;
     case 'addidea': addIdea(); break;
+    case 'topen': u.topen = u.topen === b.dataset.id ? null : b.dataset.id; save(); renderBody(); break;
+    case 'ttodo': { const t = S.tasks.find(x => x.id === b.dataset.id); if (t && t.todos) { const s = t.todos[+b.dataset.i]; s.done = !s.done; save(); renderBody(); } break; }
+    case 'ttododel': { const t = S.tasks.find(x => x.id === b.dataset.id); if (t && t.todos) { snap(); t.todos.splice(+b.dataset.i, 1); save(); renderBody(); undoToast('やることを消しました'); } break; }
+    case 'iopen': u.iopen = u.iopen === b.dataset.id ? null : b.dataset.id; save(); renderBody(); break;
+    case 'itodo': { const i = S.ideas.find(x => x.id === b.dataset.id); if (i && i.todos) { const t = i.todos[+b.dataset.i]; t.done = !t.done; save(); renderBody(); } break; }
+    case 'itododel': { const i = S.ideas.find(x => x.id === b.dataset.id); if (i && i.todos) { snap(); i.todos.splice(+b.dataset.i, 1); save(); renderBody(); undoToast('やることを消しました'); } break; }
     case 'idone': { const i = S.ideas.find(x => x.id === b.dataset.id); i.done = !i.done; save(); renderBody(); break; }
     case 'iweek': case 'itoday': { snap(); const i = S.ideas.find(x => x.id === b.dataset.id); if (!i) break; S.ideas = S.ideas.filter(x => x !== i);
       S.tasks.push({ id: i.id, title: i.title, week: weekOf(TODAY), date: a === 'itoday' ? TODAYK : null, done: false }); save(); renderBody(); undoToast(a === 'itoday' ? '今日のやることに移しました' : '今週のやることに移しました'); break; }
@@ -2083,6 +2114,8 @@ $('#page').addEventListener('keydown', e => {
   const t = e.target;
   if (t.id === 'ideain') { addIdea(); return; }
   if (t.dataset.tadd) { const v = t.value.trim(); if (!v) return; const wh = t.dataset.tadd; S.tasks.push({ id: uid(), title: v, week: weekOf(TODAY), date: wh === 'today' ? TODAYK : null, done: false }); save(); renderBody(); const i = pb.querySelector('[data-tadd="' + wh + '"]'); if (i) i.focus(); return; }
+  if (t.dataset.ttodo) { const v = t.value.trim(), k = S.tasks.find(x => x.id === t.dataset.ttodo); if (!v || !k) return; (k.todos = k.todos || []).push({ title: v, done: false }); save(); renderBody(); const n = pb.querySelector('[data-ttodo]'); if (n) n.focus(); return; }
+  if (t.dataset.itodo) { const v = t.value.trim(), i = S.ideas.find(x => x.id === t.dataset.itodo); if (!v || !i) return; (i.todos = i.todos || []).push({ title: v, done: false }); save(); renderBody(); const n = pb.querySelector('[data-itodo]'); if (n) n.focus(); return; }
   if (t.dataset.evtodo) { const v = t.value.trim(), ev = selEvent(); if (!v || !ev) return; (ev.todos = ev.todos || []).push({ title: v, done: false }); save(); renderBody(); const i = pb.querySelector('[data-evtodo]'); if (i) i.focus(); return; }
   if (t.dataset.madd) { madd(t.closest('aside').querySelector('[data-act="madd"]').dataset.date); return; }
   if (t.dataset.add) {
@@ -2403,7 +2436,8 @@ function syncPort() {
   st.setProperty('--aw', W_APP + 'px'); st.setProperty('--ah', H_APP + 'px'); st.setProperty('--th', th + 'px');
   st.setProperty('--bw', BODY_W + 'px'); st.setProperty('--bh', BODY_H + 'px'); st.setProperty('--hw', (BODY_W / 2) + 'px');
   app.classList.toggle('port', p);
-  scale = Math.min(window.innerWidth / W_APP, window.innerHeight / H_APP);
+  const stg = document.getElementById('stage'), sw = stg ? stg.clientWidth : window.innerWidth, shh = stg ? stg.clientHeight : window.innerHeight;
+  scale = Math.min(sw / W_APP, shh / H_APP);
   st.transform = 'scale(' + scale + ')';
   return changed;
 }
