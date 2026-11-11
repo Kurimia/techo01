@@ -6,10 +6,10 @@
 <title>Tokimekuri</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Tokimekuri">
-<meta name="theme-color" content="#E7E6E2" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0E0F12" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" id="theme-color" content="#E7E6E2">
+<script>try { if (matchMedia("(prefers-color-scheme: dark)").matches) document.getElementById("theme-color").content = "#0E0F12"; } catch (e) {}</script>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
@@ -2436,11 +2436,20 @@ function syncPort() {
   st.setProperty('--aw', W_APP + 'px'); st.setProperty('--ah', H_APP + 'px'); st.setProperty('--th', th + 'px');
   st.setProperty('--bw', BODY_W + 'px'); st.setProperty('--bh', BODY_H + 'px'); st.setProperty('--hw', (BODY_W / 2) + 'px');
   app.classList.toggle('port', p);
+  themeColor();
   const ins = safeInsets(), sw = window.innerWidth - ins[1] - ins[3], shh = window.innerHeight - ins[0] - ins[2];
   scale = Math.min(sw / W_APP, shh / H_APP);
   st.transform = 'scale(' + scale + ')';
   return changed;
 }
+function themeColor() {
+  const m = document.getElementById('theme-color'); if (!m) return;
+  const el = VIEWBOOK ? book : document.getElementById('top');
+  let c = el ? getComputedStyle(el).backgroundColor : '';
+  if (!c || c === 'transparent' || /rgba\(.*,\s*0\)$/.test(c)) c = getComputedStyle(document.body).backgroundColor;
+  if (c && m.content !== c) m.content = c;
+}
+try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => setTimeout(themeColor, 50)); } catch (e) {}
 function fit() {
   const ch = syncPort();
   if (!$('#page').hidden && !VIEWBOOK) { if (ch) { closePop(); removeSel(); renderPage(); } else setupInk(); }
