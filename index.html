@@ -52,10 +52,10 @@ html,body{height:100%}
 body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--font);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
   padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
 body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--sbar,var(--desk));z-index:50}
-.edgebar{display:none;position:fixed;left:0;right:0;height:11px;z-index:60;pointer-events:none}
+.edgebar{display:none;position:fixed;left:0;right:0;height:8px;z-index:60;pointer-events:none}
 #edge-top{top:0;background:var(--edge-top,var(--desk))}#edge-bot{bottom:0;background:var(--edge-bot,var(--desk))}
 html[data-standalone] .edgebar{display:block}
-html[data-standalone] #stage{top:calc(env(safe-area-inset-top,0px) + 11px);bottom:calc(env(safe-area-inset-bottom,0px) + 11px)}
+html[data-standalone] #stage{top:calc(env(safe-area-inset-top,0px) + 8px);bottom:calc(env(safe-area-inset-bottom,0px) + 8px)}
 #stage:has(#page:not([hidden])){background:var(--bg)}
 #stage{position:fixed;inset:0;top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px);display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
 #app{--sheetc:72px;--aw:1133px;--ah:744px;--th:56px;--bw:1133px;--bh:688px;--hw:566.5px;width:var(--aw);height:var(--ah);position:relative;flex:none;overflow:hidden;background:var(--bg);transform-origin:center center}
@@ -2505,7 +2505,7 @@ function syncPort() {
   st.setProperty('--bw', BODY_W + 'px'); st.setProperty('--bh', BODY_H + 'px'); st.setProperty('--hw', (BODY_W / 2) + 'px');
   app.classList.toggle('port', p);
   themeColor();
-  const ins = safeInsets(), eb = document.documentElement.hasAttribute('data-standalone') ? 22 : 0, sw = window.innerWidth - ins[1] - ins[3], shh = window.innerHeight - ins[0] - ins[2] - eb;
+  const ins = safeInsets(), eb = document.documentElement.hasAttribute('data-standalone') ? 16 : 0, sw = window.innerWidth - ins[1] - ins[3], shh = window.innerHeight - ins[0] - ins[2] - eb;
   scale = Math.min(sw / W_APP, shh / H_APP);
   st.transform = 'scale(' + scale + ')';
   return changed;
