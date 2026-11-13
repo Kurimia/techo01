@@ -1,5 +1,5 @@
 // Tokimekuri：オフラインで開けるようにアプリ本体を iPad に保存しておく
-const VERSION = 'techo-v18';
+const VERSION = 'techo-v19';
 const SHELL = ['./', 'index.html', 'manifest.json', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {

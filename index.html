@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Tokimekuri">
 <meta name="theme-color" id="theme-color" content="#E7E6E2">
 <script>try { if (navigator.standalone || matchMedia("(display-mode: standalone)").matches || /[?&]sa\b/.test(location.search)) document.documentElement.setAttribute("data-standalone", ""); } catch (e) {}</script>
-<script>try { if (matchMedia("(prefers-color-scheme: dark)").matches) document.getElementById("theme-color").content = "#0E0F12"; } catch (e) {}</script>
+<script>try { var th = localStorage.getItem("techo-theme"); if (th === "light" || th === "dark") document.documentElement.setAttribute("data-theme", th); if (th === "dark" || (th !== "light" && matchMedia("(prefers-color-scheme: dark)").matches)) document.getElementById("theme-color").content = "#0E0F12"; else if (th === "light") document.getElementById("theme-color").content = "#E7E6E2"; } catch (e) {}</script>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
@@ -2288,7 +2288,7 @@ function renderBook() {
   for (let k = nL; k >= 1; k--) stacks += '<div class="sheet" style="transform-origin:' + (380 + k * 8) + 'px 50%;transform:rotateY(var(--va));left:' + (-k * 8) + 'px;top:' + (k * 3) + 'px;height:' + (462 - k * 6) + 'px;border-radius:8px 0 0 8px;filter:brightness(' + (1 - k * .05) + ')"></div>';
   for (let k = nR; k >= 1; k--) stacks += '<div class="sheet" style="transform-origin:' + (-k * 8) + 'px 50%;transform:rotateY(calc(-1 * var(--va)));left:' + (380 + k * 8) + 'px;top:' + (k * 3) + 'px;height:' + (462 - k * 6) + 'px;border-radius:0 8px 8px 0;filter:brightness(' + (1 - k * .05) + ')"></div>';
   const full = cachedFull(BN);
-  book.innerHTML = '<div class="bk-top"><button class="rb" data-bk="close" aria-label="閉じて今のページを開く">' + ICON.x + '</button><button class="chap" data-bk="shelf" style="margin-left:4px">本棚</button><div style="margin-left:auto;display:flex;gap:6px">' +
+  book.innerHTML = '<div class="bk-top"><button class="rb" data-bk="close" aria-label="閉じて今のページを開く">' + ICON.x + '</button><button class="chap" data-bk="shelf" style="margin-left:4px">本棚</button><button class="chap" data-bk="theme" style="margin-left:4px" aria-label="表示の明るさを切り替える">' + themeLabel() + '</button><div style="margin-left:auto;display:flex;gap:6px">' +
     '<button class="chap' + (BN === 0 ? ' on' : '') + '" data-bk="chap" data-n="0">COVER</button>' + CHAPS.map((c, k) => c[1] == null ? '' : '<button class="chap' + (i.chap === k ? ' on' : '') + '" data-bk="chap" data-n="' + c[1] + '">' + c[0] + '</button>').join('') + '</div></div>' +
     '<div class="bk-title"><b>2026年の手帳</b><span id="bklabel">' + (i.sub ? i.sub + '　' : '') + i.title + (BN >= 1 && BN <= TOTAL ? '　p.' + BN + ' / ' + TOTAL : '') + '</span></div>' +
     '<div class="book" id="bk" style="transform:translateX(' + shiftFor(BN) + 'px)">' + stacks + '<div class="half L' + (isVoid(BN, 'L') ? ' void' : '') + (BN === BMAX ? ' cv' : '') + '" id="hL">' + halfHTML(full, 'L') + '</div><div class="half R' + (isVoid(BN, 'R') ? ' void' : '') + (BN === 0 ? ' cv' : '') + '" id="hR">' + halfHTML(full, 'R') + '</div><div id="leaves"></div><div class="flipcount" id="fc" hidden></div></div>' +
@@ -2298,6 +2298,7 @@ function renderBook() {
   if (BN === 0 || BN === BMAX) applyCover();
 }
 /* shelf: one closed book per year, side by side */
+function themeLabel() { const t = document.documentElement.getAttribute('data-theme'); return t === 'light' ? 'ライト' : t === 'dark' ? 'ダーク' : '自動'; }
 function renderShelf() {
   const col = coverColor(), ink = coverInk(col);
   book.innerHTML = '<div class="bk-top"><button class="rb" data-bk="pickbook" aria-label="2026年の手帳に戻る">' + ICON.x + '</button></div>' +
@@ -2476,6 +2477,12 @@ book.addEventListener('click', e => {
   if (b.dataset.bk === 'chap') { BN = +b.dataset.n; renderBook(); }
   if (b.dataset.bk === 'cover') { S.ui.cover = b.dataset.v; delete S.ui.coverHSL; save(); const c = coverHSL(); [['cvh', 0], ['cvs', 1], ['cvl', 2]].forEach(([id, i]) => { const el = $('#' + id); if (el) el.value = c[i]; }); applyCover(); }
   if (b.dataset.bk === 'shelf') renderShelf();
+  if (b.dataset.bk === 'theme') {
+    const cur = document.documentElement.getAttribute('data-theme') || 'auto', nx = cur === 'auto' ? 'light' : cur === 'light' ? 'dark' : 'auto';
+    try { nx === 'auto' ? localStorage.removeItem('techo-theme') : localStorage.setItem('techo-theme', nx); } catch (err) {}
+    nx === 'auto' ? document.documentElement.removeAttribute('data-theme') : document.documentElement.setAttribute('data-theme', nx);
+    thumbCache.clear(); setTimeout(() => { themeColor(); redrawInk(); renderBook(); }, 30);
+  }
   if (b.dataset.bk === 'cvdone') { CVOPEN = false; renderBook(); }
   if (b.dataset.bk === 'pickbook') { BN = 0; renderBook(); }
   if (b.dataset.bk === 'export') exportBackup();
