@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Tokimekuri">
 <meta name="theme-color" id="theme-color" content="#E7E6E2">
+<script>try { if (navigator.standalone || matchMedia("(display-mode: standalone)").matches || /[?&]sa\b/.test(location.search)) document.documentElement.setAttribute("data-standalone", ""); } catch (e) {}</script>
 <script>try { if (matchMedia("(prefers-color-scheme: dark)").matches) document.getElementById("theme-color").content = "#0E0F12"; } catch (e) {}</script>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -51,6 +52,10 @@ html,body{height:100%}
 body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--font);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
   padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
 body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--sbar,var(--desk));z-index:50}
+.edgebar{display:none;position:fixed;left:0;right:0;height:14px;z-index:60;pointer-events:none}
+#edge-top{top:0;background:var(--edge-top,var(--desk))}#edge-bot{bottom:0;background:var(--edge-bot,var(--desk))}
+html[data-standalone] .edgebar{display:block}
+html[data-standalone] #stage{top:calc(env(safe-area-inset-top,0px) + 14px);bottom:calc(env(safe-area-inset-bottom,0px) + 14px)}
 #stage{position:fixed;inset:0;top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px);display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
 #app{--sheetc:72px;--aw:1133px;--ah:744px;--th:56px;--bw:1133px;--bh:688px;--hw:566.5px;width:var(--aw);height:var(--ah);position:relative;flex:none;overflow:hidden;background:var(--bg);transform-origin:center center}
 button,input,select{font-family:inherit;color:inherit}
@@ -170,6 +175,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .chapseg button{height:30px;padding:0 8px;border:none;border-radius:8px;background:none;font-size:12px;color:var(--sub);white-space:nowrap}
 .chapseg button.on{background:var(--seg-on);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.12)}
 .bookbtn2{width:36px;height:36px;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;padding:0;color:var(--ink);flex:none}
+#gfloat{position:absolute;right:12px;top:64px;z-index:13;width:270px;max-height:calc(100% - 80px);overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:10px}
+#gfloat .card{border:none;padding:4px;background:transparent}
 #tbx{position:absolute;z-index:12;display:flex;align-items:center;gap:3px;height:48px;padding:0 8px 0 4px;background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:0 6px 20px rgba(0,0,0,.14);touch-action:none}
 #tbx[hidden]{display:none!important}
 #tbx .grip{width:22px;height:36px;border:none;background:none;color:var(--muted);display:flex;align-items:center;justify-content:center;padding:0;cursor:grab;touch-action:none}
@@ -218,7 +225,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 #zw{position:absolute;left:0;top:0;width:var(--bw);height:var(--bh);transform-origin:0 0}
 #ink{position:absolute;left:0;top:0;width:var(--bw);height:var(--bh);pointer-events:none;z-index:8}
 .pstatic{position:absolute;left:0;top:0;width:var(--bw);height:var(--bh);background:var(--bg);color:var(--ink);overflow:hidden;pointer-events:none}
-.pstatic img{position:absolute;left:0;top:0;width:var(--bw);height:var(--bh)}
+.pstatic img{position:absolute;left:0;top:0;width:var(--bw);height:var(--bh);z-index:12}
 .phalf{position:absolute;top:0;width:var(--hw);height:var(--bh);overflow:hidden;pointer-events:none;background:var(--bg)}
 .phalf.L{left:0}.phalf.R{left:var(--hw)}
 .phalf .pin{position:absolute;top:0;width:var(--bw);height:var(--bh)}
@@ -270,21 +277,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .dtn{font-size:10px;color:var(--sub);margin:auto}
 .panel .tlist .task{cursor:grab;touch-action:pan-y}
 /* ---------- portrait (week / day only) ---------- */
-.dleft{width:470px;flex:none;display:flex;flex-direction:column;padding:6px 16px 14px 4px}
-#app.port .dleft{width:300px;padding-right:10px}
+.dleft{width:300px;flex:none;display:flex;flex-direction:column;padding:6px 10px 14px 4px}
 #app.port .top{align-items:flex-end}
 #app.port .top > .bookbtn2,#app.port .top > .navs{margin-bottom:8px}
-#app.port .wk-main{padding-bottom:6px}
+#app.port .wk-main{padding-bottom:6px;padding-right:30px}
+#app.port .gw{flex:none;height:var(--gwh,auto)}
 .shandle{display:none}
 .panel.tplp{padding-bottom:20px;overflow:auto}
 #app.port .wk > .panel.tplp:not(.open){overflow:hidden}
+#app.port #ink{z-index:11}
 #app.port .wk > .panel{position:absolute;left:0;right:0;bottom:0;width:auto;height:var(--sheetc);border-left:none;border-top:1px solid var(--border);border-radius:18px 18px 0 0;box-shadow:0 -8px 26px rgba(0,0,0,.13);z-index:10;padding:0 18px 18px;gap:10px;overflow:hidden;transition:height .28s cubic-bezier(.3,.7,.3,1)}
 #app.port .wk > .panel.open{height:52%}
 #app.port .wk > .panel.open.withgoals{overflow-y:auto}
 #app.port .wk > .panel.drag{transition:none}
 #app.port .shandle{display:flex;order:-3;flex:none;height:26px;margin:0 -18px -8px;border:none;background:none;align-items:center;justify-content:center;padding:0;cursor:grab;touch-action:none}
 #app.port .shandle::before{content:"";width:44px;height:5px;border-radius:3px;background:var(--border)}
-#app.port .wk > .panel > .pdays{order:-2}
+#app.port .wk > .panel > .pdays{order:-2;margin-left:20px;margin-right:12px}   /* under the 7 columns: grid starts at 4+34px, ends 30px from the right; sheet padding 18px */
 #app.port .pd{height:50px;border-radius:12px;flex-direction:column;gap:1px}
 #app.port .pd small{font-size:10px;font-weight:500;line-height:1;opacity:.75}
 #app.port .pd b{font-size:15px;line-height:1.1}
@@ -306,9 +314,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 #app.port .pdots{grid-column:1 / -1;justify-self:center;height:6px}
 #app.port .pdots i{width:5px;height:5px}
 #app.port .wk > .panel.open{height:60%}
-#app.port .wk > .panel .tsec{flex:0 1 auto;max-height:36%}
+#app.port .wk > .panel .tsec{flex:0 1 auto;max-height:50%;min-height:0;overflow:hidden}
 #app.port .wk > .panel .tlist{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:16px;align-content:start}
-#app.port .wk > .panel .msec.open,#app.port .wk > .panel .evmemo.msec.open{flex:1 1 auto;min-height:200px}
+#app.port .wk > .panel .msec.open,#app.port .wk > .panel .evmemo.msec.open{flex:1 1 auto;min-height:100px}
 #tdghost{position:absolute;z-index:50;pointer-events:none;background:var(--surface);border:1px solid var(--ink);border-radius:8px;padding:5px 10px;font-size:12px;box-shadow:0 8px 20px rgba(0,0,0,.2);white-space:nowrap}
 .adl{width:34px;flex:none;font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;box-sizing:border-box}
 .adstrip{position:relative;flex:1;min-width:0;background:var(--surface);border:1px solid var(--l-col);border-radius:6px;background-image:linear-gradient(to right,var(--l-col) 1px,transparent 1px);background-size:calc(100% / 7) 100%;touch-action:none}
@@ -353,8 +361,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .tlab{width:34px;position:relative;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;flex:none}
 .tlab span{position:absolute;right:6px;transform:translateY(-50%)}
 .grid{flex:1;min-width:0;position:relative;background:var(--surface);border-bottom:1px solid var(--l-hour);border-right:1px solid var(--l-col)}
-.lines{position:absolute;inset:0;pointer-events:none;z-index:1;background-image:linear-gradient(to bottom,var(--l-hour) 0,var(--l-hour) 1px,transparent 1px,transparent 50%,var(--l-half) 50%,var(--l-half) calc(50% + 1px),transparent calc(50% + 1px)),linear-gradient(to right,var(--l-col) 0,var(--l-col) 1px,transparent 1px);background-size:100% calc(100% / 18),calc(100% / 7) 100%}
-.lines.one{background-image:linear-gradient(to bottom,var(--l-hour) 0,var(--l-hour) 1px,transparent 1px,transparent 50%,var(--l-half) 50%,var(--l-half) calc(50% + 1px),transparent calc(50% + 1px));background-size:100% calc(100% / 18)}
+.lines{position:absolute;inset:0;pointer-events:none;z-index:1;background-image:linear-gradient(to bottom,var(--l-hour) 0,var(--l-hour) 1px,transparent 1px,transparent 50%,var(--l-half) 50%,var(--l-half) calc(50% + 1px),transparent calc(50% + 1px)),linear-gradient(to right,var(--l-col) 0,var(--l-col) 1px,transparent 1px);background-size:100% calc(100% / var(--hn, 15)),calc(100% / 7) 100%}
+.lines.one{background-image:linear-gradient(to bottom,var(--l-hour) 0,var(--l-hour) 1px,transparent 1px,transparent 50%,var(--l-half) 50%,var(--l-half) calc(50% + 1px),transparent calc(50% + 1px));background-size:100% calc(100% / var(--hn, 15))}
 .blk{position:absolute;box-sizing:border-box;border-radius:4px;font-size:11px;padding:2px 6px;overflow:hidden;white-space:nowrap;line-height:1.35}
 .blk small{display:block;font-size:10px;opacity:.85;font-variant-numeric:tabular-nums}
 .blk .mo{font-size:9px;border:1px solid currentColor;border-radius:3px;padding:0 2px;margin-left:3px}
@@ -502,6 +510,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 </head>
 <body>
 
+<div class="edgebar" id="edge-top"></div><div class="edgebar" id="edge-bot"></div>
 <div id="stage">
   <div id="app">
     <section id="book" class="view" aria-label="本を俯瞰する"></section>
@@ -509,6 +518,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <div class="top" id="top"></div>
       <div id="pbody"><div id="zw"></div></div>
       <div id="tbx" role="toolbar" aria-label="道具"></div>
+      <div id="gfloat" hidden></div>
     </section>
     <div id="pop" role="dialog" hidden></div>
     <div id="toast" role="status" aria-live="polite"></div>
@@ -543,6 +553,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 /* ================= basics ================= */
 const $ = (s, r = document) => r.querySelector(s);
 const app = $('#app'), pb = $('#pbody'), zw = $('#zw'), pop = $('#pop'), book = $('#book');
+let HS = 7, HN = 15;   // first hour shown, number of hours shown
 let BODY_W = 1133, BODY_H = 688, W_APP = 1133, H_APP = 744, PORT = false;
 const TOTAL = 74;
 const DOW = ['月','火','水','木','金','土','日'];
@@ -800,8 +811,8 @@ const ICON = {
 /* routines sit behind: same pastel, but see-through so events and handwriting stay on top */
 const tagStyleBg = id => { const c = tagColor(id); return 'background:color-mix(in srgb,var(--c-' + c + ') 50%,transparent);color:var(--c-' + c + '-t)'; };
 const tagStyle = id => { const c = tagColor(id); return 'background:var(--c-' + c + ');color:var(--c-' + c + '-t)'; };
-const pos = (s, e) => 'top:' + ((s - 6) / 18 * 100) + '%;height:calc(' + ((e - s) / 18 * 100) + '% - 2px)';
-function tlabels(step) { let h = ''; for (let t = 6; t <= 24; t += step) h += '<span style="top:' + ((t - 6) / 18 * 100) + '%">' + (t === 6 && step === 2 ? '6:00' : t) + '</span>'; return h; }
+const pos = (s, e) => { const a = Math.max(s, HS), b = Math.min(e, HS + HN); return b <= a ? 'display:none' : 'top:' + ((a - HS) / HN * 100) + '%;height:calc(' + ((b - a) / HN * 100) + '% - 2px)'; };
+function tlabels(step) { let h = ''; for (let t = HS; t <= HS + HN; t += step) h += '<span style="top:' + ((t - HS) / HN * 100) + '%">' + (t === HS && step === 2 ? t + ':00' : t) + '</span>'; return h; }
 function taskBox(t) { return '<button class="box' + (t.done ? ' on' : '') + '" data-act="done" data-id="' + t.id + '" aria-label="' + esc(t.title) + 'を' + (t.done ? '未完了に戻す' : '完了にする') + '">' + (t.done ? ICON.check : '') + '</button>'; }
 let SEL = null; // selected event or template routine (shows handles)
 const isSel = (kind, id, extra) => SEL && SEL.kind === kind && SEL.id === id && (extra === undefined || SEL.extra === extra);
@@ -859,12 +870,12 @@ function weekBody(w, opt = {}) {
     });
   }
   let now = '';
-  if (!tpl && inWeek >= 0) { const n = new Date(), h = n.getHours() + n.getMinutes() / 60; if (h >= 6 && h <= 24 && key(n) === TODAYK) now = '<div class="now" style="left:' + (inWeek * 100 / 7) + '%;width:' + (100 / 7) + '%;top:' + ((h - 6) / 18 * 100) + '%"></div>'; }
+  if (!tpl && inWeek >= 0) { const n = new Date(), h = n.getHours() + n.getMinutes() / 60; if (h >= HS && h <= HS + HN && key(n) === TODAYK) now = '<div class="now" style="left:' + (inWeek * 100 / 7) + '%;width:' + (100 / 7) + '%;top:' + ((h - HS) / HN * 100) + '%"></div>'; }
   const grid = '<div class="grid" ' + (thumb ? '' : 'data-draw data-grid="' + (tpl ? 'tpl' : 'week') + '" data-week="' + w + '"') + '>' +
     '<div class="wkend" style="left:' + (500 / 7) + '%;width:' + (200 / 7) + '%"></div>' + bg + '<div class="lines"></div>' + top + now + '</div>';
   const mon = tpl ? '' : '<div class="wkmon" aria-label="' + (ws.getMonth() + 1) + '月"><b>' + (ws.getMonth() + 1) + '</b>月</div>';
   const main = '<div class="wk-main"><div class="dayhead">' + mon + head + '</div>' + allday + '<div class="gw"><div class="tlab">' + tlabels(3) + '</div>' + grid + '</div></div>';
-  if (tpl) return '<div class="wk">' + main + '<aside class="panel tplp' + (PORT && S.ui.sheet ? ' open' : '') + '">' + (PORT && !thumb ? '<button class="shandle" data-sheet="1" aria-label="シートを開閉"></button>' : '') + (S.ui.goals ? goalsCard(weekOf(TODAY)) : '') + '' + tagLegend() + '</aside></div>';
+  if (tpl) return '<div class="wk">' + main + '<aside class="panel tplp' + (PORT && S.ui.sheet ? ' open' : '') + '">' + (PORT ? '<button class="shandle" data-sheet="1" aria-label="シートを開閉"></button>' : '') + tagLegend() + '</aside></div>';
   return '<div class="wk">' + main + panelWithEvent(w, thumb) + '</div>';
 }
 function tagLegend() { return '<div class="card" style="gap:2px"><span class="k" style="margin-bottom:4px">タグ</span>' + S.tags.map(t => '<button class="legend-row" data-act="tagedit" data-id="' + t.id + '"><i style="width:14px;height:14px;border-radius:4px;flex:none;background:var(--c-' + t.color + ')"></i>' + esc(t.name) + '</button>').join('') + '<button class="legend-row" data-act="tagadd" style="color:var(--sub)"><i style="width:14px;height:14px;border-radius:4px;flex:none;border:1px dashed var(--muted);box-sizing:border-box"></i>＋ タグを追加</button></div>'; }
@@ -896,8 +907,8 @@ function panelHTML(w, thumb, ev) {
   const pdays = '<div class="pdays" role="group" aria-label="日ごとのタスク">' + wdays.map((dk, i) => {
     const n = S.tasks.filter(t => t.date === dk && !t.done).length, on = mode === 'today' && dk === pday;
     let dots = '';
-    if (PORT && !thumb) { const all = S.tasks.filter(t => t.date === dk), op = all.filter(t => !t.done).length, dn = all.length - op; dots = '<span class="pdots">' + '<i></i>'.repeat(Math.min(op, 6)) + '<i class="dn"></i>'.repeat(Math.min(dn, Math.max(0, 6 - op))) + '</span>'; }
-    return '<button class="pd' + (on ? ' on' : '') + (dk === TODAYK ? ' td' : '') + (i === 5 ? ' sat' : i === 6 ? ' sun' : '') + '" data-act="pday" data-date="' + dk + '"' + (thumb ? '' : ' data-dtbox="' + dk + '"') + ' aria-label="' + md(parse(dk)) + 'のタスク ' + n + '件">' + (PORT && !thumb ? '<small>' + DOW[i] + '</small>' : '') + '<b>' + parse(dk).getDate() + '</b>' + dots + '</button>';
+    if (PORT) { const all = S.tasks.filter(t => t.date === dk), op = all.filter(t => !t.done).length, dn = all.length - op; dots = '<span class="pdots">' + '<i></i>'.repeat(Math.min(op, 6)) + '<i class="dn"></i>'.repeat(Math.min(dn, Math.max(0, 6 - op))) + '</span>'; }
+    return '<button class="pd' + (on ? ' on' : '') + (dk === TODAYK ? ' td' : '') + (i === 5 ? ' sat' : i === 6 ? ' sun' : '') + '" data-act="pday" data-date="' + dk + '"' + (thumb ? '' : ' data-dtbox="' + dk + '"') + ' aria-label="' + md(parse(dk)) + 'のタスク ' + n + '件">' + (PORT ? '<small>' + DOW[i] + '</small>' : '') + '<b>' + parse(dk).getDate() + '</b>' + dots + '</button>';
   }).join('') + '</div>';
   let list = '';
   if (mode === 'today') {
@@ -911,7 +922,7 @@ function panelHTML(w, thumb, ev) {
     for (const t of vis(ts)) list += '<div class="task' + (t.done ? ' done' : '') + '"' + (thumb ? '' : ' data-tdrag="' + t.id + '"') + '>' + taskBox(t) + '<span class="tt">' + esc(t.title) + '</span>' + (t.date ? '<span class="due">' + DOW[dowIdx(parse(t.date))] + '</span>' : '') + (!t.done && t.date !== TODAYK && todayIn ? '<button class="mini" data-act="totoday" data-id="' + t.id + '">今日へ</button>' : '') + '</div>';
     list += '</div><div class="addrow"><input' + idp + ' data-add="week" data-w="' + w + '" placeholder="＋ 今週のタスク" aria-label="今週のタスクを追加" enterkeyhint="done"></div>';
   }
-  return '<aside class="panel' + (S.ui.goals ? ' withgoals' : '') + (PORT && S.ui.sheet ? ' open' : '') + '">' + (PORT && !thumb ? '<button class="shandle" data-sheet="1" aria-label="' + (S.ui.sheet ? 'シートを下げる' : 'シートを引き上げる') + '"></button>' : '') + (S.ui.goals ? goalsCard(w) : '') +
+  return '<aside class="panel' + '' + (PORT && S.ui.sheet ? ' open' : '') + '">' + (PORT ? '<button class="shandle" data-sheet="1" aria-label="' + (S.ui.sheet ? 'シートを下げる' : 'シートを引き上げる') + '"></button>' : '') + '' +
     pdays + '<div class="segrow"><div class="segs" role="group" aria-label="タスクの表示"><button data-act="panel" data-v="today" class="' + (mode === 'today' ? 'on' : '') + '">DAY</button><button data-act="panel" data-v="week" class="' + (mode === 'week' ? 'on' : '') + '">WEEK</button></div>' +
     '<button class="donetg' + (showD ? ' on' : '') + '" data-act="pdone" aria-pressed="' + showD + '" aria-label="完了したタスクを' + (showD ? '隠す' : '表示') + '" title="完了したタスクを' + (showD ? '隠す' : '表示') + '">' + ICON.donetg + '</button></div>' +
     '<div class="tsec"' + (thumb ? '' : ' data-tzone="' + mode + '"') + '>' + list + '</div>' +
@@ -936,8 +947,8 @@ function dayBody(dk) {
   const ts = S.tasks.filter(t => t.date === dk);
   for (const t of ts.filter(t => t.time != null)) top += '<div class="blk tk" data-kind="task" data-id="' + t.id + '" style="' + pos(t.time, t.time + 1) + ';' + geo + ';font-size:13px' + (t.done ? ';color:var(--muted);text-decoration:line-through' : '') + '">' + esc(t.title) + '</div>';
   let now = '';
-  if (dk === TODAYK) { const n = new Date(), h = n.getHours() + n.getMinutes() / 60; if (h >= 6 && h <= 24) now = '<div class="now" style="left:0;width:100%;top:' + ((h - 6) / 18 * 100) + '%"></div>'; }
-  const opts = h => { let o = '<option value="">時間なし</option>'; for (let t = 6; t < 24; t += 0.5) o += '<option value="' + t + '"' + (h === t ? ' selected' : '') + '>' + fmtT(t) + '</option>'; return o; };
+  if (dk === TODAYK) { const n = new Date(), h = n.getHours() + n.getMinutes() / 60; if (h >= HS && h <= HS + HN) now = '<div class="now" style="left:0;width:100%;top:' + ((h - HS) / HN * 100) + '%"></div>'; }
+  const opts = h => { let o = '<option value="">時間なし</option>'; for (let t = 5; t < 24; t += 0.5) o += '<option value="' + t + '"' + (h === t ? ' selected' : '') + '>' + fmtT(t) + '</option>'; return o; };
   let list = '';
   const showD = S.ui.pDone !== false;
   for (const t of (showD ? ts : ts.filter(t => !t.done))) list += '<div class="task' + (t.done ? ' done' : '') + '" style="border-bottom:1px solid var(--border)">' + taskBox(t) + '<span class="tt">' + esc(t.title) + '</span><select data-time="' + t.id + '" aria-label="' + esc(t.title) + 'の時間" style="height:26px;border:1px solid var(--border);border-radius:7px;font-size:11px;background:var(--surface)">' + opts(t.time) + '</select>' + (!t.done ? '<button class="mini" data-act="toweek" data-id="' + t.id + '">今週に戻す</button>' : '') + '</div>';
@@ -1007,7 +1018,7 @@ function monthBody(m, thumb) {
   for (const it of allDayIn(sel, sel)) items.push('<div class="irow"><span class="t">' + (it.end !== it.dk ? (parse(it.dk).getMonth() + 1) + '/' + parse(it.dk).getDate() + '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '終日') + '</span><span class="n" style="font-weight:700">' + (it.ev.tag ? '<span style="display:inline-block;width:8px;height:8px;border-radius:4px;margin-right:6px;background:var(--c-' + tagColor(it.ev.tag) + '-t)"></span>' : '') + esc(it.ev.name) + '</span><button class="xbtn" data-act="mdel" data-date="' + it.dk + '" data-id="' + it.ev.id + '" aria-label="' + esc(it.ev.name) + 'を削除">' + ICON.x + '</button></div>');
   for (const ev of evs(sel).filter(e => !e.allDay).sort((a, b) => a.s - b.s)) items.push('<div class="irow"><span class="t">' + (ev.allDay ? '終日' : fmtT(ev.s) + '–' + fmtT(ev.e)) + '</span><span class="n">' + (ev.tag ? '<span style="display:inline-block;width:8px;height:8px;border-radius:4px;margin-right:6px;background:var(--c-' + tagColor(ev.tag) + '-t)"></span>' : '') + esc(ev.name) + '</span><button class="xbtn" data-act="mdel" data-date="' + sel + '" data-id="' + ev.id + '" aria-label="' + esc(ev.name) + 'を削除">' + ICON.x + '</button></div>');
   for (const t of S.tasks.filter(t => t.date === sel)) items.push('<div class="irow"><span class="t">タスク</span><span class="n" style="' + (t.done ? 'color:var(--muted);text-decoration:line-through' : '') + '">' + esc(t.title) + '</span></div>');
-  const opts = (v, withAll, start) => { let o = withAll ? '<option value="">終日</option>' : ''; for (let t = 6; start ? t < 24 : t <= 24; t += 0.5) o += '<option value="' + t + '"' + (v === t ? ' selected' : '') + '>' + fmtT(t) + '</option>'; return o; };
+  const opts = (v, withAll, start) => { let o = withAll ? '<option value="">終日</option>' : ''; for (let t = 5; start ? t < 24 : t <= 24; t += 0.5) o += '<option value="' + t + '"' + (v === t ? ' selected' : '') + '>' + fmtT(t) + '</option>'; return o; };
   const panel = '<aside style="width:330px;flex:none;display:flex;flex-direction:column;gap:10px;padding:16px 18px 18px;border-left:1px solid var(--border);background:var(--panel)">' +
     '<div style="display:flex;align-items:baseline;gap:8px"><h2 style="margin:0;font-size:18px">' + md(d) + '</h2></div>' +
     '<div style="display:flex;gap:6px"><button class="pill" data-act="day" data-date="' + sel + '">日のページを開く</button><button class="pill" data-act="openweek" data-date="' + sel + '">この週のページ</button></div>' +
@@ -1039,7 +1050,7 @@ function ideasBody(thumb) {
   const item = i => '<div class="idea' + (i.done ? ' done' : '') + (iopen === i.id ? ' open' : '') + '"><button class="box' + (i.done ? ' on' : '') + '" data-act="idone" data-id="' + i.id + '" aria-label="' + esc(i.title) + 'をやった">' + (i.done ? ICON.check : '') + '</button><span class="tt" data-act="iopen" data-id="' + i.id + '" role="button" aria-expanded="' + (iopen === i.id) + '">' + esc(i.title) + ibadge(i) + '</span>' +
     (i.when !== 'いつか' ? '<button class="tagc" data-act="iwhen" data-v="いつか" data-id="' + i.id + '" title="いつかに戻す">' + esc(i.when) + '</button>' : '') +
     (i.done ? '' : '<button class="mini" data-act="itoday" data-id="' + i.id + '">今日やる</button><button class="mini" data-act="iweek" data-id="' + i.id + '">今週やる</button>') + '</div>' + iexp(i);
-  const gl = S.ui.goals ? '<aside class="panel" style="padding-bottom:20px;overflow:auto">' + goalsCard(weekOf(TODAY)) + '</aside>' : '';
+  const gl = '';
   return (gl ? '<div class="wk">' : '') + '<div class="pg" ' + (thumb ? '' : 'data-draw') + (gl ? ' style="position:relative;inset:auto;flex:1;min-width:0"' : '') + '><div style="display:flex;align-items:baseline;gap:14px"><h1>思いつき</h1></div>' +
     '<div class="card" style="border:1.5px solid var(--ink);padding:12px 16px"><input ' + (thumb ? '' : 'id="ideain"') + ' aria-label="思いついたこと" placeholder="思いついたことを書く" enterkeyhint="done" style="font-size:16px;border:none;padding:4px 0;background:transparent;outline:none">' +
     '<div class="row"><span style="font-size:12px;color:var(--muted)">いつ？</span>' + WHENS().map(w => '<button class="whenb' + ((WHENS().includes(S.ui.when) ? S.ui.when : 'いつか') === w ? ' on' : '') + '" data-act="when" data-v="' + w + '">' + w + '</button>').join('') + '<button class="primary" style="margin-left:auto" data-act="addidea">追加</button></div></div>' +
@@ -1153,9 +1164,19 @@ function renderTbx() {
   let h = '<button class="grip" data-grip="1" aria-label="道具を動かす">' + GRIP + '</button>' + pensHTML();
   if (isWeek || V.mode === 'day' || tpl) h += '<span class="vsep"></span>' + routineTgl();
   const isIdea = V.mode === 'page' && info(V.n).type === 'ideas';
-  if (isWeek || isIdea || V.mode === 'tplWeek') h += (isIdea ? '<span class="vsep"></span>' : '') + '<button class="goalbtn' + (u.goals ? ' on' : '') + '" data-act="goals" aria-pressed="' + u.goals + '" aria-label="目標を表示" title="目標">' + ICON.flag + '</button>';
+  const isGoalPg = V.mode === 'page' && info(V.n).type === 'goal';
+  if (!isGoalPg) h += (isWeek || V.mode === 'day' || tpl ? '' : '<span class="vsep"></span>') + '<button class="goalbtn' + (u.goals ? ' on' : '') + '" data-act="goals" aria-pressed="' + u.goals + '" aria-label="目標を表示" title="目標">' + ICON.flag + '</button>';
   t.innerHTML = h;
   placeTbx();
+  renderGoalFloat(isGoalPg);
+}
+function renderGoalFloat(own) {
+  const g = $('#gfloat'); if (!g) return;
+  if (own || !S.ui.goals) { g.hidden = true; g.innerHTML = ''; return; }
+  let d = TODAY;
+  if (V.mode === 'day') d = parse(V.date);
+  else if (V.mode === 'page') { const i = info(V.n); if (i.type === 'week') d = weekStart(i.w); else if (i.type === 'month') d = new Date(2026, i.m - 1, 15); else if (i.type === 'quarter') d = new Date(2026, (i.q - 1) * 3 + 1, 15); }
+  g.innerHTML = goalsCard(weekOf(d)); g.hidden = false;
 }
 function placeTbx() {
   const t = $('#tbx'), w = t.offsetWidth, hh = t.offsetHeight;
@@ -1224,6 +1245,7 @@ function renderBody() {
   pb.classList.toggle('sheetopen', PORT && !!S.ui.sheet && V.mode === 'page');
   pb.insertAdjacentHTML('beforeend', extra);
   applyZoom();
+  portFit();
   setupInk();
 }
 function renderPage(anim) {
@@ -1244,7 +1266,11 @@ function inkURLFor(k) {
   if (!arr.length && !marr.length) return '';
   const c = document.createElement('canvas'); c.width = BODY_W; c.height = BODY_H;
   const g = zw.querySelector('.grid[data-grid="week"],.grid[data-grid="day"]');
-  const x = c.getContext("2d"), M = gridKey(k) ? (g && (g.dataset.grid === 'day') === (k[0] === 'd') ? mkMap(hostOrigin(g), g.dataset.grid) : thumbMap(k)) : null; for (const st of inkOrder(arr)) drawStroke(x, mapSt(st, M));
+  const x = c.getContext("2d"), M = gridKey(k) ? (g && (g.dataset.grid === 'day') === (k[0] === 'd') ? mkMap(hostOrigin(g), g.dataset.grid) : thumbMap(k)) : null;
+  const shp = PORT ? zw.querySelector('.wk > .panel') : null; x.save();
+  if (shp) { const s = hostOrigin(shp); x.beginPath(); x.rect(0, 0, BODY_W, BODY_H); x.rect(s[0], s[1], s[2], s[3]); x.clip('evenodd'); }
+  for (const st of inkOrder(arr)) if (!offHours(st, M)) drawStroke(x, mapSt(st, M));
+  x.restore();
   if (marr.length) { const o = hostOrigin(mh); x.save(); x.beginPath(); x.rect(o[0], o[1], o[2], o[3]); x.clip(); x.translate(o[0], o[1]); for (const st of inkOrder(marr)) drawStroke(x, st); x.restore(); }
   return c.toDataURL('image/png');
 }
@@ -1314,13 +1340,19 @@ function clampPan() { Z.tx = clamp(Z.tx, BODY_W - BODY_W * Z.z, 0); Z.ty = clamp
 let ink, ictx, drawing = null, lastTapBlock = 0;
 /* week/day pages: page handwriting is stored in "grid space" (GBASE units from the grid's top-left), so it stays on the
    same day and time when the layout changes (portrait, all-day rows). Each stroke keeps its shape (uniform scale k). */
-const GBASE = { week: [843, 592], day: [430, 592], tpl: [843, 592] };
-const GL = { week: [38, 82, 843, 592], day: [44, 82, 430, 592] };   // the grid in the landscape layout (used for thumbnails)
+const BHPX = 592 / 15, BH0 = 7;   // stored units: 1 hour = BHPX, y = 0 at 7:00 (the landscape grid)
+const BCOL = { week: 843 / 7, tpl: 843 / 7, day: 260 };   // stored width of one day column
+const GL = { week: [38, 82, 843, 592], day: [44, 82, 260, 592] };   // the grid in the landscape layout (used for thumbnails)
 const ML = { week: [910, 349.8, 207, 254.2], day: [503, 347.6, 608, 250.4] };   // the memo box in the landscape layout (thumbnails)
+const gridKeyX = 0;
 const gridKey = k => !!k && (k === 'tw' || /^d\d/.test(k) || (/^p\d+$/.test(k) && info(+k.slice(1)).type === 'week'));
-const mkMap = (o, t) => { const b = GBASE[t]; const sx = o[2] / b[0], sy = o[3] / b[1]; return { x: o[0], y: o[1], sx, sy, k: Math.min(sx, sy) }; };
+const gridMap = (o, t, hs, hn) => { const colW = o[2] / (t === 'day' ? 1 : 7), hp = o[3] / hn, sx = colW / BCOL[t], sy = hp / BHPX; return { x: o[0], y: o[1] + (BH0 - hs) * hp, sx, sy, k: Math.min(sx, sy), hs, hn }; };
+const mkMap = (o, t) => gridMap(o, t, HS, HN);
+const mkMapOld = (o, t) => { const b = { week: [843, 592], day: [430, 592], tpl: [843, 592] }[t]; const sx = o[2] / b[0], sy = o[3] / b[1]; return { x: o[0], y: o[1], sx, sy, k: Math.min(sx, sy) }; };
 function liveMap() { const k = inkKey(V); if (!gridKey(k)) return null; const g = zw.querySelector('.grid[data-grid="week"],.grid[data-grid="day"],.grid[data-grid="tpl"]'); return g ? mkMap(hostOrigin(g), g.dataset.grid) : null; }
-const thumbMap = k => gridKey(k) ? (k[0] === 'd' ? mkMap(GL.day, 'day') : mkMap(GL.week, 'week')) : null;
+const thumbMap = k => gridKey(k) ? (k[0] === 'd' ? gridMap(GL.day, 'day', 7, 15) : gridMap(GL.week, 'week', 7, 15)) : null;
+/* strokes in the hours this orientation does not show are hidden (they come back in the other orientation) */
+const offHours = (st, M) => { if (!M || st._scr || !M.hn) return false; const h = BH0 + stCenter(st.p)[1] / BHPX; return (h >= 4.75 && h < M.hs) || (h > M.hs + M.hn && h <= 24.5); };
 function stCenter(p) { let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (const q of p) { if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1]; } return [(x0 + x1) / 2, (y0 + y1) / 2]; }
 /* stored -> screen */
 function mapSt(st, M) {
@@ -1337,18 +1369,43 @@ function storeSt(st, M) {
   delete st._scr;
 }
 /* old data (before grid space): page strokes were in landscape body pixels */
+function toV4(k) {
+  const t = k[0] === 'd' ? 'day' : k === 'tw' ? 'tpl' : 'week', oc = t === 'day' ? 430 : 843 / 7, oh = 592 / 18, s = Math.min(BCOL[t] / oc, BHPX / oh);
+  for (const st of S.strokes[k] || []) {
+    const c = stCenter(st.p), nc = [c[0] * BCOL[t] / oc, (c[1] / oh + 6 - BH0) * BHPX];
+    st.p = st.p.map(q => [Math.round((nc[0] + (q[0] - c[0]) * s) * 10) / 10, Math.round((nc[1] + (q[1] - c[1]) * s) * 10) / 10, q[2]]);
+    if (s !== 1) st.w = Math.round((st.w || 1) * s * 100) / 100;
+  }
+}
 function migrateInk() {
-  if (S.inkv === 2) { const a = (S.strokes || {}).tw; if (a) for (const st of a) { st._scr = true; storeSt(st, mkMap(GL.week, 'week')); } S.inkv = 3; return; }
-  if (S.inkv >= 3) return;
+  if (S.inkv === 4) return;
+  if (S.inkv === 2 || S.inkv === 3) {
+    for (const k of Object.keys(S.strokes || {})) if (gridKey(k) && !(S.inkv === 2 && k === 'tw')) toV4(k);
+    if (S.inkv === 2) { const a = (S.strokes || {}).tw; if (a) for (const st of a) { st._scr = true; storeSt(st, thumbMap('tw')); } }
+    S.inkv = 4; return;
+  }
   for (const k of Object.keys(S.strokes || {})) {
     if (!gridKey(k)) continue;
     const M = thumbMap(k);
     for (const st of S.strokes[k]) { st._scr = true; storeSt(st, M); }
   }
-  S.inkv = 3;
+  S.inkv = 4;
 }
 const curStrokes = () => { const k = inkKey(V); if (!k) return null; return S.strokes[k] || (S.strokes[k] = []); };
 const penColor = c => getComputedStyle(app).getPropertyValue('--pen-' + c).trim() || '#2B4EA8';
+let sheetC = 72;
+function portFit() {
+  const st = app.style;
+  if (!PORT) { st.removeProperty('--gwh'); st.removeProperty('--sheetc'); sheetC = 72; return; }
+  const g = zw.querySelector('.grid[data-grid]'); if (!g) return;
+  const t = g.dataset.grid, k = (zw.getBoundingClientRect().width / BODY_W) || 1;
+  const colW = g.getBoundingClientRect().width / k / (t === 'day' ? 1 : 7);
+  st.setProperty('--gwh', Math.round(BHPX * colW / BCOL[t] * HN) + 'px');
+  const zr = zw.getBoundingClientRect(), gr = g.getBoundingClientRect();
+  if (t !== 'day') {
+    sheetC = Math.max(72, Math.round(BODY_H - (gr.bottom - zr.top) / k - 6)); st.setProperty('--sheetc', sheetC + 'px');
+  }
+}
 function setupInk() {
   ink = $('#ink'); if (!ink) return;
   const dpr = Math.min(4, (window.devicePixelRatio || 1) * scale * Z.z);
@@ -1408,8 +1465,10 @@ function redrawInk() {
   const ov = zw.querySelector('[data-evx]'), or = ov ? hostOrigin(ov) : null;
   const outside = () => { if (!or) return; ictx.beginPath(); ictx.rect(0, 0, BODY_W, BODY_H); ictx.rect(or[0], or[1], or[2], or[3]); ictx.clip('evenodd'); };
   ictx.save(); outside();
+  const sh = PORT ? zw.querySelector('.wk > .panel') : null;
+  if (sh) { const s = hostOrigin(sh); ictx.beginPath(); ictx.rect(0, 0, BODY_W, BODY_H); ictx.rect(s[0], s[1], s[2], s[3]); ictx.clip('evenodd'); }
   const M = liveMap();
-  for (const st of inkOrder(curStrokes() || [])) drawStroke(ictx, mapSt(st, M));
+  for (const st of inkOrder(curStrokes() || [])) if (!offHours(st, M)) drawStroke(ictx, mapSt(st, M));
   ictx.restore();
   zw.querySelectorAll('[data-inkkey]').forEach(el => {
     const arr = S.strokes[el.dataset.inkkey]; if (!arr || !arr.length) return;
@@ -1435,7 +1494,7 @@ function eraseAt(pt, k, o) {
   if (o) pt = [pt[0] - o[0], pt[1] - o[1]];
   const before = arr.length, M = k ? null : liveMap();
   const gone = [];
-  for (let i = arr.length - 1; i >= 0; i--) if (mapSt(arr[i], M).p.some(q => Math.hypot(q[0] - pt[0], q[1] - pt[1]) < 12)) gone.push(...arr.splice(i, 1));
+  for (let i = arr.length - 1; i >= 0; i--) if (!offHours(arr[i], M) && mapSt(arr[i], M).p.some(q => Math.hypot(q[0] - pt[0], q[1] - pt[1]) < 12)) gone.push(...arr.splice(i, 1));
   if (gone.length) { if (drawing && drawing.erase) { if (!drawing.rec) { drawing.rec = { del: { k: k || inkKey(V), items: [] } }; undoKeys.push(drawing.rec); } drawing.rec.del.items.push(...gone); } else undoKeys.push({ del: { k: k || inkKey(V), items: gone } }); }
   if (arr.length !== before) { redrawInk(); thumbCache.delete(inkKey(V)); save(); }
 }
@@ -1571,7 +1630,7 @@ pb.addEventListener('pointerdown', e => {
   else {
     G.mode = 'range'; G.day = dayFromX(grid, e.clientX); G.t0 = Math.floor(timeFromY(grid, e.clientY) * 2) / 2;
     /* long press without moving: show the hour that will be added, before the finger moves or lifts */
-    const g0 = G; g0.lp = setTimeout(() => { if (G === g0 && !g0.moved) { const s = clamp(g0.t0, 6, 23); drawSel(g0.grid, g0.day, s, s + 1); g0.shown = true; } }, 320);
+    const g0 = G; g0.lp = setTimeout(() => { if (G === g0 && !g0.moved) { const s = clamp(g0.t0, HS, HS + HN - 1); drawSel(g0.grid, g0.day, s, s + 1); g0.shown = true; } }, 320);
   }
   if (G.mode === 'resize' || G.mode === 'move') { const m = selModel(); if (!m) { G = null; return; } G.s0 = m.s; G.e0 = m.e; G.date0 = SEL.date; }
   try { pb.setPointerCapture(e.pointerId); } catch (err) {}
@@ -1626,7 +1685,7 @@ pb.addEventListener('pointermove', e => {
   if (!G || e.pointerId !== G.id) return;
   if (!G.moved && Math.hypot(e.clientX - G.x0, e.clientY - G.y0) > 6) G.moved = true;
   if (!G.moved) return;
-  if (G.mode === 'sheet') { if (!G.dragging && Math.abs(e.clientY - G.y0) / G.k < 14) return; G.dragging = true; const h = clamp(G.h0 - (e.clientY - G.y0) / G.k, 72, BODY_H * 0.86); G.h = h; G.pnl.style.height = h + 'px'; return; }
+  if (G.mode === 'sheet') { if (!G.dragging && Math.abs(e.clientY - G.y0) / G.k < 14) return; G.dragging = true; const h = clamp(G.h0 - (e.clientY - G.y0) / G.k, sheetC, BODY_H * 0.86); G.h = h; G.pnl.style.height = h + 'px'; return; }
   if (G.mode === 'edge') {
     const k = pb.getBoundingClientRect().width / BODY_W, dx = (e.clientX - G.x0) / k, now = performance.now();
     if (!G.turn) { if ((G.side === 'R' && dx < 0) || (G.side === 'L' && dx > 0)) G.turn = startTurn(G.side === 'R' ? 1 : -1); if (!G.turn) return; }
@@ -1640,17 +1699,17 @@ pb.addEventListener('pointermove', e => {
   if (G.mode === 'range') {
     const t = timeFromY(G.grid, e.clientY);
     const s = Math.min(G.t0, Math.floor(t * 2) / 2), en = Math.max(G.t0 + 0.5, Math.ceil(t * 2) / 2);
-    G.s = clamp(s, 6, 23.5); G.e = clamp(en, 6.5, 24);
+    G.s = clamp(s, HS, HS + HN - 0.5); G.e = clamp(en, HS + 0.5, HS + HN);
     drawSel(G.grid, G.day, G.s, G.e, false);
   } else if (G.mode === 'resize') {
     const t = Math.round(timeFromY(G.grid, e.clientY) * 2) / 2, m = selModel();
     if (G.edge === 't') m.s = clamp(t, 6, m.e - 0.5); else m.e = clamp(t, m.s + 0.5, 24);
-    G.el.style.top = ((m.s - 6) / 18 * 100) + '%'; G.el.style.height = 'calc(' + ((m.e - m.s) / 18 * 100) + '% - 2px)';
+    G.el.style.top = ((m.s - HS) / HN * 100) + '%'; G.el.style.height = 'calc(' + ((m.e - m.s) / HN * 100) + '% - 2px)';
     const sm = G.el.querySelector('small'); if (sm) sm.textContent = fmtT(m.s) + '–' + fmtT(m.e);
   } else if (G.mode === 'move') {
-    const k = G.r.height / 18, dh = Math.round((e.clientY - G.y0) / k * 2) / 2, m = selModel(), dur = G.e0 - G.s0;
-    m.s = clamp(G.s0 + dh, 6, 24 - dur); m.e = m.s + dur;
-    G.el.style.top = ((m.s - 6) / 18 * 100) + '%';
+    const k = G.r.height / HN, dh = Math.round((e.clientY - G.y0) / k * 2) / 2, m = selModel(), dur = G.e0 - G.s0;
+    m.s = clamp(G.s0 + dh, HS, HS + HN - dur); m.e = m.s + dur;
+    G.el.style.top = ((m.s - HS) / HN * 100) + '%';
     const sm = G.el.querySelector('small'); if (sm) sm.textContent = fmtT(m.s) + '–' + fmtT(m.e);
     if (G.grid.dataset.grid === 'week') { const dd = dayFromX(G.grid, e.clientX), d0 = dayFromX(G.grid, G.x0); G.dd = dd - d0; G.el.style.transform = 'translateX(' + (G.dd * G.r.width / 7 / (G.r.width / G.grid.offsetWidth)) + 'px)'; }
   }
@@ -1687,7 +1746,7 @@ function endPointer(e) {
   if (drawing && e.pointerId === drawing.id) {
     if (drawing.lasso) {
       const poly = drawing.pts, arr = drawing.k === inkKey(V) ? (curStrokes() || []) : strokesFor(drawing.k);
-      const M = drawing.M, items = poly.length > 4 ? arr.filter(st => { const p = mapSt(st, M).p; return p.filter(q => inPoly(q[0], q[1], poly)).length >= p.length * 0.6; }) : [];
+      const M = drawing.M, items = poly.length > 4 ? arr.filter(st => { if (offHours(st, M)) return false; const p = mapSt(st, M).p; return p.filter(q => inPoly(q[0], q[1], poly)).length >= p.length * 0.6; }) : [];
       LS = items.length ? { k: drawing.k, o: drawing.o, M, items, box: boxOf(items.map(st => mapSt(st, M))) } : null;
       drawing = null; redrawInk(); lassoBar(); suppressClick = Date.now(); return;
     }
@@ -1705,7 +1764,7 @@ function endPointer(e) {
   if (g.mode === 'sheet') {
     g.pnl.classList.remove('drag'); g.pnl.style.height = '';
     if (!g.dragging && g.onBtn) return;   // a tap on a button (day box, DAY/WEEK…): the click handles it
-    S.ui.sheet = g.dragging ? g.h > (72 + BODY_H * 0.6) / 2 : !S.ui.sheet; save(); suppressClick = Date.now(); renderBody(); return;
+    S.ui.sheet = g.dragging ? g.h > (sheetC + BODY_H * 0.6) / 2 : !S.ui.sheet; save(); suppressClick = Date.now(); renderBody(); return;
   }
   if (g.mode === 'edge') {
     if (!g.turn) return;
@@ -1718,7 +1777,7 @@ function endPointer(e) {
   if (g.mode === 'adrange') { openAdSel(g.ads, Math.min(g.d0, g.d1), Math.max(g.d0, g.d1)); return; }
   if (g.mode === 'tapad') { if (!g.moved) { SEL = { kind: 'event', id: g.el.dataset.id, date: g.el.dataset.date }; closePop(); renderBody(); selectedPopover(); } return; }
   if (g.mode === 'range') {
-    if (!g.moved) { g.s = clamp(g.t0, 6, 23); g.e = g.s + 1; }
+    if (!g.moved) { g.s = clamp(g.t0, HS, HS + HN - 1); g.e = g.s + 1; }
     openSel(g.grid, g.day, g.s, g.e);
   } else if (g.mode === 'tapblk') { if (!g.moved) blockTap(g.el); }
   else if (g.mode === 'resize' || g.mode === 'move') {
@@ -1736,7 +1795,7 @@ pb.addEventListener('touchmove', e => { if (drawing || PG || G) e.preventDefault
 document.addEventListener('gesturestart', e => e.preventDefault());
 document.addEventListener('dblclick', e => e.preventDefault());
 function renderBodyKeepZoom() { renderBody(); }
-function timeFromY(grid, y) { const r = grid.getBoundingClientRect(); return clamp(6 + (y - r.top) / r.height * 18, 6, 24); }
+function timeFromY(grid, y) { const r = grid.getBoundingClientRect(); return clamp(HS + (y - r.top) / r.height * HN, HS, HS + HN); }
 function dayFromX(grid, x) { if (grid.dataset.grid === 'day') return dowIdx(parse(grid.dataset.date)); const r = grid.getBoundingClientRect(); return clamp(Math.floor((x - r.left) / r.width * 7), 0, 6); }
 function selModel() {
   if (!SEL) return null;
@@ -1842,7 +1901,7 @@ function openPop(html, anchor) {
 }
 function closePop(deselect) { pop.hidden = true; pop.innerHTML = ''; popCtx = null; if (deselect && SEL) { SEL = null; renderBody(); } }
 app.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target) && !pb.contains(e.target)) { closePop(true); } }, true);
-const timeOpts = sel => { let o = ''; for (let t = 6; t <= 24; t += 0.5) o += '<option value="' + t + '"' + (t === sel ? ' selected' : '') + '>' + fmtT(t) + '</option>'; return o; };
+const timeOpts = sel => { let o = ''; for (let t = 5; t <= 24; t += 0.5) o += '<option value="' + t + '"' + (t === sel ? ' selected' : '') + '>' + fmtT(t) + '</option>'; return o; };
 function tagPicker(cur, allowNone) {
   const t = tagOf(cur);
   return '<span class="lab">タグ</span><div class="row">' + (allowNone ? '<button class="chip' + (!cur ? ' on' : '') + '" data-pop="tag" data-v="" style="background:var(--surface);color:var(--sub);border-color:' + (!cur ? 'var(--ink)' : 'var(--border)') + '">なし</button>' : '') +
@@ -1897,7 +1956,7 @@ function dayAddPop(dk, anchor) {
   popCtx = { type: 'dayadd', dk };
   const items = allDayIn(dk, dk).map(it => '<div class="irow" style="min-height:28px"><span class="t" style="width:64px">' + (it.end !== it.dk ? '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '終日') + '</span><span class="n" style="font-weight:700">' + esc(it.ev.name) + '</span></div>').join('') +
     evs(dk).filter(e => !e.allDay).sort((a, b) => a.s - b.s).map(ev => '<div class="irow" style="min-height:28px"><span class="t" style="width:64px">' + fmtT(ev.s) + '</span><span class="n">' + esc(ev.name) + '</span></div>').join('');
-  let to = '<option value="">終日</option>'; for (let t = 6; t <= 23.5; t += 0.5) to += '<option value="' + t + '">' + fmtT(t) + '</option>';
+  let to = '<option value="">終日</option>'; for (let t = 5; t <= 23.5; t += 0.5) to += '<option value="' + t + '">' + fmtT(t) + '</option>';
   openPop('<span class="lab">' + md(d) + '</span>' + (items ? '<div>' + items + '</div>' : '<span style="font-size:12px;color:var(--muted)">予定はまだありません</span>') +
     '<input type="text" id="dpn" aria-label="予定の名前" placeholder="予定を追加" enterkeyhint="done">' +
     '<div class="row"><select id="dps" aria-label="開始">' + to + '</select><select id="dpl" aria-label="長さ・日数"><option value="1">1日／1時間</option>' + [2, 3, 4, 5, 6, 7].map(n => '<option value="' + n + '">' + n + '日間／' + n + '時間</option>').join('') + '</select></div>' +
@@ -2147,7 +2206,7 @@ function inkThumb(n) {
   if (marr && marr.length && !thumbCache.has(k)) { const o = ML.week; arr = arr.concat(marr.map(st => ({ c: st.c, w: st.w, _scr: true, p: st.p.map(q => [q[0] + o[0], q[1] + o[1], q[2]]) }))).map(st => st); }
   if (thumbCache.has(k)) return thumbCache.get(k);
   const c = document.createElement('canvas'); c.width = 1133; c.height = 688;
-  const x = c.getContext("2d"), M = thumbMap(k); for (const st of inkOrder(arr)) drawStroke(x, mapSt(st, M));
+  const x = c.getContext("2d"), M = thumbMap(k); for (const st of inkOrder(arr)) if (!offHours(st, M)) drawStroke(x, mapSt(st, M));
   const url = c.toDataURL('image/png'); thumbCache.set(k, url); return url;
 }
 /* covers: a slightly thick board in a colour of your choice. The book view counts 0 = front cover, TOTAL+1 = back cover. */
@@ -2431,13 +2490,14 @@ function wantPort() { return window.innerHeight > window.innerWidth * 1.05 && !V
 function syncPort() {
   const p = wantPort(), changed = p !== PORT;
   PORT = p; W_APP = p ? 744 : 1133; H_APP = p ? 1133 : 744;
+  HS = p ? 5 : 7; HN = p ? 19 : 15; app.style.setProperty('--hn', HN);
   const th = p ? 100 : 56; BODY_W = W_APP; BODY_H = H_APP - th;
   const st = app.style;
   st.setProperty('--aw', W_APP + 'px'); st.setProperty('--ah', H_APP + 'px'); st.setProperty('--th', th + 'px');
   st.setProperty('--bw', BODY_W + 'px'); st.setProperty('--bh', BODY_H + 'px'); st.setProperty('--hw', (BODY_W / 2) + 'px');
   app.classList.toggle('port', p);
   themeColor();
-  const ins = safeInsets(), sw = window.innerWidth - ins[1] - ins[3], shh = window.innerHeight - ins[0] - ins[2];
+  const ins = safeInsets(), eb = document.documentElement.hasAttribute('data-standalone') ? 28 : 0, sw = window.innerWidth - ins[1] - ins[3], shh = window.innerHeight - ins[0] - ins[2] - eb;
   scale = Math.min(sw / W_APP, shh / H_APP);
   st.transform = 'scale(' + scale + ')';
   return changed;
@@ -2448,6 +2508,8 @@ function themeColor() {
   let c = el ? getComputedStyle(el).backgroundColor : '';
   if (!c || c === 'transparent' || /rgba\(.*,\s*0\)$/.test(c)) c = getComputedStyle(document.body).backgroundColor;
   if (c && m.content !== c) m.content = c;
+  const rs = document.documentElement.style; if (c) rs.setProperty('--edge-top', c);
+  rs.setProperty('--edge-bot', getComputedStyle(document.body).backgroundColor);
 }
 try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => setTimeout(themeColor, 50)); } catch (e) {}
 function fit() {
