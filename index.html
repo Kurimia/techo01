@@ -1571,7 +1571,8 @@ pb.addEventListener('pointerdown', e => {
   // 2b) portrait sheet: drag the handle up / down (a tap toggles it)
   /* finger anywhere on the sheet (not the task list or a text field) drags it; the pencil keeps writing in the memo */
   const pnl0 = PORT && e.pointerType !== 'pen' && e.target.closest('.wk > .panel');
-  const sh = pnl0 && !e.target.closest('input,select,textarea,[contenteditable="true"],[data-tdrag],.tlist') ? pnl0 : null;
+  const hz = pnl0 && (e.target.closest('.shandle') || (e.clientY - pnl0.getBoundingClientRect().top) <= 44 * (pnl0.getBoundingClientRect().height / pnl0.offsetHeight));
+  const sh = pnl0 && hz && !e.target.closest('input,select,textarea,[contenteditable="true"],[data-tdrag],.tlist') ? pnl0 : null;
   if (sh) { const pnl = sh; const onBtn = !!e.target.closest('button:not(.shandle)'); G = { id: e.pointerId, mode: 'sheet', pnl, onBtn, y0: e.clientY, h0: pnl.offsetHeight, h: pnl.offsetHeight, moved: false, k: pb.getBoundingClientRect().height / BODY_H }; pnl.classList.add('drag'); if (!onBtn) { try { pb.setPointerCapture(e.pointerId); } catch (err) {} e.preventDefault(); } return; }
   // 2c) page edge (finger / mouse): turn one page. The zone is wide; on a task row only the outermost strip counts.
   if (e.pointerType !== 'pen' && !e.target.closest('[data-evx]') && (V.mode === 'page' || V.mode === 'day') && !e.target.closest('button,input,select,a,[contenteditable="true"],.panel.open')) {
