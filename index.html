@@ -1913,10 +1913,10 @@ const PALM = { lastPen: -1e9, penDown: 0, m: new Map(), clickUntil: 0 };
   const cancelOf = e => { PALM.syn = true; try { (e.target || document).dispatchEvent(new PointerEvent('pointercancel', { pointerId: e.pointerId, pointerType: 'touch', isPrimary: e.isPrimary, bubbles: true, clientX: e.clientX, clientY: e.clientY })); } catch (err) {} PALM.syn = false; };
   window.addEventListener('pointerdown', e => {
     if (PALM.syn) return;
-    if (e.pointerType === 'pen') { PALM.penDown++; PALM.lastPen = now(); PALM.m.forEach(v => { v.pen = true; }); return; }
+    if (e.pointerType === 'pen') { PALM.penDown++; PALM.lastPen = now(); PALM.m.forEach(v => { v.pen = true; if (!v.dead) { v.dead = true; cancelOf(v.e); } }); return; }
     if (e.pointerType !== 'touch') return;
     const big = Math.max(e.width || 0, e.height || 0) > 36, near = now() - PALM.lastPen < 700 || PALM.penDown > 0;
-    const v = { pen: near, big, sent: !(near || big), dead: near || big };
+    const v = { pen: near, big, sent: !(near || big), dead: near || big, e: { target: e.target, pointerId: e.pointerId, isPrimary: e.isPrimary, clientX: e.clientX, clientY: e.clientY } };
     PALM.m.set(e.pointerId, v);
     if (v.dead) e.stopImmediatePropagation();
   }, true);
@@ -1925,6 +1925,7 @@ const PALM = { lastPen: -1e9, penDown: 0, m: new Map(), clickUntil: 0 };
     if (e.pointerType === 'pen') { PALM.lastPen = now(); PALM.m.forEach(v => { v.pen = true; }); return; }
     if (e.pointerType !== 'touch') return;
     const v = PALM.m.get(e.pointerId); if (!v) return;
+    v.e = { target: e.target, pointerId: e.pointerId, isPrimary: e.isPrimary, clientX: e.clientX, clientY: e.clientY };
     if (!v.dead && flagged(v)) { v.dead = true; cancelOf(e); }
     if (v.dead) e.stopImmediatePropagation();
   }, true);
