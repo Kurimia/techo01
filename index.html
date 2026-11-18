@@ -463,6 +463,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .qlegend i{display:inline-block;margin-right:5px;vertical-align:middle}
 .chipb.faint{color:var(--muted);background:transparent}
 .chipb{font-size:10.5px;border-radius:4px;padding:1px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.irow.evrow{cursor:pointer}.irow.sel{outline:2px solid var(--ink);outline-offset:-1px;border-radius:6px}
 .irow{display:flex;align-items:center;gap:8px;min-height:36px;border-bottom:1px solid var(--border);font-size:13px}
 .irow .t{width:84px;flex:none;font-size:12px;color:var(--sub);font-variant-numeric:tabular-nums}
 .irow .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -821,7 +822,7 @@ const HANDLES = '<span class="hdl t" data-edge="t" aria-hidden="true"></span><sp
 function evBlock(ev, dk, geo, big) {
   const short = ev.e - ev.s <= 0.5, sel = isSel('event', ev.id);
   const c = ev.tag ? tagColor(ev.tag) : null;
-  return '<div class="blk ev' + (ev.tent ? ' tent' : '') + (sel ? ' sel' : '') + '" data-kind="event" data-id="' + ev.id + '" data-date="' + dk + '" style="' + pos(ev.s, ev.e) + ';' + geo + (c ? ';border-color:var(--c-' + c + '-t)' : '') + (short ? ';padding-top:0;padding-bottom:0;font-size:11px;line-height:1.2' : '') + (big ? ';font-size:13px' : '') + '">' +
+  return '<div class="blk ev' + (ev.tent ? ' tent' : '') + (sel ? ' sel' : '') + '" data-kind="event" data-id="' + ev.id + '" data-date="' + dk + '" style="' + pos(ev.s, ev.e) + ';' + geo + (c ? ';background:var(--c-' + c + ');color:var(--c-' + c + '-t);border-color:var(--c-' + c + ')' : '') + (short ? ';padding-top:0;padding-bottom:0;font-size:11px;line-height:1.2' : '') + (big ? ';font-size:13px' : '') + '">' +
     (ev.tent ? '<em>仮</em>' : '') + (c ? '<span class="dot" style="background:var(--c-' + c + '-t)"></span>' : '') + esc(ev.name) + (!short ? '<small>' + fmtT(ev.s) + '–' + fmtT(ev.e) + '</small>' : '') + (sel ? HANDLES : '') + '</div>';
 }
 
@@ -845,7 +846,7 @@ function weekBody(w, opt = {}) {
       const c0 = Math.max(0, daysBetween(wsK, it.dk)), c1 = Math.min(6, daysBetween(wsK, it.end));
       let lane = 0; while (lanes[lane] !== undefined && lanes[lane] >= c0) lane++; lanes[lane] = c1;
       const c = it.ev.tag ? tagColor(it.ev.tag) : null, sel = isSel('event', it.ev.id);
-      bars += '<div class="adbar' + (sel ? ' sel' : '') + '" data-kind="event" data-id="' + it.ev.id + '" data-date="' + it.dk + '" style="left:calc(' + (c0 * 100 / 7) + '% + 2px);width:calc(' + ((c1 - c0 + 1) * 100 / 7) + '% - 4px);top:' + (lane * 22 + 2) + 'px' + (c ? ';border-color:var(--c-' + c + '-t)' : '') + '">' + (c ? '<span class="dot" style="background:var(--c-' + c + '-t)"></span>' : '') + esc(it.ev.name) + (it.end !== it.dk ? '　' + (parse(it.dk).getMonth() + 1) + '/' + parse(it.dk).getDate() + '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '') + '</div>';
+      bars += '<div class="adbar' + (sel ? ' sel' : '') + '" data-kind="event" data-id="' + it.ev.id + '" data-date="' + it.dk + '" style="left:calc(' + (c0 * 100 / 7) + '% + 2px);width:calc(' + ((c1 - c0 + 1) * 100 / 7) + '% - 4px);top:' + (lane * 22 + 2) + 'px' + (c ? ';background:var(--c-' + c + ');color:var(--c-' + c + '-t);border-color:var(--c-' + c + ')' : '') + '">' + (c ? '<span class="dot" style="background:var(--c-' + c + '-t)"></span>' : '') + esc(it.ev.name) + (it.end !== it.dk ? '　' + (parse(it.dk).getMonth() + 1) + '/' + parse(it.dk).getDate() + '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '') + '</div>';
     }
     const h = Math.max(1, lanes.length) * 22 + 4;
     allday = '<div class="adrow"><span class="adl">終日</span><div class="adstrip" ' + (thumb ? '' : 'data-ad="1" data-week="' + w + '"') + ' style="height:' + h + 'px" aria-label="終日の予定（なぞって追加）">' + bars + '</div></div>';
@@ -955,7 +956,7 @@ function dayBody(dk) {
   for (const t of (showD ? ts : ts.filter(t => !t.done))) list += '<div class="task' + (t.done ? ' done' : '') + '" style="border-bottom:1px solid var(--border)">' + taskBox(t) + '<span class="tt">' + esc(t.title) + '</span><select data-time="' + t.id + '" aria-label="' + esc(t.title) + 'の時間" style="height:26px;border:1px solid var(--border);border-radius:7px;font-size:11px;background:var(--surface)">' + opts(t.time) + '</select>' + (!t.done ? '<button class="mini" data-act="toweek" data-id="' + t.id + '">今週に戻す</button>' : '') + '</div>';
   const ad = allDayIn(dk, dk);
   const lanes = Math.max(1, ad.length);
-  const adBars = ad.map((it, i) => { const c = it.ev.tag ? tagColor(it.ev.tag) : null; return '<div class="adbar' + (isSel('event', it.ev.id) ? ' sel' : '') + '" data-kind="event" data-id="' + it.ev.id + '" data-date="' + it.dk + '" style="left:4px;right:4px;top:' + (i * 22 + 2) + 'px;font-size:12px' + (c ? ';border-color:var(--c-' + c + '-t)' : '') + '">' + (c ? '<span class="dot" style="background:var(--c-' + c + '-t)"></span>' : '') + esc(it.ev.name) + (it.end !== it.dk ? '　' + (parse(it.dk).getMonth() + 1) + '/' + parse(it.dk).getDate() + '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '') + '</div>'; }).join('');
+  const adBars = ad.map((it, i) => { const c = it.ev.tag ? tagColor(it.ev.tag) : null; return '<div class="adbar' + (isSel('event', it.ev.id) ? ' sel' : '') + '" data-kind="event" data-id="' + it.ev.id + '" data-date="' + it.dk + '" style="left:4px;right:4px;top:' + (i * 22 + 2) + 'px;font-size:12px' + (c ? ';background:var(--c-' + c + ');color:var(--c-' + c + '-t);border-color:var(--c-' + c + ')' : '') + '">' + (c ? '<span class="dot" style="background:var(--c-' + c + '-t)"></span>' : '') + esc(it.ev.name) + (it.end !== it.dk ? '　' + (parse(it.dk).getMonth() + 1) + '/' + parse(it.dk).getDate() + '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '') + '</div>'; }).join('');
   const sev = selEvent();
   const dd = parse(dk), dwi = dowIdx(dd);
   return '<div class="wk"><div class="dleft">' +
@@ -995,8 +996,8 @@ function monthCal(y, m, opt = {}) {
     }
     if (opt.detail && !out) {
       for (const r of routinesFor(d).filter(r => r.monthly)) chips += '<span class="chipb" style="' + tagStyle(r.tag) + '">' + esc(r.name) + '</span>';
-      for (const it of allDayIn(dk, dk)) chips += '<span class="chipb" style="background:var(--surface);border:1px solid ' + (it.ev.tag ? 'var(--c-' + tagColor(it.ev.tag) + '-t)' : 'var(--ev-b)') + ';color:var(--ink);font-weight:700">' + esc(it.ev.name) + '</span>';
-      for (const ev of evs(dk).filter(e => !e.allDay)) chips += '<span class="chipb" style="border:1px solid ' + (ev.tag ? 'var(--c-' + tagColor(ev.tag) + '-t)' : 'var(--ev-b)') + ';color:var(--ink)">' + esc(ev.name) + '</span>';
+      for (const it of allDayIn(dk, dk)) chips += '<span class="chipb" style="' + (it.ev.tag ? tagStyle(it.ev.tag) + ';border:1px solid var(--c-' + tagColor(it.ev.tag) + ')' : 'background:var(--surface);border:1px solid var(--ev-b);color:var(--ink)') + ';font-weight:700">' + esc(it.ev.name) + '</span>';
+      for (const ev of evs(dk).filter(e => !e.allDay)) chips += '<span class="chipb" style="' + (ev.tag ? tagStyle(ev.tag) + ';border:1px solid var(--c-' + tagColor(ev.tag) + ')' : 'border:1px solid var(--ev-b);color:var(--ink)') + '">' + esc(ev.name) + '</span>';
     }
     if (opt.mini && !out) {
       const n = allDayIn(dk, dk).length + evs(dk).filter(e => !e.allDay).length, nt = S.tasks.filter(t => t.date === dk && !t.done).length;
@@ -1016,15 +1017,17 @@ function monthBody(m, thumb) {
   const d = parse(sel);
   const items = [];
   for (const r of routinesFor(d).filter(r => r.monthly)) items.push('<div class="irow"><span class="t">' + fmtT(r.s) + '–' + fmtT(r.e) + '</span><span class="n"><span class="chipb" style="' + tagStyle(r.tag) + '">毎月</span> ' + esc(r.name) + '</span></div>');
-  for (const it of allDayIn(sel, sel)) items.push('<div class="irow"><span class="t">' + (it.end !== it.dk ? (parse(it.dk).getMonth() + 1) + '/' + parse(it.dk).getDate() + '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '終日') + '</span><span class="n" style="font-weight:700">' + (it.ev.tag ? '<span style="display:inline-block;width:8px;height:8px;border-radius:4px;margin-right:6px;background:var(--c-' + tagColor(it.ev.tag) + '-t)"></span>' : '') + esc(it.ev.name) + '</span><button class="xbtn" data-act="mdel" data-date="' + it.dk + '" data-id="' + it.ev.id + '" aria-label="' + esc(it.ev.name) + 'を削除">' + ICON.x + '</button></div>');
-  for (const ev of evs(sel).filter(e => !e.allDay).sort((a, b) => a.s - b.s)) items.push('<div class="irow"><span class="t">' + (ev.allDay ? '終日' : fmtT(ev.s) + '–' + fmtT(ev.e)) + '</span><span class="n">' + (ev.tag ? '<span style="display:inline-block;width:8px;height:8px;border-radius:4px;margin-right:6px;background:var(--c-' + tagColor(ev.tag) + '-t)"></span>' : '') + esc(ev.name) + '</span><button class="xbtn" data-act="mdel" data-date="' + sel + '" data-id="' + ev.id + '" aria-label="' + esc(ev.name) + 'を削除">' + ICON.x + '</button></div>');
+  for (const it of allDayIn(sel, sel)) items.push('<div class="irow evrow' + (isSel('event', it.ev.id) ? ' sel' : '') + '" role="button" tabindex="0" data-act="mevsel" data-id="' + it.ev.id + '" data-date="' + it.dk + '"' + (it.ev.tag ? ' style="' + tagStyle(it.ev.tag) + ';border-radius:6px;padding:0 6px"' : '') + '><span class="t">' + (it.end !== it.dk ? (parse(it.dk).getMonth() + 1) + '/' + parse(it.dk).getDate() + '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '終日') + '</span><span class="n" style="font-weight:700">' + (it.ev.tag ? '<span style="display:inline-block;width:8px;height:8px;border-radius:4px;margin-right:6px;background:var(--c-' + tagColor(it.ev.tag) + '-t)"></span>' : '') + esc(it.ev.name) + '</span><button class="xbtn" data-act="mdel" data-date="' + it.dk + '" data-id="' + it.ev.id + '" aria-label="' + esc(it.ev.name) + 'を削除">' + ICON.x + '</button></div>');
+  for (const ev of evs(sel).filter(e => !e.allDay).sort((a, b) => a.s - b.s)) items.push('<div class="irow evrow' + (isSel('event', ev.id) ? ' sel' : '') + '" role="button" tabindex="0" data-act="mevsel" data-id="' + ev.id + '" data-date="' + sel + '"' + (ev.tag ? ' style="' + tagStyle(ev.tag) + ';border-radius:6px;padding:0 6px"' : '') + '><span class="t">' + (ev.allDay ? '終日' : fmtT(ev.s) + '–' + fmtT(ev.e)) + '</span><span class="n">' + (ev.tag ? '<span style="display:inline-block;width:8px;height:8px;border-radius:4px;margin-right:6px;background:var(--c-' + tagColor(ev.tag) + '-t)"></span>' : '') + esc(ev.name) + '</span><button class="xbtn" data-act="mdel" data-date="' + sel + '" data-id="' + ev.id + '" aria-label="' + esc(ev.name) + 'を削除">' + ICON.x + '</button></div>');
   for (const t of S.tasks.filter(t => t.date === sel)) items.push('<div class="irow"><span class="t">タスク</span><span class="n" style="' + (t.done ? 'color:var(--muted);text-decoration:line-through' : '') + '">' + esc(t.title) + '</span></div>');
+  const sev = !thumb && selEvent() && SEL.date === sel ? selEvent() : null;
   const opts = (v, withAll, start) => { let o = withAll ? '<option value="">終日</option>' : ''; for (let t = 5; start ? t < 24 : t <= 24; t += 0.5) o += '<option value="' + t + '"' + (v === t ? ' selected' : '') + '>' + fmtT(t) + '</option>'; return o; };
   const panel = '<aside style="width:330px;flex:none;display:flex;flex-direction:column;gap:10px;padding:16px 18px 18px;border-left:1px solid var(--border);background:var(--panel)">' +
     '<div style="display:flex;align-items:baseline;gap:8px"><h2 style="margin:0;font-size:18px">' + md(d) + '</h2></div>' +
     '<div style="display:flex;gap:6px"><button class="pill" data-act="day" data-date="' + sel + '">日のページを開く</button><button class="pill" data-act="openweek" data-date="' + sel + '">この週のページ</button></div>' +
     '<div style="display:flex;flex-direction:column;overflow:auto;min-height:0">' + (items.length ? items.join('') : '<span style="font-size:13px;color:var(--muted);padding:8px 0">予定はまだありません</span>') + '</div>' +
-    '<div class="card" style="margin-top:auto;gap:8px"><span class="k">この日に予定を追加</span><input ' + (thumb ? '' : 'id="mname"') + ' data-madd="1" placeholder="予定の名前" aria-label="予定の名前" enterkeyhint="done" style="height:34px;border:1px solid var(--border);border-radius:8px;padding:0 8px;font-size:14px;background:var(--surface)">' +
+    (sev ? evMemoHTML(sev).replace('<section class="evmemo"', '<section class="evmemo" style="margin-top:auto"') : '') +
+    '<div class="card" style="' + (sev ? 'display:none;' : '') + 'margin-top:auto;gap:8px"><span class="k">この日に予定を追加</span><input ' + (thumb ? '' : 'id="mname"') + ' data-madd="1" placeholder="予定の名前" aria-label="予定の名前" enterkeyhint="done" style="height:34px;border:1px solid var(--border);border-radius:8px;padding:0 8px;font-size:14px;background:var(--surface)">' +
     '<div class="row"><select ' + (thumb ? '' : 'id="ms"') + ' aria-label="開始" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + opts(null, true, true) + '</select>–<select ' + (thumb ? '' : 'id="me"') + ' aria-label="終了" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + opts(null, true) + '</select><select ' + (thumb ? '' : 'id="md"') + ' aria-label="日数（終日のとき）" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + [...Array(14)].map((_, i) => '<option value="' + (i + 1) + '">' + (i + 1) + '日間</option>').join('') + '</select></div>' +
     '<div class="row">' + tagDots(S.ui.newTag, 'data-mtag') + '</div><button class="primary" data-act="madd" data-date="' + sel + '" style="align-self:flex-end">追加</button></div></aside>';
   return '<div class="wk" ' + (thumb ? '' : 'data-draw') + '><div class="pg" style="position:relative;flex:1;min-width:0;gap:10px"><div style="display:flex;align-items:baseline;gap:14px"><h1>' + m + '月</h1></div>' + monthCal(2026, m, { detail: true, sel, style: 'flex:1;min-height:0' }) + '</div>' + panel + '</div>';
@@ -1888,7 +1891,7 @@ function blockTap(blk) {
 }
 function selectedPopover() {
   if (!SEL) return;
-  const el = pb.querySelector('.sel[data-kind]'); if (!el) return;
+  const el = pb.querySelector('.sel[data-kind],.irow.sel'); if (!el) return;
   if (SEL.kind === 'event') eventPop(SEL.date, SEL.id, el); else seriesPop(SEL.id, SEL.extra, el);
 }
 let popCtx = null;
@@ -1902,6 +1905,40 @@ function openPop(html, anchor) {
   pop.style.top = clamp(y, 60, H_APP - pop.offsetHeight - 10) + 'px';
 }
 function closePop(deselect) { pop.hidden = true; pop.innerHTML = ''; popCtx = null; if (deselect && SEL) { SEL = null; renderBody(); } }
+/* palm rejection: a finger contact that overlaps pen activity (or is unusually large) is ignored */
+const PALM = { lastPen: -1e9, penDown: 0, m: new Map(), clickUntil: 0 };
+{
+  const now = () => performance.now();
+  const flagged = v => v.pen || v.big || PALM.penDown > 0 || now() - PALM.lastPen < 500;
+  const cancelOf = e => { PALM.syn = true; try { (e.target || document).dispatchEvent(new PointerEvent('pointercancel', { pointerId: e.pointerId, pointerType: 'touch', isPrimary: e.isPrimary, bubbles: true, clientX: e.clientX, clientY: e.clientY })); } catch (err) {} PALM.syn = false; };
+  window.addEventListener('pointerdown', e => {
+    if (PALM.syn) return;
+    if (e.pointerType === 'pen') { PALM.penDown++; PALM.lastPen = now(); PALM.m.forEach(v => { v.pen = true; }); return; }
+    if (e.pointerType !== 'touch') return;
+    const big = Math.max(e.width || 0, e.height || 0) > 36, near = now() - PALM.lastPen < 700 || PALM.penDown > 0;
+    const v = { pen: near, big, sent: !(near || big), dead: near || big };
+    PALM.m.set(e.pointerId, v);
+    if (v.dead) e.stopImmediatePropagation();
+  }, true);
+  window.addEventListener('pointermove', e => {
+    if (PALM.syn) return;
+    if (e.pointerType === 'pen') { PALM.lastPen = now(); PALM.m.forEach(v => { v.pen = true; }); return; }
+    if (e.pointerType !== 'touch') return;
+    const v = PALM.m.get(e.pointerId); if (!v) return;
+    if (!v.dead && flagged(v)) { v.dead = true; cancelOf(e); }
+    if (v.dead) e.stopImmediatePropagation();
+  }, true);
+  const up = e => {
+    if (PALM.syn) return;
+    if (e.pointerType === 'pen') { PALM.penDown = Math.max(0, PALM.penDown - 1); PALM.lastPen = now(); PALM.m.forEach(v => { v.pen = true; }); return; }
+    if (e.pointerType !== 'touch') return;
+    const v = PALM.m.get(e.pointerId); if (!v) return;
+    PALM.m.delete(e.pointerId);
+    if (v.dead || flagged(v)) { e.stopImmediatePropagation(); if (!v.dead) cancelOf(e); PALM.clickUntil = now() + 450; }
+  };
+  window.addEventListener('pointerup', up, true); window.addEventListener('pointercancel', up, true);
+  window.addEventListener('click', e => { if (now() < PALM.clickUntil) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+}
 /* the margins beside the scaled page belong to the page too: a finger swipe there turns the page */
 $('#stage').addEventListener('pointerdown', e => {
   if (e.target !== e.currentTarget || e.pointerType === 'pen' || $('#page').hidden || VIEWBOOK || G || drawing || !(V.mode === 'page' || V.mode === 'day')) return;
@@ -2133,7 +2170,8 @@ function act(b, e) {
       S.ideas.push({ id: t.id, title: t.title, when: 'いつか', done: false }); save(); renderBody(); undoToast('思いつきに戻しました'); break; }
     case 'monthly': e.stopPropagation(); monthlyPop(b.dataset.id, b); break;
     case 'tplcell': { const nth = +b.dataset.nth, dow = +b.dataset.dow; S.monthly.push({ id: uid(), name: '新しい毎月の予定', tag: 'life', nth: [nth], dow, t: [10, 11] }); save(); renderBody(); monthlyPop(S.monthly[S.monthly.length - 1].id, b); break; }
-    case 'msel': u.msel = b.dataset.date; save(); renderBody(); break;
+    case 'mevsel': SEL = { kind: 'event', id: b.dataset.id, date: b.dataset.date }; closePop(); renderBody(); selectedPopover(); break;
+    case 'msel': u.msel = b.dataset.date; SEL = null; closePop(); save(); renderBody(); break;
     case 'qday': dayAddPop(b.dataset.date, b); break;
     case 'showdone': u.showDone = !u.showDone; save(); renderBody(); break;
     case 'tk': { const t = S.tasks.find(x => x.id === b.dataset.id); if (!t) break; const to = b.dataset.to;
