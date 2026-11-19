@@ -1953,7 +1953,7 @@ function tagPicker(cur, allowNone) {
   const t = tagOf(cur);
   return '<span class="lab">タグ</span><div class="row">' + (allowNone ? '<button class="chip' + (!cur ? ' on' : '') + '" data-pop="tag" data-v="" style="background:var(--surface);color:var(--sub);border-color:' + (!cur ? 'var(--ink)' : 'var(--border)') + '">なし</button>' : '') +
     S.tags.map(x => '<button class="chip' + (x.id === cur ? ' on' : '') + '" data-pop="tag" data-v="' + x.id + '" style="background:var(--c-' + x.color + ');color:var(--c-' + x.color + '-t)">' + esc(x.name) + '</button>').join('') + '<button class="chip" data-pop="newtag" style="border:1px dashed var(--muted);background:none;color:var(--sub)">＋ タグ</button></div>' +
-    (t ? '<div class="row" style="padding:7px 8px;background:var(--panel);border-radius:10px"><span class="lab">「' + esc(t.name) + '」の色</span>' + COLORS.map(c => '<button class="swc' + (t.color === c ? ' on' : '') + '" data-pop="color" data-v="' + c + '" aria-label="' + c + '" style="background:var(--c-' + c + ')"></button>').join('') + '</div>' : '');
+    (t ? '<div class="row" style="padding:7px 8px;background:var(--panel);border-radius:10px;flex-wrap:wrap"><input type="text" data-pop="tgname" aria-label="タグの名前" value="' + esc(t.name) + '" style="flex:1 1 100%;margin-bottom:4px"><span class="lab">色</span>' + COLORS.map(c => '<button class="swc' + (t.color === c ? ' on' : '') + '" data-pop="color" data-v="' + c + '" aria-label="' + c + '" style="background:var(--c-' + c + ')"></button>').join('') + '</div>' : '');
 }
 /* first time only: returns true once the hint has already been shown */
 function seenHint(k) { const h = S.ui.hints || (S.ui.hints = {}); if (h[k]) return true; h[k] = 1; save(); return false; }
@@ -2024,6 +2024,10 @@ pop.addEventListener('input', e => {
   const t = e.target, c = popCtx; if (!c) return;
   if (t.dataset.pop === 'name') { const o = c.type === 'series' ? S.series.find(x => x.id === c.id) : S.monthly.find(x => x.id === c.id); if (o) { o.name = t.value; save(); } }
   if (t.dataset.pop === 'ename') { const ev = evs(c.dk).find(x => x.id === c.id); if (ev) { ev.name = t.value; save(); } }
+  if (t.dataset.pop === 'tgname') {
+    const o = c.type === 'series' ? S.series.find(x => x.id === c.id) : c.type === 'monthly' ? S.monthly.find(x => x.id === c.id) : c.type === 'event' ? evs(c.dk).find(x => x.id === c.id) : null;
+    const tg = o && tagOf(o.tag); if (tg) { tg.name = t.value.trim() || 'タグ'; const chip = pop.querySelector('[data-pop="tag"][data-v="' + tg.id + '"]'); if (chip) chip.textContent = tg.name; thumbCache.clear(); save(); }
+  }
   if (t.dataset.pop === 'tname') { const tg = tagOf(c.id); if (tg) { tg.name = t.value || 'タグ'; save(); } }
 });
 pop.addEventListener('change', e => {
@@ -2064,7 +2068,7 @@ pop.addEventListener('click', e => {
   if (!target) return;
   if (p === 'tag') { if (v) target.tag = v; else delete target.tag; }
   if (p === 'color' && target.tag) tagOf(target.tag).color = v;
-  if (p === 'newtag') { const nt = { id: uid(), name: 'タグ' + (S.tags.length + 1), color: COLORS[S.tags.length % COLORS.length] }; S.tags.push(nt); target.tag = nt.id; toast('タグを追加しました（名前は本番で変えられます）'); }
+  if (p === 'newtag') { const nt = { id: uid(), name: 'タグ' + (S.tags.length + 1), color: COLORS[S.tags.length % COLORS.length] }; S.tags.push(nt); target.tag = nt.id; toast('タグを追加しました。名前を入れてください'); PALM.focusTag = true; }
   if (c.type === 'series') {
     if (p === 'day') { const i = +v; if (target.days[i]) { if (Object.keys(target.days).length > 1) { delete target.days[i]; if (i === c.day) { closePop(); SEL = null; save(); renderBody(); return; } } } else target.days[i] = target.days[c.day].slice(); }
     if (p === 'delday') { snap(); delete target.days[c.day]; if (!Object.keys(target.days).length) S.series = S.series.filter(x => x !== target); SEL = null; save(); closePop(); renderBody(); undoToast('ルーティンを外しました'); return; }
@@ -2085,6 +2089,7 @@ pop.addEventListener('click', e => {
   renderBody();
   if (c.type === 'series') seriesPop(c.id, c.day, 'keep'); else if (c.type === 'monthly') monthlyPop(c.id, 'keep'); else eventPop(c.dk, c.id, 'keep');
   pop.style.left = l; pop.style.top = t;
+  if (PALM.focusTag) { PALM.focusTag = false; const ni = pop.querySelector('[data-pop="tgname"]'); if (ni) { ni.focus(); ni.select(); } }
 });
 pb.addEventListener('pointerdown', e => { if (e.target.closest('#lsbar')) e.stopPropagation(); }, true);
 pb.addEventListener('click', e => {
@@ -2234,7 +2239,7 @@ $('#page').addEventListener('keydown', e => {
     save(); renderBody(); const i = $('#addtask', pb); if (i) i.focus();
   }
 });
-pop.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing && e.target.id === 'dpn') dayAdd(); if (e.key === 'Enter' && !e.isComposing && e.target.dataset.pop === 'tname') { closePop(); renderBody(); } if (e.key === 'Enter' && !e.isComposing && e.target.id === 'cap') capture(); if (e.key === 'Escape') closePop(true); });
+pop.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing && e.target.id === 'dpn') dayAdd(); if (e.key === 'Enter' && !e.isComposing && e.target.dataset.pop === 'tgname') e.target.blur(); if (e.key === 'Enter' && !e.isComposing && e.target.dataset.pop === 'tname') { closePop(); renderBody(); } if (e.key === 'Enter' && !e.isComposing && e.target.id === 'cap') capture(); if (e.key === 'Escape') closePop(true); });
 $('#page').addEventListener('change', e => { const t = e.target; if (t.dataset.time) { const tk = S.tasks.find(x => x.id === t.dataset.time); tk.time = t.value === '' ? null : parseFloat(t.value); save(); renderBody(); } });
 $('#page').addEventListener('input', e => {
   const t = e.target.closest('[data-edit]'); if (!t) return;
