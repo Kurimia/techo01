@@ -122,6 +122,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .cvsl input::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:9px;background:#fff;border:1px solid rgba(0,0,0,.3);box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .cvsl input::-moz-range-thumb{width:18px;height:18px;border-radius:9px;background:#fff;border:1px solid rgba(0,0,0,.3)}
 .shelf{position:absolute;left:0;right:0;top:170px;display:flex;justify-content:center;align-items:flex-end;gap:48px}
+.sbook.cur .cvr{outline:3px solid var(--ink);outline-offset:3px}
 .sbook{width:380px;height:462px;padding:0;border:none;background:none;border-radius:2px 10px 10px 2px;box-shadow:4px 3px 0 -1px rgba(0,0,0,.55),10px 16px 30px rgba(0,0,0,.35);display:block;transform:scale(.72);transform-origin:bottom center;margin:0 -53px}
 .sbook .cvr{top:0}
 .sbook.empty{box-shadow:none;border:2px dashed var(--on-desk-sub);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--on-desk-sub);box-sizing:border-box}
@@ -253,6 +254,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .dh{border:none;background:none;font-size:13px;color:var(--sub);display:flex;align-items:center;justify-content:center;gap:5px;height:40px;border-radius:8px;padding:0}
 .dh b{font-size:17px;color:var(--ink)}
 .dh.sat{color:var(--sat)}.dh.sun{color:var(--sun)}
+.dh .hn{display:block;font-size:9.5px;font-weight:600;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.dayttl .hn{font-style:normal;font-size:12px;font-weight:700;margin-left:6px}
+.cal .c.hol .dn{color:var(--sun)}.cal .c.sat .dn{color:var(--sat)}.cal .c.out.hol .dn,.cal .c.out.sat .dn{opacity:.6}
+.cal .hname{font-size:10px;font-weight:700;color:var(--sun);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dh.sat b,.dh.sun b{color:inherit}
 .dh.today,.dh.today b{color:var(--today);font-weight:800}
 .adrow{display:flex;align-items:stretch;margin-bottom:4px}
@@ -461,6 +466,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .mk .tk{width:6px;height:6px;background:var(--done);transform:rotate(45deg);margin:0 2px;border-radius:1px}
 .qlegend{display:flex;gap:14px;font-size:11px;color:var(--sub);align-items:center}
 .qlegend i{display:inline-block;margin-right:5px;vertical-align:middle}
+.chipb.rt{font-size:9.5px;padding:0 4px;opacity:.85}
 .chipb.faint{color:var(--muted);background:transparent}
 .chipb{font-size:10.5px;border-radius:4px;padding:1px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .irow.evrow{cursor:pointer}.irow.sel{outline:2px solid var(--ink);outline-offset:-1px;border-radius:6px}
@@ -570,11 +576,10 @@ const fmtT = h => Math.floor(h) + ':' + (h % 1 ? '30' : '00');
 const md = d => (d.getMonth() + 1) + '月' + d.getDate() + '日（' + DOW[dowIdx(d)] + '）';
 const WEEK1 = new Date(2025, 11, 29);
 let TODAY = new Date(); TODAY.setHours(0, 0, 0, 0);
-if (TODAY.getFullYear() !== 2026) TODAY = new Date(2026, 10, 1);
 const TODAYK = key(TODAY);
 const weekOf = d => Math.floor((d - WEEK1) / 864e5 / 7) + 1;
 const weekStart = w => addDays(WEEK1, (w - 1) * 7);
-const pageOfWeek = w => 17 + w;
+const pageOfWeek = w => 18 + w - FW;
 const uid = () => Math.random().toString(36).slice(2, 9);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
@@ -644,6 +649,43 @@ function migrate() {
   S.ideas = S.ideas.filter(i => i.when !== 'week');
 }
 migrate();
+/* ================= books: one per year. In December the next year's book appears on the shelf;
+   on New Year's Day the new book opens by itself. Events, routines, tags, ideas and tasks are shared;
+   pages (ink), year/quarter goals belong to their book. ================= */
+const BOOK0 = 2026;
+const booksAvail = () => { const top = Math.max(BOOK0, TODAY.getFullYear() + (TODAY.getMonth() === 11 ? 1 : 0)); const a = []; for (let y = BOOK0; y <= top; y++) a.push(y); return a; };
+let YR = BOOK0, FW = 1, REF = TODAY, CHAPS = [];
+function setYear(y) {
+  YR = y; FW = weekOf(new Date(y, 0, 1));
+  REF = TODAY.getFullYear() === y ? TODAY : TODAY.getFullYear() < y ? new Date(y, 0, 1) : new Date(y, 11, 31);
+  const q = Math.ceil((REF.getMonth() + 1) / 3);
+  CHAPS = [['GOAL', 1], [q + 'Q', 1 + q], ['MONTH', 6 + REF.getMonth()], ['WEEK', pageOfWeek(weekOf(REF))], ['DAY', null], ['IDEA', 71], ['TODO', 72]];
+}
+{ const av = booksAvail(), ty = TODAY.getFullYear(); let y = S.ui.yr;
+  if (S.ui.yrAuto !== ty && av.includes(ty)) { y = ty; S.ui.yrAuto = ty; }
+  if (!av.includes(y)) y = av.includes(ty) ? ty : av[av.length - 1];
+  S.ui.yr = y; setYear(y); }
+/* Japanese national holidays (rules of 祝日法; equinoxes by the standard approximation, valid 1980–2099) */
+const HOL = {};
+function holidaysOf(y) {
+  if (HOL[y]) return HOL[y];
+  const h = {}, k = (m, d) => key(new Date(y, m - 1, d)), mon = (m, n) => { const f = new Date(y, m - 1, 1).getDay(); return 1 + ((8 - f) % 7) + (n - 1) * 7; };
+  const sp = Math.floor(20.8431 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4)), au = Math.floor(23.2488 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4));
+  [[1, 1, '元日'], [1, mon(1, 2), '成人の日'], [2, 11, '建国記念の日'], [2, 23, '天皇誕生日'], [3, sp, '春分の日'], [4, 29, '昭和の日'], [5, 3, '憲法記念日'], [5, 4, 'みどりの日'], [5, 5, 'こどもの日'],
+   [7, mon(7, 3), '海の日'], [8, 11, '山の日'], [9, mon(9, 3), '敬老の日'], [9, au, '秋分の日'], [10, mon(10, 2), 'スポーツの日'], [11, 3, '文化の日'], [11, 23, '勤労感謝の日']].forEach(([m, d, n]) => { h[k(m, d)] = n; });
+  for (const dk of Object.keys(h)) { const d = parse(dk), mid = addDays(d, 1); if (h[key(addDays(d, 2))] && !h[key(mid)] && mid.getDay() !== 0) h[key(mid)] = '休日'; }
+  for (const dk of Object.keys(h).sort()) { const d = parse(dk); if (d.getDay() === 0) { let x = addDays(d, 1); while (h[key(x)]) x = addDays(x, 1); h[key(x)] = '振替休日'; } }
+  return HOL[y] = h;
+}
+const holiday = dk => holidaysOf(+dk.slice(0, 4))[dk] || '';
+const pk = n => YR === BOOK0 ? 'p' + n : 'p' + YR + '_' + n;
+const curY = () => TODAY.getFullYear() === YR;
+function GO() {
+  if (YR === BOOK0) return S.goals;
+  const all = S.goalsY || (S.goalsY = {}), g = all[YR] || (all[YR] = { year: '', q: {}, theme: {} });
+  if (!Object.getOwnPropertyDescriptor(g, 'w')) Object.defineProperty(g, 'w', { get: () => GO().w, enumerable: false });
+  return g;
+}
 /* ideas -> weekend: once per week, 1-2 ideas per weekend day go into a free hour as tentative events (this month's ideas first, then "いつか").
    The idea moves into the event; "思いつきに戻す" on the event moves it back. */
 function returnIdeas() {
@@ -684,7 +726,7 @@ function writeNow() { return window.__techoPut(KEEP, JSON.parse(JSON.stringify(S
 function save() { if (lastSnap && !lastSnap.after) lastSnap.after = snapData(); clearTimeout(saveT); saveT = setTimeout(writeNow, 300); }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { clearTimeout(saveT); writeNow(); } else checkDay(); });
 /* the app can stay open in the background for days: when the date changes, save and start again on the new day */
-function realTodayKey() { let d = new Date(); d.setHours(0, 0, 0, 0); if (d.getFullYear() !== 2026) d = new Date(2026, 10, 1); return key(d); }
+function realTodayKey() { let d = new Date(); d.setHours(0, 0, 0, 0); return key(d); }
 let dayReloading = false;
 function checkDay() {
   if (dayReloading || realTodayKey() === TODAYK) return;
@@ -750,23 +792,36 @@ const tagColor = id => (tagOf(id) || { color: 'gray' }).color;
 
 /* ================= page model ================= */
 function info(n) {
-  if (n === 1) return { type: 'goal', title: '2026年の目標', chap: 0 };
+  if (n === 1) return { type: 'goal', title: YR + '年の目標', chap: 0 };
   if (n <= 5) { const q = n - 1; return { type: 'quarter', q, title: 'Q' + q + '（' + ((q - 1) * 3 + 1) + '〜' + (q * 3) + '月）', chap: 1 }; }
-  if (n <= 17) { const m = n - 5; return { type: 'month', m, title: '2026年 ' + m + '月', chap: 2 }; }
-  if (n <= 70) { const w = n - 17, s = weekStart(w), e = addDays(s, 6); return { type: 'week', w, title: (s.getMonth() + 1) + '月' + s.getDate() + '日 – ' + (e.getMonth() + 1) + '月' + e.getDate() + '日', sub: '第' + w + '週', chap: 3 }; }
+  if (n <= 17) { const m = n - 5; return { type: 'month', m, title: YR + '年 ' + m + '月', chap: 2 }; }
+  if (n <= 70) { const w = FW + n - 18, s = weekStart(w), e = addDays(s, 6); return { type: 'week', w, title: (s.getMonth() + 1) + '月' + s.getDate() + '日 – ' + (e.getMonth() + 1) + '月' + e.getDate() + '日', sub: '第' + (n - 17) + '週', chap: 3 }; }
   if (n === 72) return { type: 'tasks', title: 'やること', chap: 6 };
   return { type: n === 71 ? 'ideas' : 'ideanote', title: n === 71 ? '思いつき' : '手書きノート', chap: n === 71 ? 5 : 6 };
 }
-const CHAPS = [['GOAL', 1], [Math.ceil((TODAY.getMonth() + 1) / 3) + 'Q', 1 + Math.ceil((TODAY.getMonth() + 1) / 3)], ['MONTH', 6 + TODAY.getMonth()], ['WEEK', pageOfWeek(weekOf(TODAY))], ['DAY', null], ['IDEA', 71], ['TODO', 72]];
 const DAYCHAP = 4;
 const DOWEN = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
 /* ================= routine computation ================= */
 const nthOf = d => Math.ceil(d.getDate() / 7);
 const isLastOf = d => addDays(d, 7).getMonth() !== d.getMonth();
+/* overlapping blocks share the column: lane index + lane count per item */
+function lanesOf(list) {
+  const idx = list.map((x, i) => i).sort((a, b) => list[a].s - list[b].s || list[b].e - list[a].e), out = new Array(list.length);
+  let cl = [], ends = [], cEnd = -1;
+  const flush = () => { for (const i of cl) out[i].n = ends.length; cl = []; ends = []; cEnd = -1; };
+  for (const i of idx) {
+    const x = list[i]; if (cl.length && x.s >= cEnd) flush();
+    let L = ends.findIndex(e => e <= x.s); if (L < 0) { L = ends.length; ends.push(x.e); } else ends[L] = x.e;
+    out[i] = { lane: L, n: 1 }; cl.push(i); cEnd = Math.max(cEnd, x.e);
+  }
+  flush(); return out;
+}
+const colSub = (i, l) => !l || l.n <= 1 ? 'left:calc(' + (i * 100 / 7) + '% + 2px);width:calc(' + (100 / 7) + '% - 4px)' : 'left:calc(' + (i * 100 / 7 + l.lane * 100 / 7 / l.n) + '% + 1px);width:calc(' + (100 / 7 / l.n) + '% - 2px);padding-left:3px;padding-right:2px';
+const wkLabel = s => s.wk && s.wk.length < 5 ? s.wk.map(n => '第' + n).join('・') : '';
 function routinesFor(d) {
   const i = dowIdx(d), out = [];
-  for (const s of S.series) if (s.days[i]) out.push({ kind: 'series', id: s.id, name: s.name, tag: s.tag, s: s.days[i][0], e: s.days[i][1], day: i });
+  for (const s of S.series) if (s.days[i] && (!s.wk || s.wk.includes(nthOf(d)))) out.push({ kind: 'series', id: s.id, name: s.name, tag: s.tag, s: s.days[i][0], e: s.days[i][1], day: i });
   for (const m of S.monthly) {
     if (m.dow !== i) continue;
     if (m.nth.includes(nthOf(d)) || (m.nth.includes(5) && isLastOf(d))) out.push({ kind: 'monthly', id: m.id, name: m.name, tag: m.tag, s: m.t[0], e: m.t[1], monthly: true });
@@ -834,9 +889,9 @@ function weekBody(w, opt = {}) {
   const colL = i => 'left:calc(' + (i * 100 / 7) + '% + 2px);width:calc(' + (100 / 7) + '% - 4px)';
   let head = '';
   days.forEach((d, i) => {
-    const cls = 'dh' + (i === 5 ? ' sat' : '') + (i === 6 ? ' sun' : '') + (!tpl && i === inWeek ? ' today' : '');
+    const hn = tpl ? '' : holiday(key(d)), cls = 'dh' + (i === 5 ? ' sat' : '') + (i === 6 || hn ? ' sun' : '') + (!tpl && i === inWeek ? ' today' : '');
     head += tpl ? '<div class="' + cls + '" style="font-weight:700;color:var(--ink)">' + DOW[i] + '</div>'
-      : '<button class="' + cls + '" data-act="day" data-date="' + key(d) + '" aria-label="' + md(d) + 'の日のページを開く">' + DOW[i] + ' <b>' + d.getDate() + '</b></button>';
+      : '<button class="' + cls + '" data-act="day" data-date="' + key(d) + '" aria-label="' + md(d) + (hn ? '（' + hn + '）' : '') + 'の日のページを開く">' + DOW[i] + ' <b>' + d.getDate() + '</b>' + (hn ? '<small class="hn">' + hn + '</small>' : '') + '</button>';
   });
   let allday = '';
   if (!tpl) {
@@ -854,14 +909,16 @@ function weekBody(w, opt = {}) {
   let bg = '';
   if (tpl) {
     days.forEach((d, i) => {
-      for (const s of S.series.filter(s => s.days[i])) {
+      const ss = S.series.filter(s => s.days[i]), ln = lanesOf(ss.map(s => ({ s: s.days[i][0], e: s.days[i][1] })));
+      ss.forEach((s, j) => {
         const t = s.days[i], sel = isSel('series', s.id, i);
-        bg += '<div class="blk' + (sel ? ' sel' : '') + '" data-kind="series" data-id="' + s.id + '" data-day="' + i + '" style="' + pos(t[0], t[1]) + ';' + colL(i) + ';' + tagStyle(s.tag) + ';z-index:' + (sel ? 6 : 2) + (t[1] - t[0] <= 0.5 ? ';font-size:10px;padding-top:0;padding-bottom:0' : '') + '">' + esc(s.name) + (t[1] - t[0] >= 1 ? '<small>' + fmtT(t[0]) + '–' + fmtT(t[1]) + '</small>' : '') + (sel ? HANDLES : '') + '</div>';
-      }
+        bg += '<div class="blk' + (sel ? ' sel' : '') + '" data-kind="series" data-id="' + s.id + '" data-day="' + i + '" style="' + pos(t[0], t[1]) + ';' + colSub(i, ln[j]) + ';' + tagStyle(s.tag) + ';z-index:' + (sel ? 6 : 2) + (t[1] - t[0] <= 0.5 ? ';font-size:10px;padding-top:0;padding-bottom:0' : '') + '">' + esc(s.name) + (wkLabel(s) ? '<span class="mo">' + wkLabel(s) + '</span>' : '') + (t[1] - t[0] >= 1 ? '<small>' + fmtT(t[0]) + '–' + fmtT(t[1]) + '</small>' : '') + (sel ? HANDLES : '') + '</div>';
+      });
     });
   } else if (S.ui.routine) {
     days.forEach((d, i) => {
-      for (const r of routinesFor(d)) bg += '<div class="blk bg" style="' + pos(r.s, r.e) + ';' + colL(i) + ';' + tagStyleBg(r.tag) + (r.e - r.s <= 0.5 ? ';font-size:10px;padding-top:0;padding-bottom:0' : '') + '">' + esc(r.name) + (r.monthly ? '<span class="mo">毎月</span>' : '') + '</div>';
+      const rs = routinesFor(d), ln = lanesOf(rs);
+      rs.forEach((r, j) => bg += '<div class="blk bg" style="' + pos(r.s, r.e) + ';' + colSub(i, ln[j]) + ';' + tagStyleBg(r.tag) + (r.e - r.s <= 0.5 ? ';font-size:10px;padding-top:0;padding-bottom:0' : '') + '">' + esc(r.name) + (r.monthly ? '<span class="mo">毎月</span>' : '') + '</div>');
     });
   }
   let top = '';
@@ -882,13 +939,13 @@ function weekBody(w, opt = {}) {
 }
 function tagLegend() { return '<div class="card" style="gap:2px"><span class="k" style="margin-bottom:4px">タグ</span>' + S.tags.map(t => '<button class="legend-row" data-act="tagedit" data-id="' + t.id + '"><i style="width:14px;height:14px;border-radius:4px;flex:none;background:var(--c-' + t.color + ')"></i>' + esc(t.name) + '</button>').join('') + '<button class="legend-row" data-act="tagadd" style="color:var(--sub)"><i style="width:14px;height:14px;border-radius:4px;flex:none;border:1px dashed var(--muted);box-sizing:border-box"></i>＋ タグを追加</button></div>'; }
 function goalsCard(w) {
-  const ws0 = weekStart(w), wsd = ws0.getFullYear() < 2026 ? new Date(2026, 0, 1) : ws0;
-  const q = Math.ceil((wsd.getMonth() + 1) / 3), qEnd = new Date(2026, q * 3, 0);
+  const ws0 = weekStart(w), wsd = ws0.getFullYear() < YR ? new Date(YR, 0, 1) : ws0;
+  const q = Math.ceil((wsd.getMonth() + 1) / 3), qEnd = new Date(YR, q * 3, 0);
   const left = Math.max(0, Math.round((qEnd - TODAY) / 864e5));
-  return '<section class="card" aria-label="目標"><span class="k">2026年</span><span class="v edit" contenteditable="true" data-edit="year" data-ph="年の目標">' + esc(S.goals.year || '') + '</span>' +
-    '<span class="k">Q' + q + '</span><span class="v edit" contenteditable="true" data-edit="q" data-q="' + q + '" data-ph="3ヶ月の目標">' + esc(S.goals.q[q] || '') + '</span>' +
+  return '<section class="card" aria-label="目標"><span class="k">' + YR + '年</span><span class="v edit" contenteditable="true" data-edit="year" data-ph="年の目標">' + esc(GO().year || '') + '</span>' +
+    '<span class="k">Q' + q + '</span><span class="v edit" contenteditable="true" data-edit="q" data-q="' + q + '" data-ph="3ヶ月の目標">' + esc(GO().q[q] || '') + '</span>' +
     '<span style="font-size:12px;font-weight:700;font-variant-numeric:tabular-nums">あと' + left + '日</span>' +
-    '<span class="k" style="border-top:1px solid var(--border);padding-top:7px">今週</span><span class="v edit" contenteditable="true" data-edit="w" data-w="' + w + '" data-ph="今週の目標を書く">' + esc(S.goals.w[w] || '') + '</span></section>';
+    '<span class="k" style="border-top:1px solid var(--border);padding-top:7px">今週</span><span class="v edit" contenteditable="true" data-edit="w" data-w="' + w + '" data-ph="今週の目標を書く">' + esc(GO().w[w] || '') + '</span></section>';
 }
 function selEvent() { if (!SEL || SEL.kind !== 'event') return null; return findEv(SEL.date, SEL.id) || null; }
 function evMemoHTML(ev, big) {
@@ -910,7 +967,7 @@ function panelHTML(w, thumb, ev) {
     const n = S.tasks.filter(t => t.date === dk && !t.done).length, on = mode === 'today' && dk === pday;
     let dots = '';
     if (PORT) { const all = S.tasks.filter(t => t.date === dk), op = all.filter(t => !t.done).length, dn = all.length - op; dots = '<span class="pdots">' + '<i></i>'.repeat(Math.min(op, 6)) + '<i class="dn"></i>'.repeat(Math.min(dn, Math.max(0, 6 - op))) + '</span>'; }
-    return '<button class="pd' + (on ? ' on' : '') + (dk === TODAYK ? ' td' : '') + (i === 5 ? ' sat' : i === 6 ? ' sun' : '') + '" data-act="pday" data-date="' + dk + '"' + (thumb ? '' : ' data-dtbox="' + dk + '"') + ' aria-label="' + md(parse(dk)) + 'のタスク ' + n + '件">' + (PORT ? '<small>' + DOW[i] + '</small>' : '') + '<b>' + parse(dk).getDate() + '</b>' + dots + '</button>';
+    return '<button class="pd' + (on ? ' on' : '') + (dk === TODAYK ? ' td' : '') + (i === 5 && !holiday(dk) ? ' sat' : i === 6 || holiday(dk) ? ' sun' : '') + '" data-act="pday" data-date="' + dk + '"' + (thumb ? '' : ' data-dtbox="' + dk + '"') + ' aria-label="' + md(parse(dk)) + 'のタスク ' + n + '件">' + (PORT ? '<small>' + DOW[i] + '</small>' : '') + '<b>' + parse(dk).getDate() + '</b>' + dots + '</button>';
   }).join('') + '</div>';
   let list = '';
   if (mode === 'today') {
@@ -943,7 +1000,7 @@ function dayBody(dk) {
   const d = parse(dk);
   const geo = 'left:4px;width:calc(55% - 8px)';
   let bg = '';
-  if (S.ui.routine) for (const r of routinesFor(d)) bg += '<div class="blk bg" style="' + pos(r.s, r.e) + ';' + geo + ';font-size:12px;' + tagStyleBg(r.tag) + '">' + esc(r.name) + (r.monthly ? '<span class="mo">毎月</span>' : '') + (r.e - r.s >= 1 ? '<small>' + fmtT(r.s) + '–' + fmtT(r.e) + '</small>' : '') + '</div>';
+  if (S.ui.routine) { const rs = routinesFor(d), ln = lanesOf(rs); rs.forEach((r, j) => bg += '<div class="blk bg" style="' + pos(r.s, r.e) + ';' + (ln[j].n > 1 ? 'left:calc(4px + ' + (ln[j].lane * 55 / ln[j].n) + '%);width:calc(' + (55 / ln[j].n) + '% - ' + (8 / ln[j].n + 2) + 'px)' : geo) + ';font-size:12px;' + tagStyleBg(r.tag) + '">' + esc(r.name) + (r.monthly ? '<span class="mo">毎月</span>' : '') + (r.e - r.s >= 1 ? '<small>' + fmtT(r.s) + '–' + fmtT(r.e) + '</small>' : '') + '</div>'); }
   let top = '';
   for (const ev of evs(dk).filter(e => !e.allDay)) top += evBlock(ev, dk, geo, true);
   const ts = S.tasks.filter(t => t.date === dk);
@@ -960,7 +1017,7 @@ function dayBody(dk) {
   const sev = selEvent();
   const dd = parse(dk), dwi = dowIdx(dd);
   return '<div class="wk"><div class="dleft">' +
-    '<div class="dayttl' + (dk === TODAYK ? ' today' : dwi === 5 ? ' sat' : dwi === 6 ? ' sun' : '') + '"><b>' + dd.getDate() + '</b><span><i>' + (dd.getMonth() + 1) + '月</i>' + DOWEN[dwi] + '</span>' + (dk === TODAYK ? '<em>TODAY</em>' : '') + '</div>' +
+    '<div class="dayttl' + (dk === TODAYK ? ' today' : dwi === 6 || holiday(dk) ? ' sun' : dwi === 5 ? ' sat' : '') + '"><b>' + dd.getDate() + '</b><span><i>' + (dd.getMonth() + 1) + '月</i>' + DOWEN[dwi] + (holiday(dk) ? '<i class="hn">' + holiday(dk) + '</i>' : '') + '</span>' + (dk === TODAYK ? '<em>TODAY</em>' : '') + '</div>' +
     '<div class="adrow" style="margin-left:6px"><span class="adl">終日</span><div class="adstrip" data-ad="1" data-date="' + dk + '" style="height:' + (lanes * 22 + 4) + 'px;background-image:none">' + adBars + '</div></div>' +
     '<div style="flex:1;min-height:0;display:flex"><div class="tlab" style="width:40px;font-size:12px">' + tlabels(2) + '</div>' +
     '<div class="grid" data-draw data-grid="day" data-date="' + dk + '" style="border:1px solid var(--border);border-radius:4px">' + bg + '<div class="lines one"></div>' + top + now + '</div></div></div>' +
@@ -973,15 +1030,15 @@ function dayBody(dk) {
 
 /* ---------- other pages ---------- */
 function goalBody(thumb) {
-  const cq = Math.ceil((TODAY.getMonth() + 1) / 3);
+  const cq = curY() ? Math.ceil((TODAY.getMonth() + 1) / 3) : TODAY.getFullYear() < YR ? 0 : 5;
   let cols = '';
   for (let q = 1; q <= 4; q++) cols += '<div class="qcol' + (q === cq ? ' cur' : '') + '"><div class="qhrow"><button class="qh" data-act="goto" data-n="' + (1 + q) + '">Q' + q + '　' + ((q - 1) * 3 + 1) + '〜' + (q * 3) + '月</button>' +
-    (q === cq ? '<span class="qleft">あと' + Math.max(0, Math.round((new Date(2026, q * 3, 0) - TODAY) / 864e5)) + '日</span>' : '') + '</div>' +
-    '<span class="edit" contenteditable="true" data-edit="q" data-q="' + q + '" data-ph="3ヶ月の目標" style="font-size:15px;font-weight:700">' + esc(S.goals.q[q] || '') + '</span>' +
-    '<span class="edit" contenteditable="true" data-edit="theme" data-q="' + q + '" data-ph="テーマ" style="font-size:13px;color:var(--sub)">' + esc(S.goals.theme[q] || '') + '</span>' +
-    [0, 1, 2].map(k => { const m = (q - 1) * 3 + 1 + k, cm = TODAY.getMonth() + 1;
+    (q === cq ? '<span class="qleft">あと' + Math.max(0, Math.round((new Date(YR, q * 3, 0) - TODAY) / 864e5)) + '日</span>' : '') + '</div>' +
+    '<span class="edit" contenteditable="true" data-edit="q" data-q="' + q + '" data-ph="3ヶ月の目標" style="font-size:15px;font-weight:700">' + esc(GO().q[q] || '') + '</span>' +
+    '<span class="edit" contenteditable="true" data-edit="theme" data-q="' + q + '" data-ph="テーマ" style="font-size:13px;color:var(--sub)">' + esc(GO().theme[q] || '') + '</span>' +
+    [0, 1, 2].map(k => { const m = (q - 1) * 3 + 1 + k, cm = curY() ? TODAY.getMonth() + 1 : TODAY.getFullYear() < YR ? 0 : 13;
       return '<div class="mbox' + (m === cm ? ' cur' : m < cm ? ' past' : '') + '"><button class="mlab" data-act="goto" data-n="' + (5 + m) + '">' + m + '月</button></div>'; }).join('') + '</div>';
-  return '<div class="pg" ' + (thumb ? '' : 'data-draw') + '><h1>2026年の目標</h1><div class="card" style="padding:14px 18px"><span class="k">この1年で</span><span class="v edit" contenteditable="true" data-edit="year" data-ph="1年の目標" style="font-size:18px;font-weight:700">' + esc(S.goals.year || '') + '</span></div><div class="qcols">' + cols + '</div></div>';
+  return '<div class="pg" ' + (thumb ? '' : 'data-draw') + '><h1>' + YR + '年の目標</h1><div class="card" style="padding:14px 18px"><span class="k">この1年で</span><span class="v edit" contenteditable="true" data-edit="year" data-ph="1年の目標" style="font-size:18px;font-weight:700">' + esc(GO().year || '') + '</span></div><div class="qcols">' + cols + '</div></div>';
 }
 function monthCal(y, m, opt = {}) {
   const first = new Date(y, m - 1, 1), start = addDays(first, -dowIdx(first));
@@ -995,7 +1052,7 @@ function monthCal(y, m, opt = {}) {
       for (const ev of evs(dk).filter(e => !e.allDay)) chips += '<span class="chipb faint" style="border:1px solid var(--border)">' + esc(ev.name) + '</span>';
     }
     if (opt.detail && !out) {
-      for (const r of routinesFor(d).filter(r => r.monthly)) chips += '<span class="chipb" style="' + tagStyle(r.tag) + '">' + esc(r.name) + '</span>';
+      for (const r of routinesFor(d).filter(r => r.monthly || S.ui.routine)) chips += '<span class="chipb' + (r.monthly ? '' : ' rt') + '" style="' + tagStyle(r.tag) + '">' + esc(r.name) + '</span>';
       for (const it of allDayIn(dk, dk)) chips += '<span class="chipb" style="' + (it.ev.tag ? tagStyle(it.ev.tag) + ';border:1px solid var(--c-' + tagColor(it.ev.tag) + ')' : 'background:var(--surface);border:1px solid var(--ev-b);color:var(--ink)') + ';font-weight:700">' + esc(it.ev.name) + '</span>';
       for (const ev of evs(dk).filter(e => !e.allDay)) chips += '<span class="chipb" style="' + (ev.tag ? tagStyle(ev.tag) + ';border:1px solid var(--c-' + tagColor(ev.tag) + ')' : 'border:1px solid var(--ev-b);color:var(--ink)') + '">' + esc(ev.name) + '</span>';
     }
@@ -1003,7 +1060,8 @@ function monthCal(y, m, opt = {}) {
       const n = allDayIn(dk, dk).length + evs(dk).filter(e => !e.allDay).length, nt = S.tasks.filter(t => t.date === dk && !t.done).length;
       if (n || nt) chips += '<span class="mk">' + '<i class="ev"></i>'.repeat(Math.min(3, n)) + '<i class="tk"></i>'.repeat(Math.min(2, nt)) + '</span>';
     }
-    const cls = 'c' + (out ? ' out' : '') + (dk === TODAYK ? ' td' : '') + (opt.sel === dk ? ' selc' : '');
+    const hn = holiday(dk), cls = 'c' + (out ? ' out' : '') + (dk === TODAYK ? ' td' : '') + (opt.sel === dk ? ' selc' : '') + (hn || dowIdx(d) === 6 ? ' hol' : dowIdx(d) === 5 ? ' sat' : '');
+    if (opt.detail && hn && !out) chips = '<span class="hname">' + hn + '</span>' + chips;
     h += (opt.detail || opt.mini) && !out ? '<button class="' + cls + '" data-act="' + (opt.mini ? 'qday' : 'msel') + '" data-date="' + dk + '" aria-label="' + md(d) + (opt.mini ? 'に予定を追加' : 'を選ぶ') + '"><span class="dn">' + d.getDate() + '</span>' + chips + '</button>' : '<div class="' + cls + '"><span class="dn">' + d.getDate() + '</span>' + chips + '</div>';
   }
   return '<div class="cal" style="grid-template-rows:auto repeat(' + rows + ',minmax(0,1fr));' + (opt.style || '') + '">' + h + '</div>';
@@ -1013,10 +1071,10 @@ function tagDots(cur, attr) {
 }
 function monthBody(m, thumb) {
   let sel = S.ui.msel; const sd = sel ? parse(sel) : null;
-  if (!sd || sd.getMonth() !== m - 1 || sd.getFullYear() !== 2026) sel = key(TODAY.getMonth() === m - 1 ? TODAY : new Date(2026, m - 1, 1));
+  if (!sd || sd.getMonth() !== m - 1 || sd.getFullYear() !== YR) sel = key(curY() && TODAY.getMonth() === m - 1 ? TODAY : new Date(YR, m - 1, 1));
   const d = parse(sel);
   const items = [];
-  for (const r of routinesFor(d).filter(r => r.monthly)) items.push('<div class="irow"><span class="t">' + fmtT(r.s) + '–' + fmtT(r.e) + '</span><span class="n"><span class="chipb" style="' + tagStyle(r.tag) + '">毎月</span> ' + esc(r.name) + '</span></div>');
+  for (const r of routinesFor(d).filter(r => r.monthly || S.ui.routine).sort((a, b) => a.s - b.s)) items.push('<div class="irow"><span class="t">' + fmtT(r.s) + '–' + fmtT(r.e) + '</span><span class="n"><span class="chipb" style="' + tagStyle(r.tag) + '">' + (r.monthly ? '毎月' : '毎週') + '</span> ' + esc(r.name) + '</span></div>');
   for (const it of allDayIn(sel, sel)) items.push('<div class="irow evrow' + (isSel('event', it.ev.id) ? ' sel' : '') + '" role="button" tabindex="0" data-act="mevsel" data-id="' + it.ev.id + '" data-date="' + it.dk + '"' + (it.ev.tag ? ' style="' + tagStyle(it.ev.tag) + ';border-radius:6px;padding:0 6px"' : '') + '><span class="t">' + (it.end !== it.dk ? (parse(it.dk).getMonth() + 1) + '/' + parse(it.dk).getDate() + '〜' + (parse(it.end).getMonth() + 1) + '/' + parse(it.end).getDate() : '終日') + '</span><span class="n" style="font-weight:700">' + (it.ev.tag ? '<span style="display:inline-block;width:8px;height:8px;border-radius:4px;margin-right:6px;background:var(--c-' + tagColor(it.ev.tag) + '-t)"></span>' : '') + esc(it.ev.name) + '</span><button class="xbtn" data-act="mdel" data-date="' + it.dk + '" data-id="' + it.ev.id + '" aria-label="' + esc(it.ev.name) + 'を削除">' + ICON.x + '</button></div>');
   for (const ev of evs(sel).filter(e => !e.allDay).sort((a, b) => a.s - b.s)) items.push('<div class="irow evrow' + (isSel('event', ev.id) ? ' sel' : '') + '" role="button" tabindex="0" data-act="mevsel" data-id="' + ev.id + '" data-date="' + sel + '"' + (ev.tag ? ' style="' + tagStyle(ev.tag) + ';border-radius:6px;padding:0 6px"' : '') + '><span class="t">' + (ev.allDay ? '終日' : fmtT(ev.s) + '–' + fmtT(ev.e)) + '</span><span class="n">' + (ev.tag ? '<span style="display:inline-block;width:8px;height:8px;border-radius:4px;margin-right:6px;background:var(--c-' + tagColor(ev.tag) + '-t)"></span>' : '') + esc(ev.name) + '</span><button class="xbtn" data-act="mdel" data-date="' + sel + '" data-id="' + ev.id + '" aria-label="' + esc(ev.name) + 'を削除">' + ICON.x + '</button></div>');
   for (const t of S.tasks.filter(t => t.date === sel)) items.push('<div class="irow"><span class="t">タスク</span><span class="n" style="' + (t.done ? 'color:var(--muted);text-decoration:line-through' : '') + '">' + esc(t.title) + '</span></div>');
@@ -1030,14 +1088,14 @@ function monthBody(m, thumb) {
     '<div class="card" style="' + (sev ? 'display:none;' : '') + 'margin-top:auto;gap:8px"><span class="k">この日に予定を追加</span><input ' + (thumb ? '' : 'id="mname"') + ' data-madd="1" placeholder="予定の名前" aria-label="予定の名前" enterkeyhint="done" style="height:34px;border:1px solid var(--border);border-radius:8px;padding:0 8px;font-size:14px;background:var(--surface)">' +
     '<div class="row"><select ' + (thumb ? '' : 'id="ms"') + ' aria-label="開始" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + opts(null, true, true) + '</select>–<select ' + (thumb ? '' : 'id="me"') + ' aria-label="終了" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + opts(null, true) + '</select><select ' + (thumb ? '' : 'id="md"') + ' aria-label="日数（終日のとき）" style="height:30px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface)">' + [...Array(14)].map((_, i) => '<option value="' + (i + 1) + '">' + (i + 1) + '日間</option>').join('') + '</select></div>' +
     '<div class="row">' + tagDots(S.ui.newTag, 'data-mtag') + '</div><button class="primary" data-act="madd" data-date="' + sel + '" style="align-self:flex-end">追加</button></div></aside>';
-  return '<div class="wk" ' + (thumb ? '' : 'data-draw') + '><div class="pg" style="position:relative;flex:1;min-width:0;gap:10px"><div style="display:flex;align-items:baseline;gap:14px"><h1>' + m + '月</h1></div>' + monthCal(2026, m, { detail: true, sel, style: 'flex:1;min-height:0' }) + '</div>' + panel + '</div>';
+  return '<div class="wk" ' + (thumb ? '' : 'data-draw') + '><div class="pg" style="position:relative;flex:1;min-width:0;gap:10px"><div style="display:flex;align-items:baseline;gap:14px"><h1>' + m + '月</h1></div>' + monthCal(YR, m, { detail: true, sel, style: 'flex:1;min-height:0' }) + '</div>' + panel + '</div>';
 }
 function quarterBody(q, thumb) {
   let cals = '';
-  for (let k = 0; k < 3; k++) { const m = (q - 1) * 3 + 1 + k; cals += '<div style="display:flex;flex-direction:column;gap:6px;min-height:0"><button class="qh" data-act="goto" data-n="' + (5 + m) + '">' + m + '月</button>' + monthCal(2026, m, { mini: !thumb, style: 'flex:1;min-height:0' }) + '</div>'; }
+  for (let k = 0; k < 3; k++) { const m = (q - 1) * 3 + 1 + k; cals += '<div style="display:flex;flex-direction:column;gap:6px;min-height:0"><button class="qh" data-act="goto" data-n="' + (5 + m) + '">' + m + '月</button>' + monthCal(YR, m, { mini: !thumb, style: 'flex:1;min-height:0' }) + '</div>'; }
   return '<div class="pg" ' + (thumb ? '' : 'data-draw') + '><h1>Q' + q + '（' + ((q - 1) * 3 + 1) + '〜' + (q * 3) + '月）</h1>' +
-    '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px"><div class="card"><span class="k">テーマ</span><span class="v edit" contenteditable="true" data-edit="theme" data-q="' + q + '" data-ph="この3ヶ月のテーマ" style="font-size:16px;font-weight:700">' + esc(S.goals.theme[q] || '') + '</span></div>' +
-    '<div class="card"><span class="k">目標</span><span class="v edit" contenteditable="true" data-edit="q" data-q="' + q + '" data-ph="この3ヶ月の目標" style="font-size:16px;font-weight:700">' + esc(S.goals.q[q] || '') + '</span></div></div>' +
+    '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px"><div class="card"><span class="k">テーマ</span><span class="v edit" contenteditable="true" data-edit="theme" data-q="' + q + '" data-ph="この3ヶ月のテーマ" style="font-size:16px;font-weight:700">' + esc(GO().theme[q] || '') + '</span></div>' +
+    '<div class="card"><span class="k">目標</span><span class="v edit" contenteditable="true" data-edit="q" data-q="' + q + '" data-ph="この3ヶ月の目標" style="font-size:16px;font-weight:700">' + esc(GO().q[q] || '') + '</span></div></div>' +
     '<div style="flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">' + cals + '</div>' +
     '<div class="qlegend"><span class="mk" style="display:inline-flex"><i class="ev"></i></span>予定<span class="mk" style="display:inline-flex"><i class="tk"></i></span>やる日（タスク）</div>' +
     '<div style="height:118px;flex:none;display:flex;flex-direction:column;gap:4px;margin-right:64px"><span style="font-size:12px;color:var(--sub)">やりたいこと</span><div class="ruled" style="flex:1"></div></div></div>';
@@ -1113,7 +1171,7 @@ function bodyFor(view, thumb) {
   if (i.type === 'tasks') return tasksBody(thumb);
   return ideanoteBody(thumb);
 }
-const inkKey = v => v.mode === 'day' ? 'd' + v.date : v.mode === 'page' ? 'p' + v.n : v.mode === 'tplWeek' ? 'tw' : v.mode === 'tplMonth' ? 'tm' : null;
+const inkKey = v => v.mode === 'day' ? 'd' + v.date : v.mode === 'page' ? pk(v.n) : v.mode === 'tplWeek' ? 'tw' : v.mode === 'tplMonth' ? 'tm' : null;
 
 /* ================= page view ================= */
 let V = { mode: 'page', n: pageOfWeek(weekOf(TODAY)) }, PREV = null;
@@ -1166,7 +1224,7 @@ function renderTbx() {
   const tpl = V.mode === 'tplWeek' || V.mode === 'tplMonth';
   t.hidden = false;
   let h = '<button class="grip" data-grip="1" aria-label="道具を動かす">' + GRIP + '</button>' + pensHTML();
-  if (isWeek || V.mode === 'day' || tpl) h += '<span class="vsep"></span>' + routineTgl();
+  if (isWeek || V.mode === 'day' || tpl || (V.mode === 'page' && info(V.n).type === 'month')) h += '<span class="vsep"></span>' + routineTgl();
   const isIdea = V.mode === 'page' && info(V.n).type === 'ideas';
   const isGoalPg = V.mode === 'page' && info(V.n).type === 'goal';
   if (!isGoalPg) h += (isWeek || V.mode === 'day' || tpl ? '' : '<span class="vsep"></span>') + '<button class="goalbtn' + (u.goals ? ' on' : '') + '" data-act="goals" aria-pressed="' + u.goals + '" aria-label="目標を表示" title="目標">' + ICON.flag + '</button>';
@@ -1179,7 +1237,7 @@ function renderGoalFloat(own) {
   if (own || !S.ui.goals) { g.hidden = true; g.innerHTML = ''; return; }
   let d = TODAY;
   if (V.mode === 'day') d = parse(V.date);
-  else if (V.mode === 'page') { const i = info(V.n); if (i.type === 'week') d = weekStart(i.w); else if (i.type === 'month') d = new Date(2026, i.m - 1, 15); else if (i.type === 'quarter') d = new Date(2026, (i.q - 1) * 3 + 1, 15); }
+  else if (V.mode === 'page') { const i = info(V.n); if (i.type === 'week') d = weekStart(i.w); else if (i.type === 'month') d = new Date(YR, i.m - 1, 15); else if (i.type === 'quarter') d = new Date(YR, (i.q - 1) * 3 + 1, 15); }
   g.innerHTML = goalsCard(weekOf(d)); g.hidden = false;
 }
 function placeTbx() {
@@ -1259,7 +1317,7 @@ function renderPage(anim) {
 }
 /* ---------- page turn (edge swipe / arrows): the page lifts from its edge and turns like paper ---------- */
 function nextView(dir) {
-  if (V.mode === 'day') { const d = key(addDays(parse(V.date), dir)); return d >= '2026-01-01' && d <= '2026-12-31' ? { mode: 'day', date: d } : null; }
+  if (V.mode === 'day') { const d = key(addDays(parse(V.date), dir)); return d >= YR + '-01-01' && d <= YR + '-12-31' ? { mode: 'day', date: d } : null; }
   if (V.mode !== 'page') return null;
   const n = V.n + dir; return n >= 1 && n <= TOTAL ? { mode: 'page', n } : null;
 }
@@ -1333,7 +1391,7 @@ function flipPage(dir) {
   if (startTurn(dir)) { finishTurn(true); return; }
   const tv = nextView(dir); if (tv) go(tv, dir > 0 ? 'turn-next' : 'turn-prev');
 }
-function go(v, anim) { if (v && v.mode === 'day') v.date = v.date < '2026-01-01' ? '2026-01-01' : v.date > '2026-12-31' ? '2026-12-31' : v.date; closePop(); SEL = null; LS = null; S.ui.evx = null; Z = { z: 1, tx: 0, ty: 0 }; V = v; renderPage(anim); }
+function go(v, anim) { if (v && v.mode === 'day') v.date = v.date < YR + '-01-01' ? YR + '-01-01' : v.date > YR + '-12-31' ? YR + '-12-31' : v.date; closePop(); SEL = null; LS = null; S.ui.evx = null; Z = { z: 1, tx: 0, ty: 0 }; V = v; renderPage(anim); }
 
 /* ================= zoom ================= */
 let Z = { z: 1, tx: 0, ty: 0 };
@@ -1978,6 +2036,7 @@ function seriesPop(id, day, anchor) {
   popCtx = { type: 'series', id, day };
   openPop('<span class="lab">毎週のルーティン・' + DOW[day] + '曜 ' + fmtT(s.days[day][0]) + '–' + fmtT(s.days[day][1]) + '</span><input type="text" data-pop="name" aria-label="名前" value="' + esc(s.name) + '">' + tagPicker(s.tag, false) +
     '<span class="lab">くり返す曜日</span><div class="days">' + DOW.map((x, i) => '<button data-pop="day" data-v="' + i + '" class="' + (s.days[i] ? 'on' : '') + '" aria-pressed="' + !!s.days[i] + '">' + x + '</button>').join('') + '</div>' +
+    '<span class="lab">表示する週（その月の第何回目の' + DOW[day] + '曜か）</span><div class="days">' + [1, 2, 3, 4, 5].map(n => { const on = !s.wk || s.wk.includes(n); return '<button data-pop="swk" data-v="' + n + '" class="' + (on ? 'on' : '') + '" aria-pressed="' + on + '">第' + n + '</button>'; }).join('') + '</div>' +
     '<div class="pbtns"><button class="danger" data-pop="delday">' + DOW[day] + '曜から外す</button><button class="primary" data-pop="close">完了</button></div>', anchor);
 }
 function monthlyPop(id, anchor) {
@@ -2071,6 +2130,7 @@ pop.addEventListener('click', e => {
   if (p === 'newtag') { const nt = { id: uid(), name: 'タグ' + (S.tags.length + 1), color: COLORS[S.tags.length % COLORS.length] }; S.tags.push(nt); target.tag = nt.id; toast('タグを追加しました。名前を入れてください'); PALM.focusTag = true; }
   if (c.type === 'series') {
     if (p === 'day') { const i = +v; if (target.days[i]) { if (Object.keys(target.days).length > 1) { delete target.days[i]; if (i === c.day) { closePop(); SEL = null; save(); renderBody(); return; } } } else target.days[i] = target.days[c.day].slice(); }
+    if (p === 'swk') { const n = +v, cur = target.wk ? target.wk.slice() : [1, 2, 3, 4, 5], i = cur.indexOf(n); if (i >= 0) { if (cur.length > 1) cur.splice(i, 1); } else cur.push(n); cur.sort(); if (cur.length === 5) delete target.wk; else target.wk = cur; }
     if (p === 'delday') { snap(); delete target.days[c.day]; if (!Object.keys(target.days).length) S.series = S.series.filter(x => x !== target); SEL = null; save(); closePop(); renderBody(); undoToast('ルーティンを外しました'); return; }
   }
   if (c.type === 'monthly') {
@@ -2244,15 +2304,15 @@ $('#page').addEventListener('change', e => { const t = e.target; if (t.dataset.t
 $('#page').addEventListener('input', e => {
   const t = e.target.closest('[data-edit]'); if (!t) return;
   const v = t.textContent, k = t.dataset.edit;
-  if (k === 'year') S.goals.year = v; if (k === 'q') S.goals.q[t.dataset.q] = v; if (k === 'theme') S.goals.theme[t.dataset.q] = v; if (k === 'w') S.goals.w[t.dataset.w] = v;
+  if (k === 'year') GO().year = v; if (k === 'q') GO().q[t.dataset.q] = v; if (k === 'theme') GO().theme[t.dataset.q] = v; if (k === 'w') GO().w[t.dataset.w] = v;
   save(); thumbCache.clear();
 });
 
 /* ================= book view ================= */
-let BN = pageOfWeek(weekOf(TODAY)), VIEWBOOK = true;
+let BN = pageOfWeek(weekOf(REF)), VIEWBOOK = true;
 const thumbCache = new Map();
 function inkThumb(n) {
-  const k = 'p' + n, i = info(n), mk = i.type === 'week' ? 'wm' + i.w : null, marr = mk ? S.strokes[mk] : null;
+  const k = pk(n), i = info(n), mk = i.type === 'week' ? 'wm' + i.w : null, marr = mk ? S.strokes[mk] : null;
   let arr = S.strokes[k];
   if ((!arr || !arr.length) && (!marr || !marr.length)) return '';
   arr = arr || [];
@@ -2295,8 +2355,8 @@ const isLight = hex => { const n = parseInt(hex.slice(1), 16); return ((n >> 16)
 function coverInner(n) {
   const col = coverColor(), ink = coverInk(col);
   const face = n === 0
-    ? '<div class="cvr front" style="left:380px;--cv:' + col + ';--cvi:' + ink + '"><div class="cv-in"><span class="cv-yr">2026</span><span class="cv-sub">PLANNER</span></div><span class="cv-band"></span></div>'
-    : '<div class="cvr back" style="left:0;--cv:' + col + ';--cvi:' + ink + '"><span class="cv-mark">2026</span></div>';
+    ? '<div class="cvr front" style="left:380px;--cv:' + col + ';--cvi:' + ink + '"><div class="cv-in"><span class="cv-yr">' + YR + '</span><span class="cv-sub">PLANNER</span></div><span class="cv-band"></span></div>'
+    : '<div class="cvr back" style="left:0;--cv:' + col + ';--cvi:' + ink + '"><span class="cv-mark">' + YR + '</span></div>';
   return '<div class="cvsp">' + face + '</div>';
 }
 const isVoid = (n, side) => (n === 0 && side === 'L') || (n === BMAX && side === 'R');
@@ -2314,11 +2374,11 @@ function simpleInner(n) {
     let blocks = '';
     for (let d = 0; d < 7; d++) {
       const day = addDays(ws, d), L = 'left:calc(' + (d * 100 / 7) + '% + 2px);width:calc(' + (100 / 7) + '% - 4px)';
-      if (S.ui.routine) for (const r of routinesFor(day)) blocks += '<i class="blk" style="' + pos(r.s, r.e) + ';' + L + ';background:var(--c-' + tagColor(r.tag) + ')"></i>';
+      if (S.ui.routine) { const rs = routinesFor(day), ln = lanesOf(rs); rs.forEach((r, j) => blocks += '<i class="blk" style="' + pos(r.s, r.e) + ';' + colSub(d, ln[j]) + ';background:var(--c-' + tagColor(r.tag) + ')"></i>'); }
       for (const ev of evs(key(day)).filter(e => !e.allDay)) blocks += '<i class="blk ev" style="' + pos(ev.s, ev.e) + ';' + L + '"></i>';
     }
     const days = [...Array(7)].map((_, k) => addDays(ws, k));
-    const head = days.map((d, k) => '<div class="dh' + (k === 5 ? ' sat' : '') + (k === 6 ? ' sun' : '') + '">' + DOW[k] + ' <b>' + d.getDate() + '</b></div>').join('');
+    const head = days.map((d, k) => '<div class="dh' + (k === 5 ? ' sat' : '') + (k === 6 || holiday(key(d)) ? ' sun' : '') + '">' + DOW[k] + ' <b>' + d.getDate() + '</b></div>').join('');
     return '<div class="thumb"><div class="wk"><div class="wk-main"><div class="dayhead">' + head + '</div><div class="adrow"><span class="adl">終日</span><div class="adstrip" style="height:26px"></div></div><div class="gw"><div class="tlab">' + tlabels(3) + '</div><div class="grid"><div class="wkend" style="left:' + (500 / 7) + '%;width:' + (200 / 7) + '%"></div>' + blocks + '<div class="lines"></div></div></div></div><aside class="panel"></aside></div></div>';
   }
   return '<div class="simp ' + i.type + '"><span class="st">' + esc(i.title) + '</span><div class="sg"></div></div>';
@@ -2335,7 +2395,7 @@ function renderBook() {
   const full = cachedFull(BN);
   book.innerHTML = '<div class="bk-top"><button class="rb" data-bk="close" aria-label="閉じて今のページを開く">' + ICON.x + '</button><button class="chap" data-bk="shelf" style="margin-left:4px">本棚</button><button class="chap" data-bk="theme" style="margin-left:4px" aria-label="表示の明るさを切り替える">' + themeLabel() + '</button><div style="margin-left:auto;display:flex;gap:6px">' +
     '<button class="chap' + (BN === 0 ? ' on' : '') + '" data-bk="chap" data-n="0">COVER</button>' + CHAPS.map((c, k) => c[1] == null ? '' : '<button class="chap' + (i.chap === k ? ' on' : '') + '" data-bk="chap" data-n="' + c[1] + '">' + c[0] + '</button>').join('') + '</div></div>' +
-    '<div class="bk-title"><b>2026年の手帳</b><span id="bklabel">' + (i.sub ? i.sub + '　' : '') + i.title + (BN >= 1 && BN <= TOTAL ? '　p.' + BN + ' / ' + TOTAL : '') + '</span></div>' +
+    '<div class="bk-title"><b>' + YR + '年の手帳</b><span id="bklabel">' + (i.sub ? i.sub + '　' : '') + i.title + (BN >= 1 && BN <= TOTAL ? '　p.' + BN + ' / ' + TOTAL : '') + '</span></div>' +
     '<div class="book" id="bk" style="transform:translateX(' + shiftFor(BN) + 'px)">' + stacks + '<div class="half L' + (isVoid(BN, 'L') ? ' void' : '') + (BN === BMAX ? ' cv' : '') + '" id="hL">' + halfHTML(full, 'L') + '</div><div class="half R' + (isVoid(BN, 'R') ? ' void' : '') + (BN === 0 ? ' cv' : '') + '" id="hR">' + halfHTML(full, 'R') + '</div><div id="leaves"></div><div class="flipcount" id="fc" hidden></div></div>' +
     ((BN === 0 || BN === BMAX) && CVOPEN ? coverPickHTML() : '') +
     '<div class="bkbackup"><button class="bkreset" data-bk="export">バックアップを書き出す</button><button class="bkreset" data-bk="import">バックアップから戻す</button></div>';
@@ -2345,11 +2405,11 @@ function renderBook() {
 /* shelf: one closed book per year, side by side */
 function themeLabel() { const t = document.documentElement.getAttribute('data-theme'); return t === 'light' ? 'ライト' : t === 'dark' ? 'ダーク' : '自動'; }
 function renderShelf() {
-  const col = coverColor(), ink = coverInk(col);
-  book.innerHTML = '<div class="bk-top"><button class="rb" data-bk="pickbook" aria-label="2026年の手帳に戻る">' + ICON.x + '</button></div>' +
+  const col = coverColor(), ink = coverInk(col), av = booksAvail(), nx = av[av.length - 1] + 1;
+  book.innerHTML = '<div class="bk-top"><button class="rb" data-bk="pickbook" aria-label="' + YR + '年の手帳に戻る">' + ICON.x + '</button></div>' +
     '<div class="bk-title"><b>本棚</b><span>年ごとの手帳</span></div>' +
-    '<div class="shelf"><button class="sbook" data-bk="pickbook" aria-label="2026年の手帳を開く"><div class="cvr front" style="position:relative;left:0;--cv:' + col + ';--cvi:' + ink + '"><div class="cv-in"><span class="cv-yr">2026</span><span class="cv-sub">PLANNER</span></div><span class="cv-band"></span></div></button>' +
-    '<div class="sbook empty" aria-label="2027年（まだありません）"><span>2027</span><small>年が明けたら追加</small></div></div><div class="shelfline"></div>';
+    '<div class="shelf">' + av.map(y => '<button class="sbook' + (y === YR ? ' cur' : '') + '" data-bk="pickyear" data-y="' + y + '" aria-label="' + y + '年の手帳を開く"><div class="cvr front" style="position:relative;left:0;--cv:' + col + ';--cvi:' + ink + '"><div class="cv-in"><span class="cv-yr">' + y + '</span><span class="cv-sub">PLANNER</span></div><span class="cv-band"></span></div></button>').join('') +
+    '<div class="sbook empty" aria-label="' + nx + '年（まだありません）"><span>' + nx + '</span><small>' + (nx - 1) + '年12月に追加</small></div></div><div class="shelfline"></div>';
 }
 function openBook(n) {
   closePop(); removeSel(); htmlCache.clear(); BN = n; VIEWBOOK = true; syncPort(); renderBook();
@@ -2530,6 +2590,7 @@ book.addEventListener('click', e => {
   }
   if (b.dataset.bk === 'cvdone') { CVOPEN = false; renderBook(); }
   if (b.dataset.bk === 'pickbook') { BN = 0; renderBook(); }
+  if (b.dataset.bk === 'pickyear') { const y = +b.dataset.y; if (y !== YR) { setYear(y); S.ui.yr = y; save(); htmlCache.clear(); thumbCache.clear(); } BN = 0; renderBook(); }
   if (b.dataset.bk === 'export') exportBackup();
   if (b.dataset.bk === 'import') importBackup();
 });
